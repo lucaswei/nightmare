@@ -1,18 +1,21 @@
 import java.lang.Thread;
 public enum state{
-	end,
-	pause,
-	playing
+	END,
+	PAUSE,
+	PLAYING
 }
 
 public class Processor implements Runnable{
 	private Stage stage;
 	private Clock clock;
+	private long time;
+
 	private EnemyFactory enemyFactory;
 	private BulletFactory bulletFactory;
 	private ArrayList<Enemy> enemyList;
 	private ArrayList<Bullet> bulletList;
 	private ArrayList<Bullet> playerBulletList;
+
 	private Player player;
 
 	private void runInstructions(){
@@ -81,8 +84,12 @@ public class Processor implements Runnable{
 		}
 	}
 	public void run(){
-		while(state!=end){
-			wait();
+		while(status!=END){
+			try{
+				time = clock.next(time);
+			}
+			catch(DelayException e){
+			}
 			runInstruction();
 			calcBullet();
 			calcEnemy();
@@ -92,19 +99,14 @@ public class Processor implements Runnable{
 	}
 	public Processor(Stage stage,
 						Clock clock,
-	 					EnemyFactory enemyFactory,
-						BulletFactory bulletFactory,
-						RouteFactory routeFactory,
 						Player player){
 		enemyList  = new ArrayList<Enemy>();
 		bulletList = new ArrayList<Bullet>();
 		playerBulletList = new ArrayList<Bullet>();
-		this.enemyFactory  = enemyFactory;
-		this.bulletFactory = bulletFactory;
-		this.routeFactory  = routeFactory;
 		this.player= player; 
 		this.stage = stage;
 		this.clock = clock;
+		this.time = 0;
 	}
 }
 

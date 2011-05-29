@@ -1,5 +1,7 @@
 public class BulletFactory{
-	public Bullet getBullet(BulletInstruction inst, Point point){
+	private BulletFactory(){
+	}
+	static public Bullet getBullet(BulletInstruction inst, Point point){
 		String bulletType = inst.getBulletType();
 		Point bulletPoint = inst.get
 	}
