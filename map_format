@@ -1,0 +1,59 @@
+#position = (global|player),x,y
+#route = (random range | bezier position+)
+##Lefting "MOVE" empty mean normally exploding
+
+Role:
+
+
+PARTA time
+	GROUP time times interval
+		ENEMY time
+			TYPE (primitive|custom imageID HP radius)
+			POSITION position
+			MOVE
+				Route time route
+			END
+			SHOOT
+				BULLET time times interval amount
+					TYPE (primitive|custom imageID radius power)
+					SHAPE direction angle speed
+					MOVE
+						Route time (stay refer x y |linear refer angle speed|curve refer)
+					END
+				END
+			END
+		END
+	END
+	ENEMY time
+		TYPE (primitive|custom imageID HP radius)
+		POSITION position
+		MOVE
+			Route time route
+		END
+		SHOOT
+			WAVE time times period
+				BULLET time
+					TYPE (primitive|custom imageID radius)
+					MOVE
+						Route time speed fan (global | player) offset angle
+						Route time 
+					END
+				END
+			END
+		END
+	END
+END
+BOSSA time
+END
+PARTB time
+END
+BOSSB time
+	TYPE imageID radius
+	WAVE period HP
+		MOVE
+		BULLET time
+			TYPE (primitive|custom imageID radius)
+			SHAPE position radius angle amount
+			MOVE
+				time route
+END
