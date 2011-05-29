@@ -6,6 +6,7 @@ public class BulletFactory{
 	}
 }
 abstract class Bullet extends Printable{
+	private int test;
 	private int power;
 	private int bulletId;
 
