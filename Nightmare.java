@@ -1,10 +1,10 @@
 public class Nightmare{
 	public static void main(String[] args){
 		//Main menu
-		Menu menu = new Menu(this);
+		Menu menu = new Menu();
 		//
 	}
-	public void newGame(Window window,Stage stage,String hero){
+	public static void newGame(Window window,Stage stage,String hero){
 		Clock clock = new Clock();
 		ArrayBlockqueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>;
 		Processor processor = new Processor(clock,channel);

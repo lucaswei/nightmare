@@ -1,16 +1,19 @@
-package stage;
-
+import java.io.*;
 import java.awt.Point;
 import java.lang.Math.*;
 
 public class Stage{
+	Image[] images;
 	Instruction[][] instructions;
 	Map<String,Integer> anchors;
 	
 	int PC = 0;
 	
-	public Stage(File map){
-		StageParser parser = new StageParser(map);
+	public Stage(String map){
+		String path = "map/" + map + "/";
+		ImageMapper mapper = new ImageMapper(new File(path+"image"));
+		images = mapper.get();
+		InstructionParser parser = new InstructionParser(new File(path+"map"));
 		instructions = parser.get();
 	}
 	public Instruction[] get(){
@@ -22,9 +25,26 @@ public class Stage{
 			PC = target;
 		}
 	}
+	public Image getImage(int imageId){
+		return images[imageId];
+	}
 }
 
-class StageParser{
+class ImageMapper(){
+	public ImageMapper(File map){
+		reader = new BufferedReader(map);
+		mapImages(reader);
+	}
+	public Image[] get(){
+		return images.toArray();
+	}
+	private ArrayList<Image> images;
+	private mapImages(BufferedReader reader){
+		
+	}
+}
+
+class InstructionParser{
 	ArrayList<ArrayList<Instruction>> instructions;
 	Map<String,Integer> anchors;
 	BufferedReader reader;
@@ -32,7 +52,7 @@ class StageParser{
 	int enemyId = 0;
 	int bulletId = 0;
 	
-	public StageParser(File map){
+	public InstructionParser(File map){
 		reader = new BufferedReader(map);
 		parseInstruction(reader);
 	}
