@@ -1,10 +1,18 @@
 /*TODO Transform inst into bullet*/
 public class BulletFactory{
 	private BulletFactory(){}
-	public static Bullet getBullet(BulletInstruction inst, Point point){
-		/*Circle etc....*/
-		String bulletType = inst.getBulletType();
-		Point bulletPoint = inst.getPosition();
+	public static Bullet getBullet(int imageId, int bulletId, int radius, int power, Point enemy, String bulletType){
+		switch(bulletType){
+			case "large":
+				return bullet(enemy, 32, imageId, bulletId);
+				break;
+			case "normal":
+				return bullet(enemy, 12, imageId, bulletId);
+				break;
+			case "small":
+				return bullet(enemy, 8, imageId, bulletId);
+				break;
+		}
 	}
 }
 abstract class Bullet extends Printable{
@@ -21,20 +29,13 @@ abstract class Bullet extends Printable{
 		if(route != null)
 			position = route.move();
 	}
-	/*
-	public Point getposition(){
-		int x = position.getX();
-		int y = position.getY();
-		Point point = new Point(x, y);
-		return point;
-	}
-	*/
 }
 class CircleBullet extends Bullet{
 	private int radius;
-	public CircleBullet(Point position, int radius){
+	public CircleBullet(Point position, int radius, int imageId, int bulletId){
+		this.imageId  = imageId;
 		this.position = position;
-		this.radius = radius;
+		this.radius   = radius;
 	}
 	public boolean collision(Plane plain){
 		int x = plain.getPosition().getX() - position.getX();

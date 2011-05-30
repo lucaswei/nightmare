@@ -28,11 +28,14 @@ public class Processor implements Runnable{
 				case BULLET:
 					BulletInstruction inst = inst[i];
 					if(enemyList.indexOf(inst.getEnemyId) != null){
-						int imageId = inst.getImageID();
+						int imageId = inst.getImageId();
+						int bulletId= inst.getBulletId();
 						int radius  = inst.getRadius();
 						int power   = inst.getPower();
-						String bulletType = /**/
-						bulletList.add(inst.getBulletId(), BulletFactory.getBullet(inst) );
+						int enemyId = inst.getEnemyId();
+						String bulletType = inst.getBulletType();
+						Enemy enemy = enemyList.indexOf(enemyId);
+						bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy, bulletType) );
 					}
 					break;
 				case ROUTE:
