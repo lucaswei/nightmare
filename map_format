@@ -1,9 +1,10 @@
-#position = (global|player),x,y
-#route = (random range | bezier position+)
-##Lefting "MOVE" empty mean normally exploding
-
-Role:
-
+ROLE name
+	TYPE (default|custom) imageID radius powerlimit)
+	MOVE speed
+	BULLET level 
+		Route time
+	END
+END
 
 PARTA time
 	GROUP time times interval
@@ -36,7 +37,7 @@ PARTA time
 					TYPE (primitive|custom imageID radius)
 					MOVE
 						Route time speed fan (global | player) offset angle
-						Route time 
+						Route time speed linear global
 					END
 				END
 			END
