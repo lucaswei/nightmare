@@ -1,7 +1,6 @@
-package printable.enemy;
-
 class EnemyFactory{
-	public Enemy getEnemy(EnemyInstruction inst){
+	private EnemyFactory(){}
+	public static Enemy getEnemy(EnemyInstruction inst){
 		String enemyType = inst.getEnemyType();
 		Point point = inst.getPoint();
 		int enemyId = inst.getEnemyId();
@@ -103,22 +102,25 @@ class Boss extends Enemy{
 
 class SmallEnemy extends Enemy{
 	public SmallEnemy(int id, Point point){
-		center=point;
-		enemyId=id;
+		radius  = 25;
+		center  = point;
+		enemyId = id;
 		hp=10;
 	}
 }
 class NormalEnemy extends Enemy{
 	public NormalEnemy(int id, Point point){
-		center=point;
-		enemyId=id;
+		radius  = 30
+		center  = point;
+		enemyId = id;
 		hp=20;
 	}
 }
 class LargeEnemy extends Enemy{
 	public LargeEnemy(int id, Point point){
-		center=point;
-		enemyId=id;
+		radius  = 35
+		center  = point;
+		enemyId = id;
 		hp=30;
 	}
 }

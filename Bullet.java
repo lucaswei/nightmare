@@ -1,6 +1,8 @@
 /*TODO Transform inst into bullet*/
 public class BulletFactory{
-	public Bullet getBullet(BulletInstruction inst, Point point){
+	private BulletFactory(){}
+	public static Bullet getBullet(BulletInstruction inst, Point point){
+		/*Circle etc....*/
 		String bulletType = inst.getBulletType();
 		Point bulletPoint = inst.getPosition();
 	}
