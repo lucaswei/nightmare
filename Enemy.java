@@ -14,82 +14,27 @@ class EnemyFactory{
 		}
 	}
 }
-class Enemy extends Plane{
+
+
+
+abstract class Enemy extends Plane{
 	private int hp;
 	private Route route;
 	private int enemyId;
 
-	private Bullet[] bullet;
-
-	private Point center = new Point();
-
-	public Enemy(int hp){
-		this.hp = hp;
-	}
 	public boolean attacted(int harm){
-		hp = hp-harm;
+		hp = hp - harm;
 		if(hp < 0)
 			return true;
 		else
 			return false;
 	}
-	public void setBullet(Bullet[] bullet){
-		this.bullet = bullet;
-	}
-
 	public void setRoute(Route route){
 		this.route = route;
 	}
 	public void move(){
 		if(route != null)
-			center = route.move();
-	}
-	public Bullet[] shoot(){
-		Bullet[] returnValue = bullet;
-		bullet = null;
-		return returnValue;
-	}
-	public int crash(){
-		return -2;
-	}
-}
-
-
-
-class Enemy extends Plane{
-	private int hp;
-	private Route route;
-	private int enemyId;
-
-	private Bullet[] bullet;
-
-	private Coordinate coord = new Coordinate();
-
-	public Enemy(int hp){
-		this.hp = hp;
-	}
-	public boolean attacted(int harm){
-		hp = hp-harm;
-		if(hp < 0)
-			return true;
-		else
-			return false;
-	}
-	public void setBullet(Bullet[] bullet){
-		this.bullet = bullet;
-	}
-
-	public void setRoute(Route route){
-		this.route = route;
-	}
-	public void move(){
-		if(route != null)
-			coord = route.move();
-	}
-	public Bullet[] shoot(){
-		Bullet[] returnValue = bullet;
-		bullet = null;
-		return returnValue;
+			position = route.move();
 	}
 	public int crash(){
 		return -2;
@@ -97,6 +42,12 @@ class Enemy extends Plane{
 }
 /*TODO*/
 class Boss extends Enemy{
+	public Boss(int id,Point point){
+		center = point;
+		enemyId = id;
+	}
+	public setHp(){
+	}
 }
 
 

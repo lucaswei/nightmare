@@ -88,7 +88,10 @@ public class Instruction implements
 		return arguments[2];
 	}
 	public  Point  getPoint(){
-		return arguments[3];
+		String[] pair = arguments[3].split(',');
+		x = Integer.valueOf(pair[0]);
+		y = Integer.valueOf(pair[1]);
+		return new Point(x,y);
 	}
 	public  int    getHp(){
 		return arguments[6];
@@ -140,7 +143,7 @@ public class Instruction implements
 	public  float  getCurveRefer(){
 		return Floot.valueOf(arguments[7]);
 	}
-	public  Point  getCurveAngle(){
+	public  int    getCurveAngle(){
 		return Integer.valueOf(arguments[7]);
 	}
 }

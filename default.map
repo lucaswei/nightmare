@@ -1,0 +1,43 @@
+PARTA 00000
+	ENEMY 00300
+		TYPE normal
+		POSITION 0,150
+		MOVE
+			ROUTE 0 1 line global 60,150 0
+			ROUTE 0 2 line global 60,0   0 
+			END
+		SHOOT
+			BULLET 0 3 1 5
+				TYPE normal
+				MOVE
+					ROUTE 0 1 fan player 0,0 0
+					END
+				END
+			END
+		END
+	ENEMY 00300
+		TYPE normal
+		POSITION 0,150
+		MOVE
+			ROUTE 0 1 line global 450,150 0
+			ROUTE 0 2 line global 450,0   0 
+			END
+		SHOOT
+			BULLET 0 3 1 5
+				TYPE normal
+				MOVE
+					ROUTE 0 1 fan player 0,0 0
+					END
+				END
+			END
+		END
+	END
+
+BOSSA 01000
+	END
+	
+PARTB 02000
+	END
+	
+BOSSB 03000
+	END
