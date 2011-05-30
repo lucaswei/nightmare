@@ -1,5 +1,6 @@
 import java.io.*;
-import java.awt.Point;
+import java.util.*;
+import java.awt.*;
 import java.lang.Math.*;
 
 public class Stage{
@@ -11,16 +12,16 @@ public class Stage{
 	
 	public Stage(String map){
 		String path = "map/" + map + "/";
-		ImageMapper mapper = new ImageMapper(new File(path+"image"));
+		ImageMapper mapper = new ImageMapper(new FileReader(path+"image"));
 		images = mapper.get();
-		InstructionParser parser = new InstructionParser(new File(path+"map"));
+		InstructionParser parser = new InstructionParser(new FileReader(path+"map"));
 		instructions = parser.get();
 	}
 	public Instruction[] get(){
-		return instructions.get(time);
+		return instructions[PC];
 	}
 	public void jump(String anchor){
-		target = anchors.get(anchor);
+		int target = anchors.get(anchor);
 		if(target != null){
 			PC = target;
 		}
@@ -30,16 +31,16 @@ public class Stage{
 	}
 }
 
-class ImageMapper(){
-	public ImageMapper(File map){
-		reader = new BufferedReader(map);
+class ImageMapper{
+	public ImageMapper(FileReader map){
+		BufferedReader reader = new BufferedReader(map);
 		mapImages(reader);
 	}
 	public Image[] get(){
-		return images.toArray();
+		return (Image[])images.toArray();
 	}
 	private ArrayList<Image> images;
-	private mapImages(BufferedReader reader){
+	private void mapImages(BufferedReader reader){
 		
 	}
 }
@@ -51,20 +52,21 @@ class InstructionParser{
 	
 	int enemyId = 0;
 	int bulletId = 0;
+	int wave = 0;
 	
-	public InstructionParser(File map){
-		reader = new BufferedReader(map);
+	public InstructionParser(FileReader map){
+		BufferedReader reader = new BufferedReader(map);
 		parseInstruction(reader);
 	}
 	public Instruction[][] get(){
-		ArrayList<Instruction>[] inter = instructions.toArray();
+		ArrayList<Instruction>[] inter = (ArrayList<Instruction>[])instructions.toArray();
 		Instruction[][] out = new Instruction[inter.length][];
 		for(int i=0;i<inter.length;i++){
-			out[i] = inter[i].toArray();
+			out[i] = (Instruction[])inter[i].toArray();
 		}
 		return out;
 	}
-	private parseInstruction(BufferedReader reader){
+	private void parseInstruction(BufferedReader reader){
 		ArrayList<ArrayList<Instruction>> instructions;
 		String line;
 		while((line = reader.readLine()) != null){
@@ -73,42 +75,39 @@ class InstructionParser{
 			int time = tokens.nextInt();
 			switch(type){
 				case "PARTA":
-					anchors.add("PARTA",time);
 					statePart(time);
 					break;
 				case "PARTB":
-					anchors.add("PARTB",time);
 					statePart(time);
 					break;
 				case "BOSSA":
-					anchors.add("BOSSA",time);
 					stateBoss(time);
 					break;
 				case "BOSSB":
-					anchors.add("BOSSB",time);
 					stateBoss(time);
 					break;
 			}
 		}
 	}
 	
-	private statePart(int baseTime){
+	private void statePart(int baseTime){
 		String line;
+		int time;
 		while((line = reader.readLine()) != null){
 			Scanner tokens = new Scanner(line);
 			switch(tokens.next()){
 				case "GROUP":
-					int time  = tokens.nextInt();
+					    time  = tokens.nextInt();
 					int times = tokens.nextInt();
 					int inter = tokens.nextInt();
 					for(int i=0;i<times;i++){
-						statsEnemy(baseTime + time);
+						stateEnemy(baseTime + time);
 						time += inter;
 					}
 					break;
 				case "ENEMY":
-					int time  = tokens.nextInt();
-					statsEnemy(baseTime + time);
+					time  = tokens.nextInt();
+					stateEnemy(baseTime + time);
 					break;
 				case "END":
 					return;
@@ -117,7 +116,7 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateEnemy(int baseTime){
+	private void stateEnemy(int baseTime){
 		String line;
 		int id = enemyId;
 		enemyId++;
@@ -140,7 +139,7 @@ class InstructionParser{
 				case "POSITION":
 					arguments[3] = tokens.next();
 					Instruction enemyInstruction = new Instruction(arguments);
-					addInst(insts,baseTime,enemyInstruction);
+					addInst(baseTime,enemyInstruction);
 					break;
 				case "MOVE":
 					stateMove(baseTime,"enemy",id,1);
@@ -154,7 +153,7 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateShoot(int baseTime,int enemyId){
+	private void stateShoot(int baseTime,int enemyId){
 		String line;
 		while((line = reader.readLine()) != null){
 			Scanner tokens = new Scanner(line);
@@ -165,7 +164,7 @@ class InstructionParser{
 					int inter  = tokens.nextInt();
 					int amount = tokens.nextInt();
 					for(int i=0;i<times;i++){
-						statsBullet(time,enemyId,amount);
+						stateBullet(time,enemyId,amount);
 						time += inter;
 					}
 					break;
@@ -176,10 +175,10 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateBullet(int baseTime,int enemyId,int amount){
+	private void stateBullet(int baseTime,int enemyId,int amount){
 		String line;
 		int id = bulletId;
-		bullet += amount;
+		bulletId += amount;
 		
 		String[] arguments = new String[7];
 		arguments[0] = "bullet";
@@ -199,7 +198,7 @@ class InstructionParser{
 					for(int i=0;i<amount;i++){
 						arguments[1] = Integer.toString(id + i);
 						Instruction bulletInstruction = new Instruction(arguments);
-						addInst(insts,baseTime,bulletInstruction);
+						addInst(baseTime,bulletInstruction);
 					}
 					break;
 				case "MOVE":
@@ -212,7 +211,7 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateMove(int baseTime,String targetType,int targetId,int amount){
+	private void stateMove(int baseTime,String targetType,int targetId,int amount){
 		String line;
 		String[] arguments = new String[9];
 		while((line = reader.readLine()) != null){
@@ -229,8 +228,8 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateRoute(int baseTime,String targetType,int targetId,int amount,Scanner tokens){
-		String arguments = new String[9];
+	private void stateRoute(int baseTime,String targetType,int targetId,int amount,Scanner tokens){
+		String[] arguments = new String[9];
 		arguments[0] = "route";
 		arguments[1] = targetType;
 		arguments[4] = tokens.next();
@@ -244,19 +243,19 @@ class InstructionParser{
 				int angle = tokens.nextInt();
 		
 				if(amount == 1){
-					arguments[2] = Integer.toString(id);
+					arguments[2] = Integer.toString(targetId);
 					arguments[7] = "0";
-					Instruction routeInsturction = new Instruction(arguments);
-					addInst(insts,baseTime,routetInstruction);
+					Instruction routeInstruction = new Instruction(arguments);
+					addInst(baseTime,routeInstruction);
 				}
 				else{
 					float theta = angle/amount;
 					float startAngle = -1 * theta * ((amount - 1)/2);
 					for(int i=0;i<amount;i++){
-						arguments[2] = id + i;
-						arguments[6] = startAngle + i*theta;
-						Instruction routeInsturction = new Instruction(arguments);
-						addInst(insts,baseTime,routeInstruction);
+						arguments[2] = Integer.toString(targetId + i);
+						arguments[6] = Integer.toString(startAngle + i*theta);
+						Instruction routeInstruction = new Instruction(arguments);
+						addInst(baseTime,routeInstruction);
 					}
 				}
 				break;
@@ -264,10 +263,10 @@ class InstructionParser{
 		}
 	}
 	
-	private stateBoss(int baseTime){
+	private void stateBoss(int baseTime){
 		int time = 0;
 		int id = enemyId;
-		enemtId++;
+		enemyId++;
 		
 		String[] arguments = new String[7];
 		arguments[0] = "enemy";
@@ -285,14 +284,14 @@ class InstructionParser{
 				case "WAVE":
 					int period = tokens.nextInt();
 					time += period;
-					anchors.add("WAVE"+wave,baseTime + time);
+					anchors.add("WAVE"+wave,new Integer(baseTime + time));
 					wave++;
 					arguments[6] = tokens.next();
 					
 					Instruction enemyInstruction = new Instruction(arguments);
-					addInst(insts,baseTime + time,enemyInstruction);
-					Instruction bossInstruction = new Instruction(new String[]{"boss",period});
-					addInst(insts,baseTime + time,bossInstruction);
+					addInst(baseTime + time,enemyInstruction);
+					Instruction bossInstruction = new Instruction(new String[]{"boss",Integer.toString(period)});
+					addInst(baseTime + time,bossInstruction);
 					stateWave(baseTime,id);
 					break;
 				case "END":
@@ -302,7 +301,7 @@ class InstructionParser{
 			}
 		}
 	}
-	private stateWave(int baseTime,int id){
+	private void stateWave(int baseTime,int id){
 		String[] arguments = new String[9];
 		String line;
 		while((line = reader.readLine()) != null){
@@ -317,7 +316,7 @@ class InstructionParser{
 					int inter  = tokens.nextInt();
 					int amount = tokens.nextInt();
 					for(int i=0;i<times;i++){
-						statsBullet(baseTime,id,amount);
+						stateBullet(baseTime,id,amount);
 						time += inter;
 					}
 					break;
@@ -328,11 +327,11 @@ class InstructionParser{
 		}
 	}
 	
-	private addInst(int time,Instruction inst){
-		ArrayList<Instruction> list = insts.get(time);
+	private void addInst(int time,Instruction inst){
+		ArrayList<Instruction> list = instructions.get(time);
 		if(list == null){
 			list = new ArrayList<Instruction>();
-			insts.add(time,list);
+			instructions.add(time,list);
 		}
 		list.add(inst);
 	}
