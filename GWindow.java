@@ -19,7 +19,7 @@ public class GWindow {
 		game.setTitle("Nightmare");
 		game.setLayout(null);
 		game.setSize(800, 600);
-		game.setDefaultCloseOperation(game.EXIT_ON_CLOSE);//Ãö³¬
+		game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.setLocationRelativeTo(null);
 		game.setResizable(false);
 		game.setVisible(true);
@@ -28,33 +28,32 @@ public class GWindow {
 	}
 
 	public int getWidth() {
-		// TODO Auto-generated method stub
 		return game.getWidth();
 	}
 
 	public int getHeight() {
-		// TODO Auto-generated method stub
 		return game.getHeight();
 	}
 	
-	public void addKeyListener(Menu menu) {
-		// TODO Auto-generated method stub
+	public void addKeyListener(GMenu menu) {
 		game.addKeyListener(menu);
 	}
 
 	public void addKeyListener(KeyAdapter keyAdapter) {
-		// TODO Auto-generated method stub
 		game.addKeyListener(keyAdapter);
 	}
 	
-	public void removeKeyListener(Menu menu) {
-		// TODO Auto-generated method stub
+	public void removeKeyListener(GMenu menu) {
 		game.removeKeyListener(menu);
 	}
 
 	public void removeKeyListener(KeyAdapter keyAdapter) {
-		// TODO Auto-generated method stub
 		game.removeKeyListener(keyAdapter);
+	}
+
+	public void removeKeyListener(GScreen gScreen) {
+		game.removeKeyListener((KeyListener) gScreen);
+		
 	}
 	
 }

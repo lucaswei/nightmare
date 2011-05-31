@@ -4,15 +4,18 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class GameOutput extends JFrame implements Runnable{
+public class GScreen extends JFrame implements Runnable{
 
 	private Image image;
 	private Panel canvas,scrollBar,whenPause;
 	private Graphics gc,gsb,gwp;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
+	protected GWindow game;
 	
-	public GameOutput(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
+	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
+		
+		this.game = game;
 		
 		canvas = new Panel();
 		canvas.setBounds(0,0,450,600);
