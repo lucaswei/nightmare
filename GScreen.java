@@ -12,9 +12,9 @@ public class GScreen implements Runnable{
 	
 	private int keyFlag = 1;
 	private Image image;
-	private Image palyBg,scrollBg,pauseBg;
+	private Image playBg,scrollBg,pauseBg;
 	private Image a,b,c,d,e,f;
-	private BufferedImage setPlayImg,setScrollImg;
+	private BufferedImage setPlayImg,setImg;
 	private Panel play,scrollBar,whenPause;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
@@ -29,34 +29,31 @@ public class GScreen implements Runnable{
 		 * set playArea
 		 */
 		play = new Panel(){
-			public void paint(Graphics g){		
+			public void paint(Graphics g){
 				g.drawImage(setPlayImg, 0, 0, null);
 			}
 		};
+		
 		play.setBounds(0,0,450,600);
-		game.cp.add(play);
 		
 		/*
 		 * set scroll bar
 		 */
 		scrollBar = new Panel(){
 			public void paint(Graphics g){
-				g.drawImage(setScrollImg, 0, 0, null);
+				g.drawImage(setImg, 0, 0, null);
 			}
 		};
 		
-		scrollBar.setBounds(450,0,350,600);
-		game.cp.add(scrollBar);
+		scrollBar.setBounds(450,0,800,600);
 		
 		whenPause = new Panel();
 		whenPause.setBounds(0,0,450,600);
 
-		setPlayImg = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		setScrollImg = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		setPlayImg = new BufferedImage(play.getWidth(),play.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		setImg = new BufferedImage(scrollBar.getWidth(),scrollBar.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		
 		try{
-			palyBg = ImageIO.read(new File("map/default/image/testbg.png"));
-			scrollBg = ImageIO.read(new File("map/default/image/scrollBg.png"));
 			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));
 			a = ImageIO.read(new File("map/default/image/continue1.png"));
 			b = ImageIO.read(new File("map/default/image/continue2.png"));
@@ -71,6 +68,9 @@ public class GScreen implements Runnable{
 		
 		this.queue = queue;
 		
+		game.cp.add(play);
+		game.cp.add(scrollBar);
+
 		drawPlayBg();
 		drawScrollBg();
 		
@@ -94,6 +94,8 @@ public class GScreen implements Runnable{
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
+				System.out.println(list.length);
+				System.out.println(fly == null);
 				int id = fly.getImageId();
 				image = stage.getImage(id);
 				if(image != null){
@@ -163,27 +165,36 @@ public class GScreen implements Runnable{
 	}
 	
 	private void drawPlayBg(){ 
-		Graphics g = scrollBar.getGraphics();
-		Graphics gg = setScrollImg.getGraphics();
-
-		g.drawImage(scrollBg,0,0,450,600,null);
-		gg.drawImage(scrollBg,0,0,450,600,null);
-
-		g.dispose();
-		gg.dispose();
-	}
-	
-	private void drawScrollBg(){ 
+		try{
+			playBg = ImageIO.read(new File("map/default/image/testbg.gif"));
+		}
+		catch(IOException e){}
+		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
-		g.drawImage(palyBg,450,0,800,600,null);
-		gg.drawImage(palyBg,450,0,800,600,null);
+		g.drawImage(playBg,0,0,350,600,null);
+		gg.drawImage(playBg,0,0,350,600,null);
 
 		g.dispose();
 		gg.dispose();
 	}
 	
+	private void drawScrollBg(){
+		try{
+			scrollBg = ImageIO.read(new File("map/default/image/scrollBg.png"));
+		}
+		catch(IOException e){}
+		
+		Graphics g = scrollBar.getGraphics();
+		Graphics gg = setImg.getGraphics();
+
+		g.drawImage(scrollBg,0,0,350,600,null);
+		gg.drawImage(scrollBg,0,0,350,600,null);
+
+		g.dispose();
+		gg.dispose();
+	}
 	
 	private void drawPlayArea(Image img, int dx, int dy){ 
 		Graphics g = play.getGraphics();
@@ -196,7 +207,7 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	private void drawPauseBg(){ 
+	private void drawPauseBg(){
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
