@@ -1,9 +1,10 @@
+import java.awt.Point;
 public abstract class Printable{
-	private int imagedID;
-	private Point position;
-	private float angle;
-	public int getID(){
-		return imageID;
+	protected int imageId;
+	protected Point position;
+	protected float angle;
+	public int getImageId(){
+		return imageId;
 	}
 	public Point getPosition(){
 		return position;
@@ -11,10 +12,13 @@ public abstract class Printable{
 	public float getAngle(){
 		return angle;
 	}
+	public void setPosition(Point position){
+		this.position.setLocation(position);
+	}
 }
 
 abstract class Plane extends Printable{
-	private radius;
+	protected int radius;
 	public int getRadius(){
 		return radius;
 	}
@@ -49,8 +53,8 @@ class Player extends Plane{
 	}
 	
 	public void move(){
-		int x = position.getX();
-		int y = position.getY();
+		int x = (int)position.getX();
+		int y = (int)position.getY();
 		int speed = normalSpeed;
 		if(source.check("SLOW"))
 			speed = slowSpeed;
@@ -63,14 +67,14 @@ class Player extends Plane{
 				y = y+speed;
 		}
 
-		if(source.check("LEFT"){
+		if(source.check("LEFT")){
 			if(x-speed>=0)
 				x = x-speed;
 		}else if(source.check("RIGHT")){
 			if(x+speed<WIDTH)
 				x = x+speed;
 		}
-		position.setLocation(x,y)
+		position.setLocation(x,y);
 	}
 
 	public Bullet[] shoot(){

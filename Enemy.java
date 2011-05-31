@@ -1,3 +1,4 @@
+import java.awt.Point;
 class EnemyFactory{
 	private EnemyFactory(){}
 	public static Enemy getEnemy(EnemyInstruction inst){

@@ -1,3 +1,4 @@
+import java.awt.Point;
 class RouteFactory{
 	private RouteFactory(){};
 	public static Route getRoute(Point self, Point target, int speed, String routeType){
@@ -8,19 +9,19 @@ class RouteFactory{
 	}
 }
 abstract class Route{
-	private float x;
-	private float y;
-	private float vectorX;
-	private float vectorY;
-	private int speed;
-	private Point self;
-	private Point destiny;
+	protected float x;
+	protected float y;
+	protected float vectorX;
+	protected float vectorY;
+	protected int speed;
+	protected Point self;
+	protected Point destiny;
 	public Route(Point self, Point destiny, int speed){
 		this.self = self;
 		this.destiny = destiny;
 		this.speed = speed;
-		x = self.getX();
-		y = self.getY();
+		x = (float)self.getX();
+		y = (float)self.getY();
 	}
 }
 class StopRoute extends Route{
@@ -33,7 +34,7 @@ class StopRoute extends Route{
 	}
 }
 class StraightRoute extends Route{
-	public Route(Point self, Point destiny, int speed){
+	public StraightRoute(Point self, Point destiny, int speed){
 		super(self, destiny, speed);
 		calcVector();
 	}
