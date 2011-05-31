@@ -1,4 +1,5 @@
 import java.awt.Point;
+
 public abstract class Printable{
 	protected int imageId;
 	protected Point position;
@@ -23,7 +24,6 @@ abstract class Plane extends Printable{
 		return radius;
 	}
 	public abstract void move();
-	public abstract Bullet[] shoot();
 	/* -1:gameover ; -2:nothing	*/
 	public abstract int crash();
 }
@@ -46,7 +46,7 @@ class Player extends Plane{
 		this.position = position;
 		this.HEIGHT=600;
 		this.WIDTH=450;
-	power = 1;
+		power = 1;
 		this.source = source;
 		this.life = life;
 		this.radius = radius;
