@@ -2,6 +2,7 @@ ActionSource.java
 Bullet.java
 Clock.java
 Enemy.java
+EventConnect.java
 ExtensibleArray.java
 GMenu.java
 GScreen.java

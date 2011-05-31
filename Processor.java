@@ -9,6 +9,9 @@ public class Processor implements Runnable{
 	private Clock clock;
 	//private State myState;
 	private long time;
+	private EventConnect eventConnect;
+	private int HEIGHT;
+	private int WIDTH;
 
 	private BlockingQueue<Printable[]> queue;
 	private ArrayList<Enemy> enemyList;
@@ -98,7 +101,10 @@ public class Processor implements Runnable{
 		for(Bullet bullet : playerBulletList){
 			for(Enemy enemy: enemyList){
 				if(bullet.collision(enemy)){
-					enemy.crash();
+					if(enemy.attacted( player.getPower())){
+						enemy.crash();
+						enemyList.remove(enemy);
+					}
 				}				
 			}
 		}
@@ -122,12 +128,36 @@ public class Processor implements Runnable{
 	}
 	/*recycle trash over the screen*/
 	private void recycle(){
+		int x;
+		int y;
 		for(Bullet bullet : bulletList){
+			x = (int)bullet.getPosition().getX();
+			y = (int)bullet.getPosition().getY();
+			if( calcRecycle(x, y) )
+				bulletList.remove(bullet);
 		}
 		for(Bullet bullet : playerBulletList){
+			x = (int)bullet.getPosition().getX();
+			y = (int)bullet.getPosition().getY();
+			if( calcRecycle(x, y) )
+				playerBulletList.remove(bullet);
 		}
 		for(Enemy enemy : enemyList){
+			x = (int)enemy.getPosition().getX();
+			y = (int)enemy.getPosition().getY();
+			if( calcRecycle(x, y) )
+				enemyList.remove(enemy);
 		}
+	}
+	private boolean calcRecycle(int x, int y){
+		boolean xOver;
+		boolean yOver;
+		xOver = ( (x<0 || x>WIDTH) );
+		yOver = ( (y<0 || y>HEIGHT) );
+		if( xOver || yOver)
+			return true;
+		else
+			return false;
 	}
 	private Point calcTarget(Point self, String pointRefer, int pointAngle, Point offset){
 		int x,y;
@@ -198,6 +228,10 @@ public class Processor implements Runnable{
 		double newY = y*cos(radian) - x*sin(radian);
 		return new Point((int)newX,(int)newY);
 	}
+	public void stateCheck(){
+		if(player.isPause())
+			EventConnect.setPause(true);
+	}
 	public void run(){
 		while(true){
 			try{
@@ -205,6 +239,7 @@ public class Processor implements Runnable{
 			}
 			catch(DelayException e){
 			}
+			stateCheck();
 			runInstructions();
 			calcBullet();
 			calcEnemy();
@@ -213,7 +248,11 @@ public class Processor implements Runnable{
 			outputToScreem();
 		}
 	}
-	public Processor(Stage stage, Clock clock, Hero player, BlockingQueue<Printable[]> queue){
+	public Processor(Stage stage,
+					Clock clock,
+					Hero player,
+					BlockingQueue<Printable[]> queue,
+					EventConnect eventConnect){
 		enemyList  = new ArrayList<Enemy>();
 		bulletList = new ArrayList<Bullet>();
 		playerBulletList = new ArrayList<Bullet>();
@@ -221,7 +260,10 @@ public class Processor implements Runnable{
 		this.player= player; 
 		this.stage = stage;
 		this.clock = clock;
+		this.eventConnect = eventConnect;
 		this.time = 0;
+		this.HEIGHT = 600;
+		this.WIDTH  = 450;
 	}
 }
 
