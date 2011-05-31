@@ -76,6 +76,12 @@ class Hero extends Plane{
 		}
 		position.setLocation(x,y);
 	}
+	public boolean isPause(){
+		if(source.check("Pause"))
+			return true;
+		else
+			return false;
+	}
 
 	public Bullet[] shoot(){
 		if(source.check("SHOOT")){
@@ -88,5 +94,7 @@ class Hero extends Plane{
 		life--;
 		return life;
 	}
-
+	public int getPower(){
+		return power;
+	}
 }
