@@ -22,12 +22,16 @@ public class Processor implements Runnable{
 
 	private void runInstructions(){
 		Instruction[] insts = stage.get();
+		if(insts == null){
+			System.out.println(time);
+			return ;
+		}
+			System.out.println(insts.length);
 		for(int i=0;i<insts.length;i++){
 			String instType = insts[i].getInstType();
 			if(instType == "ENEMY"){
 				EnemyInstruction inst = insts[i];
 				Enemy e = EnemyFactory.getEnemy(inst);
-				System.out.println(e == null);
 				enemyList.add(inst.getEnemyId(), EnemyFactory.getEnemy(inst) );
 			}
 			else if(instType == "BULLET"){
@@ -92,7 +96,10 @@ public class Processor implements Runnable{
 	}
 	private void calcPlayer(){
 		player.move();
-		playerBulletList.addAll( Arrays.asList(player.shoot()) );
+		Bullet playerBullet = player.shoot();
+		if(playerBullet != null){
+			playerBulletList.add( playerBullet);
+		}
 	}
 	private void collision(){
 		for(Bullet bullet : bulletList){
