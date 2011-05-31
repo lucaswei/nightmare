@@ -10,18 +10,23 @@ public class Stage{
 	
 	int PC = 0;
 	
-	public Stage(String map){
-		String path = "map/" + map + "/";
-		ImageMapper mapper = new ImageMapper(new FileReader(path+"image"));
-		images = mapper.get();
-		InstructionParser parser = new InstructionParser(new FileReader(path+"map"));
-		instructions = parser.get();
+	public Stage(File map){
+		try{
+			FileReader reader = new FileReader(map);
+			ImageMapper mapper = new ImageMapper(reader);
+			images = mapper.get();
+	
+			InstructionParser parser = new InstructionParser(reader);
+			instructions = parser.get();
+		}
+		catch(FileNotFoundException e){
+		}
 	}
 	public Instruction[] get(){
 		return instructions[PC];
 	}
 	public void jump(String anchor){
-		int target = anchors.get(anchor);
+		Integer target = anchors.get(anchor);
 		if(target != null){
 			PC = target;
 		}
@@ -69,51 +74,57 @@ class InstructionParser{
 	private void parseInstruction(BufferedReader reader){
 		ArrayList<ArrayList<Instruction>> instructions;
 		String line;
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			String type = tokens.next();
-			int time = tokens.nextInt();
-			switch(type){
-				case "PARTA":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				int time = tokens.nextInt();
+				String statement = tokens.next();
+				if(statement == "PARTA"){
 					statePart(time);
-					break;
-				case "PARTB":
+				}
+				else if(statement == "PARTB"){
 					statePart(time);
-					break;
-				case "BOSSA":
+				}
+				else if(statement == "BOSSA"){
 					stateBoss(time);
-					break;
-				case "BOSSB":
+				}
+				else if(statement == "BOSSB"){
 					stateBoss(time);
-					break;
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	
 	private void statePart(int baseTime){
 		String line;
 		int time;
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "GROUP":
-					    time  = tokens.nextInt();
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "GROUP"){
+						time  = tokens.nextInt();
 					int times = tokens.nextInt();
 					int inter = tokens.nextInt();
 					for(int i=0;i<times;i++){
 						stateEnemy(baseTime + time);
 						time += inter;
 					}
-					break;
-				case "ENEMY":
+				}
+				else if(statement == "ENEMY"){
 					time  = tokens.nextInt();
 					stateEnemy(baseTime + time);
-					break;
-				case "END":
+				}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateEnemy(int baseTime){
@@ -124,10 +135,11 @@ class InstructionParser{
 		arguments[0] = "enemy";
 		arguments[1] = Integer.toString(id);
 		
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "TYPE":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "TYPE"){
 					String type  = tokens.next();
 					arguments[2] = type;
 					if(type == "custom"){
@@ -135,30 +147,34 @@ class InstructionParser{
 						arguments[5] = tokens.next();
 						arguments[6] = tokens.next();
 					}
-					break;
-				case "POSITION":
+				}
+				else if(statement == "POSITION"){
 					arguments[3] = tokens.next();
 					Instruction enemyInstruction = new Instruction(arguments);
 					addInst(baseTime,enemyInstruction);
-					break;
-				case "MOVE":
+				}
+				else if(statement == "MOVE"){
 					stateMove(baseTime,"enemy",id,1);
-					break;
-				case "SHOOT":
+				}
+				else if(statement == "SHOOT"){
 					stateShoot(baseTime,id);
-				case "END":
+				}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateShoot(int baseTime,int enemyId){
 		String line;
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "BULLET":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "BULLET"){
 					int time   = tokens.nextInt();
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
@@ -167,12 +183,14 @@ class InstructionParser{
 						stateBullet(time,enemyId,amount);
 						time += inter;
 					}
-					break;
-				case "END":
+				}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateBullet(int baseTime,int enemyId,int amount){
@@ -184,10 +202,11 @@ class InstructionParser{
 		arguments[0] = "bullet";
 		arguments[1] = Integer.toString(enemyId);
 		
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "TYPE":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "TYPE"){
 					String type  = tokens.next();
 					arguments[2] = type;
 					if(type == "custom"){
@@ -200,32 +219,37 @@ class InstructionParser{
 						Instruction bulletInstruction = new Instruction(arguments);
 						addInst(baseTime,bulletInstruction);
 					}
-					break;
-				case "MOVE":
+				}
+				else if(statement == "MOVE"){
 					stateMove(baseTime,"bullet",id,amount);
-					break;
-				case "END":
+				}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateMove(int baseTime,String targetType,int targetId,int amount){
 		String line;
 		String[] arguments = new String[9];
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "Route":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "Route"){
 					int time = tokens.nextInt();
 					stateRoute(baseTime+time,targetType,targetId,amount,tokens);
-					break;
-				case "END":
+					}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}	
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateRoute(int baseTime,String targetType,int targetId,int amount,Scanner tokens){
@@ -234,32 +258,29 @@ class InstructionParser{
 		arguments[1] = targetType;
 		arguments[4] = tokens.next();
 		
-		String type = tokens.next();
-		switch(type){
-			case "FAN":
-				arguments[3] = "linear";
-				arguments[5] = tokens.next();
-				
-				int angle = tokens.nextInt();
-		
-				if(amount == 1){
-					arguments[2] = Integer.toString(targetId);
-					arguments[7] = "0";
+		String statement = tokens.next();
+		if(statement == "FAN"){
+			arguments[3] = "linear";
+			arguments[5] = tokens.next();
+			
+			int angle = tokens.nextInt();
+	
+			if(amount == 1){
+				arguments[2] = Integer.toString(targetId);
+				arguments[7] = "0";
+				Instruction routeInstruction = new Instruction(arguments);
+				addInst(baseTime,routeInstruction);
+			}
+			else{
+				float theta = angle/amount;
+				float startAngle = -1 * theta * ((amount - 1)/2);
+				for(int i=0;i<amount;i++){
+					arguments[2] = Integer.toString(targetId + i);
+					arguments[6] = Integer.toString((int)(startAngle + i*theta));
 					Instruction routeInstruction = new Instruction(arguments);
 					addInst(baseTime,routeInstruction);
 				}
-				else{
-					float theta = angle/amount;
-					float startAngle = -1 * theta * ((amount - 1)/2);
-					for(int i=0;i<amount;i++){
-						arguments[2] = Integer.toString(targetId + i);
-						arguments[6] = Integer.toString(startAngle + i*theta);
-						Instruction routeInstruction = new Instruction(arguments);
-						addInst(baseTime,routeInstruction);
-					}
-				}
-				break;
-			default:
+			}
 		}
 	}
 	
@@ -274,43 +295,47 @@ class InstructionParser{
 		arguments[2] = "custom";
 		
 		String line;
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "TYPE":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "TYPE"){
 					arguments[4] = tokens.next();
 					arguments[5] = tokens.next();
-					break;
-				case "WAVE":
+					}
+				else if(statement == "WAVE"){
 					int period = tokens.nextInt();
 					time += period;
-					anchors.add("WAVE"+wave,new Integer(baseTime + time));
+					anchors.put("WAVE"+wave,new Integer(baseTime + time));
 					wave++;
 					arguments[6] = tokens.next();
-					
+				
 					Instruction enemyInstruction = new Instruction(arguments);
 					addInst(baseTime + time,enemyInstruction);
 					Instruction bossInstruction = new Instruction(new String[]{"boss",Integer.toString(period)});
 					addInst(baseTime + time,bossInstruction);
 					stateWave(baseTime,id);
-					break;
-				case "END":
+					}
+				else if(statement == "END"){
 					return;
-				default:
-					
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	private void stateWave(int baseTime,int id){
 		String[] arguments = new String[9];
 		String line;
-		while((line = reader.readLine()) != null){
-			Scanner tokens = new Scanner(line);
-			switch(tokens.next()){
-				case "MOVE":
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				String statement = tokens.next();
+				if(statement == "MOVE"){
 					stateMove(baseTime,"enemy",id,1);
-					break;
-				case "BULLET":
+					}
+				else if(statement == "BULLET"){
 					int time   = tokens.nextInt();
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
@@ -319,11 +344,14 @@ class InstructionParser{
 						stateBullet(baseTime,id,amount);
 						time += inter;
 					}
-					break;
-				case "END":
+					}
+				else if(statement == "END"){
 					return;
-				default:
+				}
 			}
+		}
+		catch(IOException e){
+			return;
 		}
 	}
 	

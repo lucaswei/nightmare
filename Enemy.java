@@ -5,13 +5,14 @@ class EnemyFactory{
 		String enemyType = inst.getEnemyType();
 		Point point = inst.getPoint();
 		int enemyId = inst.getEnemyId();
-		switch(enemyType){
-			case "small":
-				return new SmallEnemy(enemyId, point); 
-			case "normal":
-				return new NormalEnemy(enemyId, point); 
-			case "large":
-				return new LargeEnemy(enemyId, point); 
+		if(enemyType == "small"){
+			return new SmallEnemy(enemyId, point);
+		}
+		else if(enemyType == "normal"){
+			return new NormalEnemy(enemyId, point);
+		}
+		else if(enemyType == "large"){
+			return new LargeEnemy(enemyId, point); 
 		}
 	}
 }
@@ -19,9 +20,9 @@ class EnemyFactory{
 
 
 abstract class Enemy extends Plane{
-	private int hp;
-	private Route route;
-	private int enemyId;
+	protected int hp;
+	protected Route route;
+	protected int enemyId;
 
 	public boolean attacted(int harm){
 		hp = hp - harm;
@@ -44,10 +45,8 @@ abstract class Enemy extends Plane{
 /*TODO*/
 class Boss extends Enemy{
 	public Boss(int id,Point point){
-		center = point;
+		position = point;
 		enemyId = id;
-	}
-	public setHp(){
 	}
 }
 
@@ -55,26 +54,24 @@ class Boss extends Enemy{
 class SmallEnemy extends Enemy{
 	public SmallEnemy(int id, Point point){
 		radius  = 25;
-		center  = point;
+		position  = point;
 		enemyId = id;
 		hp=10;
 	}
 }
 class NormalEnemy extends Enemy{
 	public NormalEnemy(int id, Point point){
-		radius  = 30
-		center  = point;
+		radius  = 30;
+		position  = point;
 		enemyId = id;
 		hp=20;
 	}
 }
 class LargeEnemy extends Enemy{
 	public LargeEnemy(int id, Point point){
-		radius  = 35
-		center  = point;
+		radius  = 35;
+		position  = point;
 		enemyId = id;
 		hp=30;
 	}
-}
-class Boss extends Enemy{
 }
