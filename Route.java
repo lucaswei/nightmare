@@ -1,18 +1,21 @@
 import java.awt.Point;
 class RouteFactory{
-	private RouteFactory(){};
+	private RouteFactory(){}
 	public static Route getRoute(Point self, Point target, int speed, String routeType){
-		if(routeType == "linear")
+		if(routeType == "linear"){
 			return new StraightRoute(self, target, speed);
-		else if(routeType == "stop")
+		}
+		else if(routeType == "stop"){
 			return new StopRoute(self, target, speed);
+		}
+		return null;
 	}
 }
 abstract class Route{
-	protected float x;
-	protected float y;
-	protected float vectorX;
-	protected float vectorY;
+	protected double x;
+	protected double y;
+	protected double vectorX;
+	protected double vectorY;
 	protected int speed;
 	protected Point self;
 	protected Point destiny;
@@ -20,16 +23,17 @@ abstract class Route{
 		this.self = self;
 		this.destiny = destiny;
 		this.speed = speed;
-		x = (float)self.getX();
-		y = (float)self.getY();
+		x = (double)self.getX();
+		y = (double)self.getY();
 	}
+	abstract public Point move();
 }
 class StopRoute extends Route{
 	public StopRoute(Point self, Point destiny, int speed){
 		super(self, destiny, speed);
 	}
 	public Point move(){
-		Point point = new Point(x, y);
+		Point point = new Point((int)x, (int)y);
 		return point;
 	}
 }
@@ -41,23 +45,23 @@ class StraightRoute extends Route{
 	public Point move(){
 		x = x+vectorX;
 		y = y+vectorY;
-		Point point = new Point(x, y);
+		Point point = new Point((int)x, (int)y);
 		return point;
 	}
 	private void calcVector(){
-		int deltaX;
-		int deltaY;
-		float fraction;
-		deltaX = self.getX()-destiny.getX();
-		deltaY = self.getY()-destiny.getY();
-		fraction = Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+		double deltaX;
+		double deltaY;
+		double fraction;
+		deltaX = self.getX()-(double)destiny.getX();
+		deltaY = self.getY()-(double)destiny.getY();
+		fraction = Math.sqrt( (double)(deltaX*deltaX+deltaY*deltaY) );
 		vectorX = (destiny.getX()-self.getX())*fraction;
 		vectorY = (destiny.getY()-self.getY())*fraction;
 	}
 }
 /*
 class CurveRoute extends Route{
-	private float beziert;
+	private double beziert;
 	private Point thirdPoint;
 	public Route(Point self, Point destiny, int speed, Point thirdPoint){
 		super(self, destiny, speed);

@@ -3,16 +3,14 @@ import java.awt.Point;
 class BulletFactory{
 	private BulletFactory(){}
 	public static Bullet getBullet(int imageId, int bulletId, int radius, int power, Point enemy, String bulletType){
-		switch(bulletType){
-			case "large":
-				return new CircleBullet(enemy, 32, imageId, bulletId);
-				break;
-			case "normal":
-				return new CircleBullet(enemy, 12, imageId, bulletId);
-				break;
-			case "small":
-				return new CircleBullet(enemy, 8, imageId, bulletId);
-				break;
+		if(bulletType == "large"){
+			return new CircleBullet(enemy, 32, imageId, bulletId);
+		}
+		else if (bulletType ==  "normal"){
+			return new CircleBullet(enemy, 12, imageId, bulletId);
+		}
+		else if(bulletType == "small"){
+			return new CircleBullet(enemy, 8, imageId, bulletId);
 		}
 	}
 }
