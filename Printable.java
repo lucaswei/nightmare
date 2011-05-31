@@ -28,7 +28,7 @@ abstract class Plane extends Printable{
 	public abstract int crash();
 }
 
-class Player extends Plane{
+class Hero extends Plane{
 	private ActionSource source;
 	private int slowSpeed;
 	private int normalSpeed;
@@ -42,7 +42,7 @@ class Player extends Plane{
 	private Bullet[] bullet;
 
 
-	public Player(ActionSource source, Point position, int radius, int life){
+	public Hero(ActionSource source, Point position, int radius, int life){
 		this.position = position;
 		this.HEIGHT=600;
 		this.WIDTH=450;
@@ -81,6 +81,7 @@ class Player extends Plane{
 		if(source.check("SHOOT")){
 			return bullet;
 		}
+		return null;
 	}
 
 	public int crash(){

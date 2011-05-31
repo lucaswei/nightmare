@@ -17,7 +17,7 @@ public class Processor implements Runnable{
 	private ArrayList<Bullet> bulletList;
 	private ArrayList<Bullet> playerBulletList;
 
-	private Player player;
+	private Hero player;
 
 	private void runInstructions(){
 		Instruction[] insts = stage.getInstructions(clock.getTime());
@@ -197,7 +197,7 @@ public class Processor implements Runnable{
 			outputToScreem();
 		}
 	}
-	public Processor(Stage stage, Clock clock, Player player, BlockingQueue<Printable[]> queue){
+	public Processor(Stage stage, Clock clock, Hero player, BlockingQueue<Printable[]> queue){
 		enemyList  = new ArrayList<Enemy>();
 		bulletList = new ArrayList<Bullet>();
 		playerBulletList = new ArrayList<Bullet>();
