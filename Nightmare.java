@@ -8,16 +8,13 @@ public class Nightmare{
 	}
 	public static void newGame(GWindow window,Stage stage,String hero){
 		Clock clock = new Clock(100);
+		KeyboardListener keyboard = new KeyboardListener(clock);
+		
+		Hero player = new Hero(keyboard);
 		ArrayBlockingQueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>(1);
-		Processor processor = new Processor(clock,channel);
-		processor.setStage(stage);
+		Processor processor = new Processor(stage,clock,player,channel);
 		
-		KeyBoardListener keyboard = new KeyBoardListener(clock);
-		GameOutput output = new GameOutput(window,keyboard,channel,stage);
-		output.setStage(stage);
-		
-		Player player = new Player(hero,keyboard);
-		processor.addPlayer(player);
+		GScreen output = new GScreen(window,keyboard,channel,stage);
 		
 		Thread processorThread = new Thread(processor);
 		Thread outputThread = new Thread(output);
