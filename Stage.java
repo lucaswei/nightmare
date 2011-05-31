@@ -10,9 +10,9 @@ public class Stage{
 	
 	int PC = 0;
 	
-	public Stage(File map){
+	public Stage(String stageName){
 		try{
-			FileReader reader = new FileReader(map);
+			FileReader reader = new FileReader(stageName);
 			ImageMapper mapper = new ImageMapper(reader);
 			images = mapper.get();
 	

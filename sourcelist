@@ -2,8 +2,9 @@ ActionSource.java
 Bullet.java
 Clock.java
 Enemy.java
-GameOutput.java
+ExtensibleArray.java
 GMenu.java
+GScreen.java
 GWindow.java
 Instruction.java
 Nightmare.java

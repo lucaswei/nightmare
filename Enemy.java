@@ -14,6 +14,7 @@ class EnemyFactory{
 		else if(enemyType == "large"){
 			return new LargeEnemy(enemyId, point); 
 		}
+		return null;
 	}
 }
 

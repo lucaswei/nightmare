@@ -2,14 +2,15 @@ import java.lang.Thread;
 import java.awt.Point;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import static java.lang.Math.*;
 
 public class Processor implements Runnable{
 	private Stage stage;
 	private Clock clock;
-	private State myState;
+	//private State myState;
 	private long time;
 
-	private BlockingQueue<Printable> queue;
+	private BlockingQueue<Printable[]> queue;
 	private ArrayList<Enemy> enemyList;
 	private ArrayList<Bullet> bulletList;
 	private ArrayList<Bullet> playerBulletList;
@@ -17,7 +18,7 @@ public class Processor implements Runnable{
 	private Hero player;
 
 	private void runInstructions(){
-		Instruction[] insts = stage.getInstructions(clock.getTime());
+		Instruction[] insts = stage.get();
 		for(int i=0;i<insts.length;i++){
 			String instType = insts[i].getInstType();
 			if(instType == "ENEMY"){
@@ -26,7 +27,7 @@ public class Processor implements Runnable{
 			}
 			else if(instType == "BULLET"){
 				BulletInstruction inst = insts[i];
-				if(enemyList.indexOf(inst.getEnemyId) != null){
+				if(enemyList.get(inst.getEnemyId()) != null){
 					int imageId = inst.getImageId();
 					int bulletId= inst.getBulletId();
 					int radius  = inst.getRadius();
@@ -86,7 +87,7 @@ public class Processor implements Runnable{
 	}
 	private void calcPlayer(){
 		player.move();
-		playerBulletList.add( player.shoot() );
+		playerBulletList.addAll( Arrays.asList(player.shoot()) );
 	}
 	private void collision(){
 		for(Bullet bullet : bulletList){
@@ -107,7 +108,7 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
-		queue.offer(output.toArray());
+		queue.offer((Printable[])output.toArray());
 		/*
 		Printable[] enemy = enemyList.toArray();
 		Printable[] bullet = bulletList.toArray();
@@ -174,16 +175,23 @@ public class Processor implements Runnable{
 		Point target = new Point(x, y);
 		return target;
 	}
-	private Point round(Point point,int angle){
+	private Point round(Point point,int degree){
 		double x = point.getX();
 		double y = point.getY();
+		/*
+		 *Before change
 		double length = Math.sqrt(x*x+y*y);
 		double th;
 		th = Math.tan(y, x);
-		th = th+(double)angle;
+		th = th+ ((double)degree / 180 * Math.PI);
 		x = length*Math.cos(th);
 		y = length*Math.sin(th);
 		Point afterRound = new Point((int)x, (int)y);
+		*/
+		double radian = PI*degree/180;
+		double newX = x*cos(radian) + y*sin(radian);
+		double newY = y*cos(radian) - x*sin(radian);
+		return new Point((int)newX,(int)newY);
 	}
 	public void run(){
 		while(true){

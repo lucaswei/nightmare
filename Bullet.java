@@ -12,6 +12,7 @@ class BulletFactory{
 		else if(bulletType == "small"){
 			return new CircleBullet(enemy, 8, imageId, bulletId);
 		}
+		return null;
 	}
 }
 abstract class Bullet extends Printable{
