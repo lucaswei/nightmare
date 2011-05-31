@@ -5,7 +5,7 @@ interface ActionSource{
 	public boolean check(String s);
 }
 
-public class KeyboardListener implements KeyListener,ActionSource{
+class KeyboardListener implements KeyListener,ActionSource{
 	private Map<String,Boolean> actions = new HashMap<String , Boolean>();
 	private Map<Integer,String> EventToString = new HashMap<Integer , String>();
 	public KeyboardListener(){

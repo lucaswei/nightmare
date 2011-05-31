@@ -1,7 +1,8 @@
 import java.lang.Thread;
 import java.awt.Point;
 import java.util.*;
-public enum state{
+import java.util.concurrent.BlockingQueue;
+enum state{
 	END,
 	PAUSE,
 	PLAYING
@@ -64,7 +65,7 @@ public class Processor implements Runnable{
 						Bullet bullet;
 						bullet = bulletList.get(targetId);
 						target = calcTarget(bullet, pointRefer, pointAngle, offset);
-						Route route = RouteFactory(enemy.getPosition(), target, speed, routeType);
+						Route route = RouteFactory(enemy.getPosition().getPosition(), target, speed, routeType);
 						bullet.setRoute(route);
 					}
 				}
@@ -124,14 +125,14 @@ public class Processor implements Runnable{
 	}
 	/*recycle trash over the screen*/
 	private void recycle(){
-		for(ArrayList<Bullet> bullet : bulletList){
+		for(Bullet bullet : bulletList){
 		}
-		for(ArrayList<Bullet> bullet : playerBulletList){
+		for(Bullet bullet : playerBulletList){
 		}
-		for(ArrayList<Enemy> enemy : enemyList){
+		for(Enemy enemy : enemyList){
 		}
 	}
-	private Point calcTarget(Point self, Point pointRefer, int pointAngle, Point offset){
+	private Point calcTarget(Point self, String pointRefer, int pointAngle, Point offset){
 		int x,y;
 		Point selfOffset;
 		if(pointRefer == "global"){
@@ -139,26 +140,26 @@ public class Processor implements Runnable{
 				Point point = new Point(offset);
 				return point;
 			}else{
-				x = offset.getX()-self.getX();
-				y = offset.getY()-self.getY();
-				Point point = new point(x,y);
-				selfOffset = round(point, angle);
+				x = offset.getX()-(int)self.getX();
+				y = offset.getY()-(int)self.getY();
+				Point point = new Point(x,y);
+				selfOffset = round(point, pointAngle);
 			}
 		}
 		else if(pointRefer == "self"){
 			if(pointAngle == 0){
-				Point point = new Point(self.getX()+offset.getX(), self.getY()+offset.getY());
+				Point point = new Point((int)(self.getX()+offset.getX() ), ((int)self.getY()+offset.getY()));
 				return point;
 			}else{
-				x = offset.getX();
-				y = offset.getY();
-				Point point = new point(x,y);
-				selfOffset = round(point, angle);
+				x = (int)offset.getX();
+				y = (int)offset.getY();
+				Point point = new Point(x,y);
+				selfOffset = round(point, pointAngle);
 			}
 		}
 		else if(pointRefer == "player"){
 			if(pointAngle == 0){
-				Point point = new Point( (player.getX()+offset.getX() ), ( player.getY()+offset.getY() ) );
+				Point point = new Point( (player.getPosition().getX()+offset.getX() ), ( player.getPosition().getY()+offset.getY() ) );
 				return point;
 			}
 			else{
