@@ -12,18 +12,20 @@ public class GScreen implements Runnable{
 	
 	private int keyFlag = 1;
 	private Image image;
-	private Image playBg,scrollBg,pauseBg;
+	private Image playBg,scoreBg,pauseBg;
 	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setImg;
-	private Panel play,scrollBar,whenPause;
+	private Panel play,scoreBar,whenPause;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
 	private EventConnect checkKeyEvent;
+	private KeyListener key;
 	
 	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent){
 		
 		this.game = game;
+		this.key = key;
 		this.checkKeyEvent = checkKeyEvent;
 		/*
 		 * set playArea
@@ -37,21 +39,21 @@ public class GScreen implements Runnable{
 		play.setBounds(0,0,450,600);
 		
 		/*
-		 * set scroll bar
+		 * set score bar
 		 */
-		scrollBar = new Panel(){
+		scoreBar = new Panel(){
 			public void paint(Graphics g){
 				g.drawImage(setImg, 0, 0, null);
 			}
 		};
 		
-		scrollBar.setBounds(450,0,800,600);
+		scoreBar.setBounds(450,0,800,600);
 		
 		whenPause = new Panel();
 		whenPause.setBounds(0,0,450,600);
 
 		setPlayImg = new BufferedImage(play.getWidth(),play.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		setImg = new BufferedImage(scrollBar.getWidth(),scrollBar.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		setImg = new BufferedImage(scoreBar.getWidth(),scoreBar.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		
 		try{
 			a = ImageIO.read(new File("map/default/image/continue1.png"));
@@ -68,10 +70,10 @@ public class GScreen implements Runnable{
 		this.queue = queue;
 		
 		game.cp.add(play);
-		game.cp.add(scrollBar);
+		game.cp.add(scoreBar);
 
 		drawPlayBg();
-		drawScrollBg();
+		drawscoreBg();
 		
 	}
 
@@ -83,20 +85,22 @@ public class GScreen implements Runnable{
 				list = queue.take();
 			} catch (InterruptedException e) {}
 			
+			
 			int length = list.length;
 			
 			if(checkKeyEvent.isPause()){
 				System.out.println("123");
 				
-				game.removeKeyListener(this);
+				//game.removeKeyListener(this);
 				paused();
+				//game.addKeyListener(key);
 			}
 			
+			System.out.println(length);
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
-				System.out.println(list.length);
-				System.out.println(fly == null);
+				
 				int id = fly.getImageId();
 				image = stage.getImage(id);
 				if(image != null){
@@ -183,17 +187,17 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	private void drawScrollBg(){
+	private void drawscoreBg(){
 		try{
-			scrollBg = ImageIO.read(new File("map/default/image/scrollBg.png"));
+			scoreBg = ImageIO.read(new File("map/default/image/scroeBg.png"));
 		}
 		catch(IOException e){}
 		
-		Graphics g = scrollBar.getGraphics();
+		Graphics g = scoreBar.getGraphics();
 		Graphics gg = setImg.getGraphics();
 
-		g.drawImage(scrollBg,0,0,350,600,null);
-		gg.drawImage(scrollBg,0,0,350,600,null);
+		g.drawImage(scoreBg,0,0,350,600,null);
+		gg.drawImage(scoreBg,0,0,350,600,null);
 
 		g.dispose();
 		gg.dispose();
@@ -240,6 +244,7 @@ public class GScreen implements Runnable{
 	}
 	
 	private void drawPauseMenu(int keyFlag){
+		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 		
@@ -274,6 +279,7 @@ public class GScreen implements Runnable{
 		g.dispose();
 		gg.dispose();
 	}
+	
 	public int praseInt(double value){
 		return (new Double(value)).intValue();
 	}

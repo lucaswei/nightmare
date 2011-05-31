@@ -72,7 +72,6 @@ class Instruction implements
 	
 	/* Printable */
 	public  int    getImageId(){
-		System.out.println(arguments.length);
 		return Integer.valueOf(arguments[4]);
 	}
 	public  int    getRadius(){

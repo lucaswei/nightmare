@@ -3,7 +3,6 @@ class EnemyFactory{
 	private EnemyFactory(){}
 	public static Enemy getEnemy(EnemyInstruction inst){
 		String enemyType = inst.getEnemyType();
-		System.out.println(enemyType);
 		Point point = inst.getPoint();
 		int enemyId = inst.getEnemyId();
 		if(enemyType.equals("small")){

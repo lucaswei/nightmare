@@ -27,7 +27,6 @@ public class Processor implements Runnable{
 		}
 		for(int i=0;i<insts.length;i++){
 			String instType = insts[i].getInstType();
-			System.out.println(instType);
 			if(instType.equals("enemy")){
 				EnemyInstruction inst = insts[i];
 				int enemyId = inst.getEnemyId();
@@ -142,6 +141,7 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
+		System.out.println(output.size());
 		ArrayList<Printable> temp = new ArrayList<Printable>();
 		for(Printable toPrint: output){
 			if(toPrint != null)
