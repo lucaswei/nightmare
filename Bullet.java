@@ -1,28 +1,29 @@
+import java.awt.Point;
 /*TODO Transform inst into bullet*/
-public class BulletFactory{
+class BulletFactory{
 	private BulletFactory(){}
 	public static Bullet getBullet(int imageId, int bulletId, int radius, int power, Point enemy, String bulletType){
 		switch(bulletType){
 			case "large":
-				return bullet(enemy, 32, imageId, bulletId);
+				return new CircleBullet(enemy, 32, imageId, bulletId);
 				break;
 			case "normal":
-				return bullet(enemy, 12, imageId, bulletId);
+				return new CircleBullet(enemy, 12, imageId, bulletId);
 				break;
 			case "small":
-				return bullet(enemy, 8, imageId, bulletId);
+				return new CircleBullet(enemy, 8, imageId, bulletId);
 				break;
 		}
 	}
 }
 abstract class Bullet extends Printable{
-	private int test;
-	private int power;
-	private int bulletId;
+	protected int test;
+	protected int power;
+	protected int bulletId;
 
-	private Route route;
+	protected Route route;
 
-	public setRoute(Route route){
+	public void setRoute(Route route){
 		this.route = route;
 	}
 	public void move(){
@@ -38,9 +39,9 @@ class CircleBullet extends Bullet{
 		this.radius   = radius;
 	}
 	public boolean collision(Plane plain){
-		int x = plain.getPosition().getX() - position.getX();
-		int y = plain.getPosition().getY() - position.getY();
-		int r = plain.getRadius() + radius;
+		int x = (int)plain.getPosition().getX() - (int)position.getX();
+		int y = (int)plain.getPosition().getY() - (int)position.getY();
+		int r = (int)plain.getRadius() + radius;
 		if( x*x+y*y <  r*r )
 			return true;
 		else

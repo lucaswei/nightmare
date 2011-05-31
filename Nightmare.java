@@ -1,12 +1,14 @@
+import java.util.concurrent.*;
+
 public class Nightmare{
 	public static void main(String[] args){
 		//Main menu
-		Menu menu = new Menu();
+		GMenu menu = new GMenu();
 		//
 	}
-	public static void newGame(Window window,Stage stage,String hero){
-		Clock clock = new Clock();
-		ArrayBlockqueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>;
+	public static void newGame(GWindow window,Stage stage,String hero){
+		Clock clock = new Clock(100);
+		ArrayBlockingQueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>(1);
 		Processor processor = new Processor(clock,channel);
 		processor.setStage(stage);
 		

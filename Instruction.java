@@ -10,13 +10,13 @@ import java.awt.Point;
 import java.lang.Integer;
 
 
-private interface IInstruction{
+interface IInstruction{
 	String getInstType();
 }
 
 
 
-public interface EnemyInstruction extends IInstruction{
+interface EnemyInstruction extends IInstruction{
 	int    getEnemyId();
 	String getEnemyType();
 	Point  getPoint();
@@ -27,7 +27,7 @@ public interface EnemyInstruction extends IInstruction{
 
 
 
-public interface BulletInstruction extends IInstruction{
+interface BulletInstruction extends IInstruction{
 	int    getEnemyId();
 	int    getBulletId();
 	String getBulletType();
@@ -38,7 +38,7 @@ public interface BulletInstruction extends IInstruction{
 
 
 
-public interface RouteInstruction extends IInstruction{
+interface RouteInstruction extends IInstruction{
 	int    getTargetId();
 	String getTargetType();
 	String getRouteType();
@@ -53,14 +53,14 @@ public interface RouteInstruction extends IInstruction{
 
 
 
-public class Instruction implements
+class Instruction implements
              EnemyInstruction,
              BulletInstruction,
              RouteInstruction{
 	private String[] arguments;
 	
 	public  Instruction(String[] arguments){
-		this.arguments = arguments.copy();
+		this.arguments = arguments.clone();
 	}
 		
 	/* IIstruction */
@@ -88,9 +88,9 @@ public class Instruction implements
 		return arguments[2];
 	}
 	public  Point  getPoint(){
-		String[] pair = arguments[3].split(',');
-		x = Integer.valueOf(pair[0]);
-		y = Integer.valueOf(pair[1]);
+		String[] pair = arguments[3].split(",");
+		int x = Integer.valueOf(pair[0]);
+		int y = Integer.valueOf(pair[1]);
 		return new Point(x,y);
 	}
 	public  int    getHp(){
@@ -129,18 +129,18 @@ public class Instruction implements
 		return arguments[5];
 	}
 	public  String getPointRefer(){
-		return argument[6];
+		return arguments[6];
 	}
 	public  int    getPointAngle(){
 		return Integer.valueOf(arguments[7]);
 	}
 	public  Point  getPointOffset(){
-		String[] pair = arguments[7].split(',');
-		x = Integer.valueOf(pair[0]);
-		y = Integer.valueOf(pair[1]);
+		String[] pair = arguments[7].split(",");
+		int x = Integer.valueOf(pair[0]);
+		int y = Integer.valueOf(pair[1]);
 		return new Point(x,y);
 	}
-	public  float  getCurveRefer(){
+	public  float  getCurveRadius(){
 		return Floot.valueOf(arguments[7]);
 	}
 	public  int    getCurveAngle(){
