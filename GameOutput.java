@@ -12,7 +12,7 @@ public class GameOutput extends JFrame implements Runnable{
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	
-	public GameOutput(Window game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
+	public GameOutput(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
 		
 		canvas = new Panel();		
 		canvas.setBounds(0,0,450,600);
