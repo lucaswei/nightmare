@@ -19,7 +19,7 @@ public class GMenu implements KeyListener{
 		
 		//Choose map
 		String mapName = "";
-		Stage stage = new Stage("default");
+		this.stage = new Stage("default");
 
 		keyFlag = 1;
 	
