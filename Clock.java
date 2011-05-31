@@ -19,12 +19,9 @@ class Clock{
 		status = STOP;
 	}
 	
-	public long next(long previousTime) throws DelayException,ExceedException{
+	public long next(long previousTime) throws DelayException{
 		if(previousTime < currentTime){
 			throw new DelayException();
-		}
-		else if(previousTime > currentTime){
-			throw new ExceedException();
 		}
 		try{
 			while(previousTime == currentTime){

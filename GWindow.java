@@ -35,8 +35,8 @@ public class GWindow {
 		return game.getHeight();
 	}
 	
-	public void addKeyListener(GMenu menu) {
-		game.addKeyListener(menu);
+	public void addKeyListener(KeyListener key) {
+		game.addKeyListener(key);
 	}
 
 	public void addKeyListener(KeyAdapter keyAdapter) {
