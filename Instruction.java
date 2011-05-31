@@ -94,7 +94,7 @@ class Instruction implements
 		return new Point(x,y);
 	}
 	public  int    getHp(){
-		return arguments[6];
+		return Integer.valueOf(arguments[6]);
 	}
 	
 	
@@ -141,7 +141,7 @@ class Instruction implements
 		return new Point(x,y);
 	}
 	public  float  getCurveRadius(){
-		return Floot.valueOf(arguments[7]);
+		return Float.valueOf(arguments[7]);
 	}
 	public  int    getCurveAngle(){
 		return Integer.valueOf(arguments[7]);
