@@ -54,7 +54,6 @@ public class GScreen implements Runnable{
 		setImg = new BufferedImage(scrollBar.getWidth(),scrollBar.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		
 		try{
-			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));
 			a = ImageIO.read(new File("map/default/image/continue1.png"));
 			b = ImageIO.read(new File("map/default/image/continue2.png"));
 			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
@@ -87,6 +86,8 @@ public class GScreen implements Runnable{
 			int length = list.length;
 			
 			if(checkKeyEvent.isPause()){
+				System.out.println("123");
+				
 				game.removeKeyListener(this);
 				paused();
 			}
@@ -110,7 +111,7 @@ public class GScreen implements Runnable{
 					drawPlayArea(image, dx, dy);
 				}
 				else{
-					
+					System.out.println(image == null);
 				}
 			}
 		}
@@ -119,7 +120,9 @@ public class GScreen implements Runnable{
 
 
 	public void paused(){
+		drawPauseBg();
 		
+		System.out.println("123");
 		
 		game.addKeyListener(new KeyAdapter(){
 			public void keyPressed(KeyEvent e){
@@ -173,8 +176,8 @@ public class GScreen implements Runnable{
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
-		g.drawImage(playBg,0,0,350,600,null);
-		gg.drawImage(playBg,0,0,350,600,null);
+		g.drawImage(playBg,0,0,450,600,null);
+		gg.drawImage(playBg,0,0,450,600,null);
 
 		g.dispose();
 		gg.dispose();
@@ -197,6 +200,9 @@ public class GScreen implements Runnable{
 	}
 	
 	private void drawPlayArea(Image img, int dx, int dy){ 
+		
+		System.out.println("123");
+		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
@@ -207,7 +213,16 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
+	
 	private void drawPauseBg(){
+
+		System.out.println("123");
+		
+		try{
+			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));
+		}
+		catch(IOException e){}
+		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
@@ -220,7 +235,6 @@ public class GScreen implements Runnable{
 		gg.drawImage(c, 80, 350, null);
 		gg.drawImage(e, 80, 400, null);
 		
-
 		g.dispose();
 		gg.dispose();
 	}
