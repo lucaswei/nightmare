@@ -230,7 +230,7 @@ public class Processor implements Runnable{
 	}
 	public void stateCheck(){
 		if(player.isPause())
-			EventConnect.setPause(true);
+			eventConnect.setPause(true);
 	}
 	public void run(){
 		while(true){
