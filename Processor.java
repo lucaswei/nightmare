@@ -2,15 +2,11 @@ import java.lang.Thread;
 import java.awt.Point;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
-enum state{
-	END,
-	PAUSE,
-	PLAYING
-}
 
 public class Processor implements Runnable{
 	private Stage stage;
 	private Clock clock;
+	private State myState;
 	private long time;
 
 	private BlockingQueue<Printable> queue;
@@ -64,8 +60,8 @@ public class Processor implements Runnable{
 					if(bulletList.get(targetId) != null){
 						Bullet bullet;
 						bullet = bulletList.get(targetId);
-						target = calcTarget(bullet, pointRefer, pointAngle, offset);
-						Route route = RouteFactory(enemy.getPosition().getPosition(), target, speed, routeType);
+						target = calcTarget(bullet.getPosition(), pointRefer, pointAngle, offset);
+						Route route = RouteFactory.getRoute(bullet.getPosition(), target, speed, routeType);
 						bullet.setRoute(route);
 					}
 				}
@@ -140,15 +136,17 @@ public class Processor implements Runnable{
 				Point point = new Point(offset);
 				return point;
 			}else{
-				x = offset.getX()-(int)self.getX();
-				y = offset.getY()-(int)self.getY();
+				x = (int)offset.getX()-(int)self.getX();
+				y = (int)offset.getY()-(int)self.getY();
 				Point point = new Point(x,y);
 				selfOffset = round(point, pointAngle);
 			}
 		}
 		else if(pointRefer == "self"){
 			if(pointAngle == 0){
-				Point point = new Point((int)(self.getX()+offset.getX() ), ((int)self.getY()+offset.getY()));
+				x = (int)(self.getX()+offset.getX());
+				y = (int)(self.getY()+offset.getY());
+				Point point = new Point(x, y);
 				return point;
 			}else{
 				x = (int)offset.getX();
@@ -159,38 +157,42 @@ public class Processor implements Runnable{
 		}
 		else if(pointRefer == "player"){
 			if(pointAngle == 0){
-				Point point = new Point( (player.getPosition().getX()+offset.getX() ), ( player.getPosition().getY()+offset.getY() ) );
+				x = (int)(player.getPosition().getX()+offset.getX());
+				y = (int)(player.getPosition().getY()+offset.getY());
+				Point point = new Point(x, y);
 				return point;
 			}
 			else{
-				x = ( offset.getX()+player.getX() )-self.getX();
-				y = ( offset.getY()+player.getY() )-self.getY();
-				Point point = new point(x,y);
-				selfOffset = round(point, angle);
+				x = (int)((offset.getX()+player.getPosition().getX())-self.getX());
+				y = (int)((offset.getY()+player.getPosition().getY())-self.getY());
+				Point point = new Point(x,y);
+				selfOffset = round(point, pointAngle);
 			}
 		}
-		x = selfOffset.getX()+self.getX();
-		y = selfOffset.getY()+self.getY();
+		x = (int)(selfOffset.getX()+self.getX());
+		y = (int)(selfOffset.getY()+self.getY());
 		Point target = new Point(x, y);
 		return target;
 	}
 	private Point round(Point point,int angle){
-		float x = point.getX();
-		float y = point.getY();
-		float length = Math.sqrt(x*x+y*y);
-		float th;
-		th = Math.tan(y/x);
-		th = th+(float)angle;
-		Point afterRound = new Point((int)length*Math.cos(th), (int)length*Math.sin(th));
+		double x = point.getX();
+		double y = point.getY();
+		double length = Math.sqrt(x*x+y*y);
+		double th;
+		th = Math.tan(y, x);
+		th = th+(double)angle;
+		x = length*Math.cos(th);
+		y = length*Math.sin(th);
+		Point afterRound = new Point((int)x, (int)y);
 	}
 	public void run(){
-		while(status!=END){
+		while(true){
 			try{
 				time = clock.next(time);
 			}
 			catch(DelayException e){
 			}
-			runInstruction();
+			runInstructions();
 			calcBullet();
 			calcEnemy();
 			calcPlayer();
