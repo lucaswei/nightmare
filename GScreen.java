@@ -10,6 +10,7 @@ public class GScreen implements Runnable{
 
 	private static final long serialVersionUID = -2440508607507254216L;
 	
+	private int keyFlag = 1;
 	private Image image;
 	private Image palyBg,scrollBg,pauseBg;
 	private Image a,b,c,d,e,f;
@@ -116,7 +117,6 @@ public class GScreen implements Runnable{
 
 
 	public void paused(){
-		final int keyFlag = 1;
 		
 		
 		game.addKeyListener(new KeyAdapter(){
