@@ -20,7 +20,6 @@ public class Stage{
 		instructions = (Instruction[][])parser.get();
 	}
 	public Instruction[] get(){
-		System.out.println(instructions.length);
 		return instructions[PC];
 	}
 	public void jump(String anchor){
