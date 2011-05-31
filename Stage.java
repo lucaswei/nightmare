@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.awt.*;
+import javax.imageio.ImageIO;
 import java.lang.Math.*;
 
 public class Stage{
@@ -37,16 +38,60 @@ public class Stage{
 }
 
 class ImageMapper{
+	BufferedReader reader;
 	public ImageMapper(FileReader map){
-		BufferedReader reader = new BufferedReader(map);
+		reader = new BufferedReader(map);
 		mapImages(reader);
 	}
 	public Image[] get(){
 		return (Image[])images.toArray();
 	}
 	private ArrayList<Image> images;
+	private Image background;
 	private void mapImages(BufferedReader reader){
-		
+		String line;
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				int time = tokens.nextInt();
+				String statement = tokens.next();
+				if(statement == "IMAGE"){
+					stateImage();
+				}
+			}
+		}
+		catch(IOException e){
+			return;
+		}
+	}
+	
+	private void stateImage(){
+		String line;
+		try{
+			while((line = reader.readLine()) != null){
+				Scanner tokens = new Scanner(line);
+				int time = tokens.nextInt();
+				String statement = tokens.next();
+				if(statement == "IMG"){
+					int imageId = tokens.nextInt();
+					String imageName = tokens.next();
+					File file = new File("image/" + imageName);
+					Image img = ImageIO.read(file);
+					images.add(img);
+				}
+				else if(statement == "BG"){
+					String imageName = tokens.next();
+					File file = new File("image/" + imageName);
+					background = ImageIO.read(file);
+				}
+				else if(statement == "END"){
+					return;
+				}
+			}
+		}
+		catch(IOException e){
+			return;
+		}
 	}
 }
 
@@ -60,8 +105,8 @@ class InstructionParser{
 	int wave = 0;
 	
 	public InstructionParser(FileReader map){
-		BufferedReader reader = new BufferedReader(map);
-		parseInstruction(reader);
+		reader = new BufferedReader(map);
+		parseInstruction();
 	}
 	public Instruction[][] get(){
 		ArrayList<Instruction>[] inter = (ArrayList<Instruction>[])instructions.toArray();
@@ -71,7 +116,7 @@ class InstructionParser{
 		}
 		return out;
 	}
-	private void parseInstruction(BufferedReader reader){
+	private void parseInstruction(){
 		ArrayList<ArrayList<Instruction>> instructions;
 		String line;
 		try{
