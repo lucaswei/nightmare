@@ -11,7 +11,7 @@ public class GScreen implements Runnable{
 	private static final long serialVersionUID = -2440508607507254216L;
 	
 	private Image image;
-	private Image palyBg,scrollBg;
+	private Image palyBg,scrollBg,pauseBg;
 	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setScrollImg;
 	private Panel play,scrollBar,whenPause;
@@ -56,6 +56,7 @@ public class GScreen implements Runnable{
 		try{
 			palyBg = ImageIO.read(new File("map/default/image/testbg.png"));
 			scrollBg = ImageIO.read(new File("map/default/image/scrollBg.png"));
+			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));
 			a = ImageIO.read(new File("map/default/image/continue1.png"));
 			b = ImageIO.read(new File("map/default/image/continue2.png"));
 			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
@@ -72,7 +73,6 @@ public class GScreen implements Runnable{
 		drawPlayBg();
 		drawScrollBg();
 		
-		run();
 	}
 
 	public void run(){
@@ -85,8 +85,10 @@ public class GScreen implements Runnable{
 			
 			int length = list.length;
 			
-			if(checkKeyEvent.isPaused())
+			if(checkKeyEvent.isPause()){
+				game.removeKeyListener(this);
 				paused();
+			}
 			
 			for(int i=0;i<length;i++){
 				
@@ -114,17 +116,40 @@ public class GScreen implements Runnable{
 
 
 	public void paused(){
-		
+		final int keyFlag = 1;
 		
 		
 		game.addKeyListener(new KeyAdapter(){
 			public void keyPressed(KeyEvent e){
 				switch(e.getKeyCode()){
 					case KeyEvent.VK_UP:
+						keyFlag--;
+					
+						if(keyFlag < 1)
+							keyFlag = 1;
+						
+						drawPauseMenu(keyFlag);
+						
 						break;
 					case KeyEvent.VK_DOWN:
+						keyFlag++;
+					
+						if(keyFlag > 3)
+							keyFlag = 3;
+						
+						drawPauseMenu(keyFlag);
+						
 						break;
 					case KeyEvent.VK_ENTER:
+						switch(keyFlag){
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+							default:break;
+						}
 						break;
 					case KeyEvent.VK_ESCAPE:
 						game.removeKeyListener(this);
@@ -137,7 +162,7 @@ public class GScreen implements Runnable{
 		
 	}
 	
-	public void drawPlayBg(){ 
+	private void drawPlayBg(){ 
 		Graphics g = scrollBar.getGraphics();
 		Graphics gg = setScrollImg.getGraphics();
 
@@ -148,7 +173,7 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	public void drawScrollBg(){ 
+	private void drawScrollBg(){ 
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
@@ -171,7 +196,59 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
+	private void drawPauseBg(){ 
+		Graphics g = play.getGraphics();
+		Graphics gg = setPlayImg.getGraphics();
+
+		g.drawImage(pauseBg, 0, 0, null);
+		g.drawImage(b, 80, 300, null);
+		g.drawImage(c, 80, 350, null);
+		g.drawImage(e, 80, 400, null);
+		gg.drawImage(pauseBg, 0, 0, null);
+		gg.drawImage(b, 80, 300, null);
+		gg.drawImage(c, 80, 350, null);
+		gg.drawImage(e, 80, 400, null);
+		
+
+		g.dispose();
+		gg.dispose();
+	}
 	
+	private void drawPauseMenu(int keyFlag){
+		Graphics g = play.getGraphics();
+		Graphics gg = setPlayImg.getGraphics();
+		
+		switch(keyFlag){
+			case 1:
+				g.drawImage(b, 80, 300, null);
+				g.drawImage(c, 80, 350, null);
+				g.drawImage(e, 80, 400, null);
+				gg.drawImage(b, 80, 300, null);
+				gg.drawImage(c, 80, 350, null);
+				gg.drawImage(e, 80, 400, null);
+				break;
+			case 2:
+				g.drawImage(a, 80, 300, null);
+				g.drawImage(d, 80, 350, null);
+				g.drawImage(e, 80, 400, null);
+				gg.drawImage(a, 80, 300, null);
+				gg.drawImage(d, 80, 350, null);
+				gg.drawImage(e, 80, 400, null);
+				break;
+			case 3:
+				g.drawImage(a, 80, 300, null);
+				g.drawImage(c, 80, 350, null);
+				g.drawImage(f, 80, 400, null);
+				gg.drawImage(a, 80, 300, null);
+				gg.drawImage(c, 80, 350, null);
+				gg.drawImage(f, 80, 400, null);
+				break;
+			default:break;
+		}
+		
+		g.dispose();
+		gg.dispose();
+	}
 	public int praseInt(double value){
 		return (new Double(value)).intValue();
 	}
