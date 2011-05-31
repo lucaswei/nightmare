@@ -14,7 +14,7 @@ public class GameOutput extends JFrame implements Runnable{
 	
 	public GameOutput(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
 		
-		canvas = new Panel();		
+		canvas = new Panel();
 		canvas.setBounds(0,0,450,600);
 		canvas.setBackground(Color.yellow);
 		this.add(canvas);
