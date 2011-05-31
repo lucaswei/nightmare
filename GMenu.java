@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.io.*;
 
 public class GMenu implements KeyListener{
@@ -14,7 +13,6 @@ public class GMenu implements KeyListener{
 	private Graphics g;
 	private Image bg,play1,play2,exit1,exit2,sword;
 	private BufferedImage img;
-	private Nightmare nightmare;
 	private int keyFlag;
 	
 	
@@ -36,15 +34,6 @@ public class GMenu implements KeyListener{
 		
 		drawMenu();
 		
-		/*ctest = new Panel(){
-			public void paint(Graphics g){		
-				g.drawImage(img, 0, 0, null);
-			}
-		};
-		
-		ctest.setBounds(0, 0, 800, 600);
-		img = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		*/
 	}
 
 	public void keyPressed(KeyEvent e){
@@ -149,8 +138,16 @@ public class GMenu implements KeyListener{
 		g.drawImage(sword, 400, 100, null);
 	}
 	
+	/*
+	ctest = new Panel(){
+	public void paint(Graphics g){		
+			g.drawImage(img, 0, 0, null);
+		}
+	};
 	
-	/*	
+	ctest.setBounds(0, 0, 800, 600);
+	img = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
+
 	public void drawbg(){ 
 		Graphics g = ctest.getGraphics();
 		Graphics gg = img.getGraphics();
