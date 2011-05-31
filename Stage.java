@@ -61,7 +61,7 @@ class ImageMapper{
 				Scanner tokens = new Scanner(line);
 				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "IMAGE"){
+				if(statement.equals("IMAGE")){
 					stateImage();
 				}
 			}
@@ -74,24 +74,24 @@ class ImageMapper{
 	
 	private void stateImage(){
 		String imagePath = path + "image/";
-		String line;
+		String line = null;
 		try{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement == "IMG"){
+				if(statement.equals("IMG")){
 					int imageId = tokens.nextInt();
 					String imageName = tokens.next();
 					File file = new File(imagePath + imageName);
 					Image img = ImageIO.read(file);
 					images.add(img);
 				}
-				else if(statement == "BG"){
+				else if(statement.equals("BG")){
 					String imageName = tokens.next();
 					File file = new File(imagePath + imageName);
 					background = ImageIO.read(file);
 				}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -127,7 +127,14 @@ class InstructionParser{
 		Instruction[][] out = new Instruction[length][];
 		for(int i=0;i<length;i++){
 			ArrayList<Instruction> array = instructions.get(i);
-			out[i] = (Instruction[])array.toArray();
+			if(array != null){
+				Object[] arr = array.toArray();
+				int len = arr.length;
+				out[i] = new Instruction[len];
+				for(int j=0;j<len;j++){
+					out[i][j] = (Instruction)arr[j];
+				}
+			}
 		}
 		
 		return out;
@@ -140,19 +147,19 @@ class InstructionParser{
 				Scanner tokens = new Scanner(line);
 				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "PARTA"){
+				if(statement.equals("PARTA")){
 					int time = tokens.nextInt();
 					statePart(time);
 				}
-				else if(statement == "PARTB"){
+				else if(statement.equals("PARTB")){
 					int time = tokens.nextInt();
 					statePart(time);
 				}
-				else if(statement == "BOSSA"){
+				else if(statement.equals("BOSSA")){
 					int time = tokens.nextInt();
 					stateBoss(time);
 				}
-				else if(statement == "BOSSB"){
+				else if(statement.equals("BOSSB")){
 					int time = tokens.nextInt();
 					stateBoss(time);
 				}
@@ -169,8 +176,9 @@ class InstructionParser{
 		try{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "GROUP"){
+				if(statement.equals("GROUP")){
 						time  = tokens.nextInt();
 					int times = tokens.nextInt();
 					int inter = tokens.nextInt();
@@ -179,11 +187,11 @@ class InstructionParser{
 						time += inter;
 					}
 				}
-				else if(statement == "ENEMY"){
+				else if(statement.equals("ENEMY")){
 					time  = tokens.nextInt();
 					stateEnemy(baseTime + time);
 				}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -203,8 +211,9 @@ class InstructionParser{
 		try{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "TYPE"){
+				if(statement.equals("TYPE")){
 					String type  = tokens.next();
 					arguments[2] = type;
 					if(type == "custom"){
@@ -213,18 +222,18 @@ class InstructionParser{
 						arguments[6] = tokens.next();
 					}
 				}
-				else if(statement == "POSITION"){
+				else if(statement.equals("POSITION")){
 					arguments[3] = tokens.next();
 					Instruction enemyInstruction = new Instruction(arguments);
 					addInst(baseTime,enemyInstruction);
 				}
-				else if(statement == "MOVE"){
+				else if(statement.equals("MOVE")){
 					stateMove(baseTime,"enemy",id,1);
 				}
-				else if(statement == "SHOOT"){
+				else if(statement.equals("SHOOT")){
 					stateShoot(baseTime,id);
 				}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -238,8 +247,9 @@ class InstructionParser{
 		try{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "BULLET"){
+				if(statement.equals("BULLET")){
 					int time   = tokens.nextInt();
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
@@ -249,7 +259,7 @@ class InstructionParser{
 						time += inter;
 					}
 				}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -270,8 +280,9 @@ class InstructionParser{
 		try{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
-				if(statement == "TYPE"){
+				if(statement.equals("TYPE")){
 					String type  = tokens.next();
 					arguments[2] = type;
 					if(type == "custom"){
@@ -285,10 +296,10 @@ class InstructionParser{
 						addInst(baseTime,bulletInstruction);
 					}
 				}
-				else if(statement == "MOVE"){
+				else if(statement.equals("MOVE")){
 					stateMove(baseTime,"bullet",id,amount);
 				}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -304,11 +315,11 @@ class InstructionParser{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement == "Route"){
+				if(statement.equals("Route")){
 					int time = tokens.nextInt();
 					stateRoute(baseTime+time,targetType,targetId,amount,tokens);
 					}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}	
 			}
@@ -324,7 +335,7 @@ class InstructionParser{
 		arguments[4] = tokens.next();
 		
 		String statement = tokens.next();
-		if(statement == "FAN"){
+		if(statement.equals("FAN")){
 			arguments[3] = "linear";
 			arguments[5] = tokens.next();
 			
@@ -364,11 +375,11 @@ class InstructionParser{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement == "TYPE"){
+				if(statement.equals("TYPE")){
 					arguments[4] = tokens.next();
 					arguments[5] = tokens.next();
 					}
-				else if(statement == "WAVE"){
+				else if(statement.equals("WAVE")){
 					int period = tokens.nextInt();
 					time += period;
 					anchors.put("WAVE"+wave,new Integer(baseTime + time));
@@ -381,7 +392,7 @@ class InstructionParser{
 					addInst(baseTime + time,bossInstruction);
 					stateWave(baseTime,id);
 					}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -397,10 +408,10 @@ class InstructionParser{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement == "MOVE"){
+				if(statement.equals("MOVE")){
 					stateMove(baseTime,"enemy",id,1);
 					}
-				else if(statement == "BULLET"){
+				else if(statement.equals("BULLET")){
 					int time   = tokens.nextInt();
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
@@ -410,7 +421,7 @@ class InstructionParser{
 						time += inter;
 					}
 					}
-				else if(statement == "END"){
+				else if(statement.equals("END")){
 					return;
 				}
 			}
@@ -421,10 +432,15 @@ class InstructionParser{
 	}
 	
 	private void addInst(int time,Instruction inst){
+		int size = instructions.size();
+		int sub  = time - size;
+		for(int i=0;i<=sub;i++){
+			instructions.add(null);
+		}
 		ArrayList<Instruction> list = instructions.get(time);
 		if(list == null){
 			list = new ArrayList<Instruction>();
-			instructions.add(time,list);
+			instructions.set(time,list);
 		}
 		list.add(inst);
 	}
