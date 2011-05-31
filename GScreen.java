@@ -94,8 +94,6 @@ public class GScreen implements Runnable{
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
-				System.out.println(list.length);
-				System.out.println(fly == null);
 				int id = fly.getImageId();
 				image = stage.getImage(id);
 				if(image != null){

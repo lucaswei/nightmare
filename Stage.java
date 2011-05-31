@@ -20,7 +20,7 @@ public class Stage{
 		instructions = (Instruction[][])parser.get();
 	}
 	public Instruction[] get(){
-		return instructions[PC];
+		return instructions[PC++];
 	}
 	public void jump(String anchor){
 		Integer target = anchors.get(anchor);
@@ -254,7 +254,7 @@ class InstructionParser{
 					int inter  = tokens.nextInt();
 					int amount = tokens.nextInt();
 					for(int i=0;i<times;i++){
-						stateBullet(time,enemyId,amount);
+						stateBullet(time + baseTime,enemyId,amount);
 						time += inter;
 					}
 				}
