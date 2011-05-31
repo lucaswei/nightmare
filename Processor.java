@@ -27,25 +27,36 @@ public class Processor implements Runnable{
 		}
 		for(int i=0;i<insts.length;i++){
 			String instType = insts[i].getInstType();
-			if(instType == "ENEMY"){
+			System.out.println(instType);
+			if(instType.equals("enemy")){
 				EnemyInstruction inst = insts[i];
+				int enemyId = inst.getEnemyId();
 				Enemy e = EnemyFactory.getEnemy(inst);
-				enemyList.add(inst.getEnemyId(), EnemyFactory.getEnemy(inst) );
+				for(i=enemyList.size();i<enemyId;i++)
+					enemyList.add(null);
+				enemyList.add(enemyId, EnemyFactory.getEnemy(inst) );
 			}
-			else if(instType == "BULLET"){
+			else if(instType.equals("bullet")){
 				BulletInstruction inst = insts[i];
 				if(enemyList.get(inst.getEnemyId()) != null){
-					int imageId = inst.getImageId();
-					int bulletId= inst.getBulletId();
-					int radius  = inst.getRadius();
-					int power   = inst.getPower();
-					int enemyId = inst.getEnemyId();
 					String bulletType = inst.getBulletType();
+					int enemyId = inst.getEnemyId();
+					int bulletId= inst.getBulletId();
+					int radius = 0;
+                    int power  = 0;
+                    int imageId= 0;
+					if(bulletType.equals("costum")){
+						radius  = inst.getRadius();
+						power   = inst.getPower();
+						imageId = inst.getImageId();
+					}
 					Enemy enemy = enemyList.get(enemyId);
+					for(i=bulletList.size();i<bulletId;i++)
+						bulletList.add(null);
 					bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType) );
 				}
 			}
-			else if(instType == "ROUTE"){
+			else if(instType.equals("route")){
 				RouteInstruction inst = insts[i];
 				String targetType = inst.getTargetType();
 				int    targetId   = inst.getTargetId();
@@ -55,7 +66,7 @@ public class Processor implements Runnable{
 				int    pointAngle = inst.getPointAngle();
 				Point  offset     = inst.getPointOffset();
 				Point target;
-				if(targetType == "enemy"){
+				if(targetType.equals("enemy")){
 					if(enemyList.get(targetId) != null){
 						Enemy enemy;
 						enemy = enemyList.get(targetId);
@@ -64,7 +75,7 @@ public class Processor implements Runnable{
 						enemy.setRoute(route);
 					}
 				}
-				else if(targetType == "bullet"){
+				else if(targetType.equals("bullet")){
 					if(bulletList.get(targetId) != null){
 						Bullet bullet;
 						bullet = bulletList.get(targetId);
@@ -79,6 +90,8 @@ public class Processor implements Runnable{
 	private void calcBullet(){
 		Point position;
 		for(Bullet bullet : bulletList){
+			if(bullet ==null)
+				continue;
 			bullet.move();
 			position = bullet.getPosition();
 			if(position.getX() < 0 || position.getY() < 0)
@@ -88,6 +101,8 @@ public class Processor implements Runnable{
 	private void calcEnemy(){
 		Point position;
 		for(Enemy enemy : enemyList){
+			if(enemy == null)
+				continue;
 			enemy.move();
 			position = enemy.getPosition();
 		}
@@ -101,12 +116,18 @@ public class Processor implements Runnable{
 	}
 	private void collision(){
 		for(Bullet bullet : bulletList){
+			if(bullet == null)
+				continue;
 			if(bullet.collision(player)){
 				player.crash();
 			}
 		}
 		for(Bullet bullet : playerBulletList){
+			if(bullet == null)
+				continue;
 			for(Enemy enemy: enemyList){
+				if(enemy == null)
+					continue;
 				if(bullet.collision(enemy)){
 					if(enemy.attacted( player.getPower())){
 						enemy.crash();
@@ -121,7 +142,12 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
-		Object[] obj = output.toArray();
+		ArrayList<Printable> temp = new ArrayList<Printable>();
+		for(Printable toPrint: output){
+			if(toPrint != null)
+				temp.add(toPrint);
+		}
+		Object[] obj = temp.toArray();
 		Printable[] array = new Printable[obj.length];
 		for(int i=0;i<obj.length;i++){
 			array[i] = (Printable)obj[i];
@@ -174,7 +200,7 @@ public class Processor implements Runnable{
 	private Point calcTarget(Point self, String pointRefer, int pointAngle, Point offset){
 		int x,y;
 		Point selfOffset = null;
-		if(pointRefer == "global"){
+		if(pointRefer.equals("global")){
 			if(pointAngle == 0){
 				Point point = new Point(offset);
 				return point;
@@ -185,7 +211,7 @@ public class Processor implements Runnable{
 				selfOffset = round(point, pointAngle);
 			}
 		}
-		else if(pointRefer == "self"){
+		else if(pointRefer.equals("self")){
 			if(pointAngle == 0){
 				x = (int)(self.getX()+offset.getX());
 				y = (int)(self.getY()+offset.getY());
@@ -198,7 +224,7 @@ public class Processor implements Runnable{
 				selfOffset = round(point, pointAngle);
 			}
 		}
-		else if(pointRefer == "player"){
+		else if(pointRefer.equals("player")){
 			if(pointAngle == 0){
 				x = (int)(player.getPosition().getX()+offset.getX());
 				y = (int)(player.getPosition().getY()+offset.getY());

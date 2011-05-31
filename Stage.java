@@ -283,14 +283,14 @@ class InstructionParser{
 				String statement = tokens.next();
 				if(statement.equals("TYPE")){
 					String type  = tokens.next();
-					arguments[2] = type;
+					arguments[3] = type;
 					if(type == "custom"){
 						arguments[4] = tokens.next();
 						arguments[5] = tokens.next();
 						arguments[6] = tokens.next();
 					}
 					for(int i=0;i<amount;i++){
-						arguments[1] = Integer.toString(id + i);
+						arguments[2] = Integer.toString(id + i);
 						Instruction bulletInstruction = new Instruction(arguments);
 						addInst(baseTime,bulletInstruction);
 					}

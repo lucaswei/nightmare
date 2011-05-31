@@ -4,13 +4,13 @@ class BulletFactory{
 	private BulletFactory(){}
 	public static Bullet getBullet(int imageId, int bulletId, int radius, int power, Point enemy, String bulletType){
 		if(bulletType == "large"){
-			return new CircleBullet(enemy, 32, imageId, bulletId);
+			return new CircleBullet(enemy, 32, 15, bulletId);
 		}
 		else if (bulletType ==  "normal"){
-			return new CircleBullet(enemy, 12, imageId, bulletId);
+			return new CircleBullet(enemy, 12, 21, bulletId);
 		}
 		else if(bulletType == "small"){
-			return new CircleBullet(enemy, 8, imageId, bulletId);
+			return new CircleBullet(enemy, 8, 17, bulletId);
 		}
 		return null;
 	}
