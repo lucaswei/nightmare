@@ -1,7 +1,5 @@
 import java.awt.*;
-
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.*;
 
@@ -12,7 +10,6 @@ public class GMenu implements KeyListener{
 	private Panel canvas;
 	private Graphics g;
 	private Image bg,play1,play2,exit1,exit2,sword;
-	private BufferedImage img;
 	private int keyFlag;
 	
 	
@@ -59,7 +56,7 @@ public class GMenu implements KeyListener{
 					g.drawImage(exit2, 400, 150, null);
 				}
 				break;
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_ENTER://Enter RoleMenu
 				switch(keyFlag){
 					case 1:
 						game.removeKeyListener(this);
@@ -72,12 +69,12 @@ public class GMenu implements KeyListener{
 										break;
 									case KeyEvent.VK_DOWN:
 										break;
-									case KeyEvent.VK_ENTER:
+									case KeyEvent.VK_ENTER://Enter game
 										game.removeKeyListener(this);
-										game.cp.remove(canvas);
+										game.cp.remove(canvas);//delete canvas;
 										Nightmare.newGame(game,stage,"Rio");
 										break;
-									case KeyEvent.VK_ESCAPE:
+									case KeyEvent.VK_ESCAPE://Back to Menu
 										game.removeKeyListener(this);		
 										drawMenu();
 										break;
@@ -93,11 +90,6 @@ public class GMenu implements KeyListener{
 						break;
 					default:break;
 				}
-				break;
-			case KeyEvent.VK_ESCAPE:
-				
-					
-			
 				break;
 			default:break;
 		}

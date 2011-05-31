@@ -1,14 +1,20 @@
 import java.util.concurrent.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.awt.image.BufferedImage;
 import javax.swing.*;
+import javax.imageio.ImageIO;
+import java.io.*;
 
 public class GScreen extends JFrame implements Runnable{
 
+	private static final long serialVersionUID = -2440508607507254216L;
+	
 	private Image image;
-	private Panel canvas,scrollBar,whenPause;
-	private Graphics gc,gsb,gwp;
+	private Image palyBg,scrollBg;
+	private BufferedImage setPlayImg,setScrollImg;
+	private Panel play,scrollBar,whenPause;
+	private Graphics graph;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
@@ -17,60 +23,80 @@ public class GScreen extends JFrame implements Runnable{
 		
 		this.game = game;
 		
-		canvas = new Panel();
-		canvas.setBounds(0,0,450,600);
-		canvas.setBackground(Color.yellow);
-		this.add(canvas);
-		gc = canvas.getGraphics();
-
-		scrollBar = new Panel();
+		/*
+		 * set playArea
+		 */
+		play = new Panel(){
+			public void paint(Graphics g){		
+				g.drawImage(setPlayImg, 0, 0, null);
+			}
+		};
+		play.setBounds(0,0,450,600);
+		play.setBackground(Color.yellow);
+		game.cp.add(play);
+		
+		/*
+		 * set scroll bar
+		 */
+		scrollBar = new Panel(){
+			public void paint(Graphics g){		
+				g.drawImage(setScrollImg, 0, 0, null);
+			}
+		};
+		
 		scrollBar.setBounds(450,0,350,600);
 		scrollBar.setBackground(Color.pink);
-		this.add(canvas);
-		gsb = canvas.getGraphics();
+		game.cp.add(scrollBar);
 		
 		whenPause = new Panel();
 		whenPause.setBounds(0,0,450,600);
-		gwp = whenPause.getGraphics();
+
+		setPlayImg = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		setScrollImg = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		
+		try{
+			palyBg = ImageIO.read(new File("image/testbg.png"));
+			scrollBg = ImageIO.read(new File("image/scrollBg.png"));
+		}
+		catch(IOException e){}
 		
 		this.addKeyListener(key);
+		
 		this.queue = queue;
+		
+		drawPlayBg();
+		drawScrollBg();
+		
 		run();
 	}
 	
 	public void run(){
 		while(true){
+			
 			Printable[] list = queue.take();
 			int length = list.length;
 			
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
-				int id = fly.getImageID();
-				image = stage.getImage();
+				int id = fly.getImageId();
+				image = stage.getImage(id);
 				
-				Coordinate targetCoord = fly.getCoord();
-				Coordinate sourceCoord = stage.getCoord(id);
-				Dimension  dimension   = stage.getDimension(id);
+				Point targetCoord = fly.getPosition();
 				
-				int dx1 = targetCoord.getX();
-				int dy1 = targetCoord.getY();
-				int dx2 = dx1 + praseInt(dimension.getWidth());
-				int dy2 = dx2 + praseInt(dimension.getHeight());
-				int sx1 = sourceCoord.getX();
-				int sy1 = sourceCoord.getY();
-				int sx2 = sx1 + praseInt(dimension.getWidth());
-				int sy2 = sx2 + praseInt(dimension.getHeight());
+				int imageHeight = image.getHeight(null);
+				int imageWidth = image.getWidth(null);
 				
-				gc.drawImage(image,
-						     dx1, dy1, dx2, dy2,
-						     sx1, sy1, sx2, sy2,
-						     this);
+				int dx = praseInt(targetCoord.getX()) - imageWidth/2;
+				int dy = praseInt(targetCoord.getY()) - imageHeight/2;
+				
+				drawPlayArea(image, dx, dy);
 			}
 		}
 
 	}
-	
+
+
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_UP:break;
@@ -115,6 +141,40 @@ public class GScreen extends JFrame implements Runnable{
 	}
 	public void keyReleased(KeyEvent e){}
 	public void keyTyped(KeyEvent e){}
+	
+	public void drawPlayBg(){ 
+		Graphics g = scrollBar.getGraphics();
+		Graphics gg = setScrollImg.getGraphics();
+
+		g.drawImage(scrollBg,0,0,800,600,null);
+		gg.drawImage(scrollBg,0,0,800,600,null);
+
+		g.dispose();
+		gg.dispose();
+	}
+	
+	public void drawScrollBg(){ 
+		Graphics g = play.getGraphics();
+		Graphics gg = setPlayImg.getGraphics();
+
+		g.drawImage(palyBg,0,0,800,600,null);
+		gg.drawImage(palyBg,0,0,800,600,null);
+
+		g.dispose();
+		gg.dispose();
+	}
+	
+	
+	private void drawPlayArea(Image img, int dx, int dy){ 
+		Graphics g = play.getGraphics();
+		Graphics gg = setPlayImg.getGraphics();
+
+		g.drawImage(img, dx, dy, null);
+		gg.drawImage(img, dx, dy, null);
+
+		g.dispose();
+		gg.dispose();
+	}
 	
 	
 	public int praseInt(double value){
