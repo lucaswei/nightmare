@@ -8,7 +8,7 @@ public class Nightmare{
 	}
 	public static void newGame(GWindow window,Stage stage,String hero){
 		Clock clock = new Clock(100);
-		KeyboardListener keyboard = new KeyboardListener(clock);
+		KeyboardListener keyboard = new KeyboardListener();
 		
 		Hero player = new Hero(keyboard);
 		ArrayBlockingQueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>(1);

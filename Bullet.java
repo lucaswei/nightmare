@@ -20,7 +20,7 @@ abstract class Bullet extends Printable{
 	protected int bulletId;
 
 	protected Route route;
-
+	abstract public boolean collision(Plane plain);
 	public void setRoute(Route route){
 		this.route = route;
 	}
