@@ -6,22 +6,24 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.io.*;
 
-public class GScreen implements KeyListener, Runnable{
+public class GScreen implements Runnable{
 
 	private static final long serialVersionUID = -2440508607507254216L;
 	
 	private Image image;
 	private Image palyBg,scrollBg;
+	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setScrollImg;
 	private Panel play,scrollBar,whenPause;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
+	private EventConnect checkKeyEvent;
 	
-	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage){
+	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent){
 		
 		this.game = game;
-		
+		this.checkKeyEvent = checkKeyEvent;
 		/*
 		 * set playArea
 		 */
@@ -52,8 +54,14 @@ public class GScreen implements KeyListener, Runnable{
 		setScrollImg = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		
 		try{
-			palyBg = ImageIO.read(new File("image/testbg.png"));
-			scrollBg = ImageIO.read(new File("image/scrollBg.png"));
+			palyBg = ImageIO.read(new File("map/default/image/testbg.png"));
+			scrollBg = ImageIO.read(new File("map/default/image/scrollBg.png"));
+			a = ImageIO.read(new File("map/default/image/continue1.png"));
+			b = ImageIO.read(new File("map/default/image/continue2.png"));
+			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
+			d = ImageIO.read(new File("map/default/image/exitgame2.png"));
+			e = ImageIO.read(new File("map/default/image/restart1.png"));
+			f = ImageIO.read(new File("map/default/image/restart2.png"));
 		}
 		catch(IOException e){}
 			 
@@ -67,10 +75,6 @@ public class GScreen implements KeyListener, Runnable{
 		run();
 	}
 
-
-
-
-
 	public void run(){
 		while(true){
 			
@@ -81,60 +85,57 @@ public class GScreen implements KeyListener, Runnable{
 			
 			int length = list.length;
 			
+			if(checkKeyEvent.isPaused())
+				paused();
+			
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
 				int id = fly.getImageId();
 				image = stage.getImage(id);
-				
-				Point targetCoord = fly.getPosition();
-				
-				int imageHeight = image.getHeight(null);
-				int imageWidth = image.getWidth(null);
-				
-				int dx = praseInt(targetCoord.getX()) - imageWidth/2;
-				int dy = praseInt(targetCoord.getY()) - imageHeight/2;
-				
-				drawPlayArea(image, dx, dy);
+				if(image != null){
+					Point targetCoord = fly.getPosition();
+					
+					int imageHeight = image.getHeight(null);
+					int imageWidth = image.getWidth(null);
+					
+					int dx = praseInt(targetCoord.getX()) - imageWidth/2;
+					int dy = praseInt(targetCoord.getY()) - imageHeight/2;
+					
+					drawPlayArea(image, dx, dy);
+				}
+				else{
+					
+				}
 			}
 		}
 
 	}
 
 
-	public void keyPressed(KeyEvent e){
-		switch(e.getKeyCode()){
-			
-			case KeyEvent.VK_ESCAPE:
-				game.removeKeyListener(this);
-				
-				game.addKeyListener(new KeyAdapter(){
-					public void keyPressed(KeyEvent e){
-						switch(e.getKeyCode()){
-							case KeyEvent.VK_UP:
-								break;
-							case KeyEvent.VK_DOWN:
-								break;
-							case KeyEvent.VK_ENTER:
-								break;
-							case KeyEvent.VK_ESCAPE:
-								game.removeKeyListener(this);
-								break;
-						}
-					}
-					public void keyReleased(KeyEvent e){}
-					public void keyTyped(KeyEvent e){}
-				});
-				
-				break;
-			
-			case KeyEvent.VK_ENTER:break;
-			
-		}
+	public void paused(){
+		
+		
+		
+		game.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e){
+				switch(e.getKeyCode()){
+					case KeyEvent.VK_UP:
+						break;
+					case KeyEvent.VK_DOWN:
+						break;
+					case KeyEvent.VK_ENTER:
+						break;
+					case KeyEvent.VK_ESCAPE:
+						game.removeKeyListener(this);
+						break;
+				}
+			}
+			public void keyReleased(KeyEvent e){}
+			public void keyTyped(KeyEvent e){}
+		});
+		
 	}
-	
-	public void keyReleased(KeyEvent e){}
-	public void keyTyped(KeyEvent e){}
 	
 	public void drawPlayBg(){ 
 		Graphics g = scrollBar.getGraphics();

@@ -42,8 +42,8 @@ public class GMenu implements KeyListener{
 				if(keyFlag < 1)
 					keyFlag = 1;
 				else{
-					g.drawImage(play2, 400, 100, null);
-					g.drawImage(exit1, 400, 150, null);
+					g.drawImage(play2, 400, 200, null);
+					g.drawImage(exit1, 400, 250, null);
 				}
 				break;
 			case KeyEvent.VK_DOWN:
@@ -52,8 +52,8 @@ public class GMenu implements KeyListener{
 				if(keyFlag > 2)
 					keyFlag = 2;
 				else{
-					g.drawImage(play1, 400, 100, null);
-					g.drawImage(exit2, 400, 150, null);
+					g.drawImage(play1, 400, 200, null);
+					g.drawImage(exit2, 400, 250, null);
 				}
 				break;
 			case KeyEvent.VK_ENTER://Enter RoleMenu
@@ -112,8 +112,8 @@ public class GMenu implements KeyListener{
 		catch(IOException e){}
 		
 		g.drawImage(bg, 0, 0, null);
-		g.drawImage(play2, 400, 100, null);
-		g.drawImage(exit1, 400, 150, null);
+		g.drawImage(play2, 400, 200, null);
+		g.drawImage(exit1, 400, 250, null);
 		
 		
 	}
@@ -127,7 +127,7 @@ public class GMenu implements KeyListener{
 		catch(IOException e){}
 		
 		g.drawImage(bg, 0, 0, null);
-		g.drawImage(sword, 400, 100, null);
+		g.drawImage(sword, 400, 200, null);
 	}
 	
 	/*

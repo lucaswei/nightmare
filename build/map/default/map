@@ -1,26 +1,26 @@
 IMAGE
-	1 menubg.png
-	2 play1.png
-	3 play2.png
-	4 exit1.png
-	5 exit2.png
-	6 rolebg.png
-	7 sword1.png
-	8 sword2.png
-	9 Rio1.png
-	10 Rio2.png
-	11 Rio.png
-	12 test.png
-	13 50_enemy_1.png
-	14 50_enemy_2.png
-	15 60_enemy_1.png
-	16 60_enemy_2.png
-	17 16_bullet_1.png
-	18 16_bullet_2.png
-	19 16_bullet_3.png
-	20 16_bullet_1.png
-	21 24_bullet_1.png
-	22 24_bullet_2.png
+	IMG 1 menubg.png
+	IMG 2 play1.png
+	IMG 3 play2.png
+	IMG 4 exit1.png
+	IMG 5 exit2.png
+	IMG 6 rolebg.png
+	IMG 7 sword1.png
+	IMG 8 sword2.png
+	IMG 9 Rio1.png
+	IMG 10 Rio2.png
+	IMG 11 Rio.png
+	BG testbg.png
+	IMG 13 50_enemy_1.png
+	IMG 14 50_enemy_2.png
+	IMG 15 60_enemy_1.png
+	IMG 16 60_enemy_2.png
+	IMG 17 16_bullet_1.png
+	IMG 18 16_bullet_2.png
+	IMG 19 16_bullet_3.png
+	IMG 20 16_bullet_1.png
+	IMG 21 24_bullet_1.png
+	IMG 22 24_bullet_2.png
 	END
 
 PARTA 00000
