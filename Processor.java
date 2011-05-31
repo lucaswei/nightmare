@@ -26,6 +26,8 @@ public class Processor implements Runnable{
 			String instType = insts[i].getInstType();
 			if(instType == "ENEMY"){
 				EnemyInstruction inst = insts[i];
+				Enemy e = EnemyFactory.getEnemy(inst);
+				System.out.println(e == null);
 				enemyList.add(inst.getEnemyId(), EnemyFactory.getEnemy(inst) );
 			}
 			else if(instType == "BULLET"){
@@ -114,7 +116,12 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
-		queue.offer((Printable[])output.toArray());
+		Object[] obj = output.toArray();
+		Printable[] array = new Printable[obj.length];
+		for(int i=0;i<obj.length;i++){
+			array[i] = (Printable)obj[i];
+		}
+		queue.offer(array);
 		/*
 		Printable[] enemy = enemyList.toArray();
 		Printable[] bullet = bulletList.toArray();
@@ -230,7 +237,7 @@ public class Processor implements Runnable{
 	}
 	public void stateCheck(){
 		if(player.isPause())
-			EventConnect.setPause(true);
+			eventConnect.setPause(true);
 	}
 	public void run(){
 		while(true){

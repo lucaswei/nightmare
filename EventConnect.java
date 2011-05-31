@@ -10,7 +10,7 @@ public class EventConnect{
 		return pause;
 	}
 	public boolean isEnd(){
-		return pause;
+		return end;
 	}
 	public void setPause(boolean toggle){
 		pause = toggle;

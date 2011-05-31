@@ -39,7 +39,10 @@ class Hero extends Plane{
 	private int HEIGHT;
 	private int WIDTH;
 	
-	private Bullet[] bullet;
+	private Bullet bullet;
+	private int BULLETRADIUS;
+	private int BULLETIMAGEID;
+	private int BULLETSPEED;
 
 
 	public Hero(ActionSource source, Point position, int radius, int life){
@@ -50,6 +53,11 @@ class Hero extends Plane{
 		this.source = source;
 		this.life = life;
 		this.radius = radius;
+		/*set bullet information*/
+		this.BULLETRADIUS  = 8;
+		this.BULLETIMAGEID = 17;
+		this.BULLETSPEED   = 5;
+		/*                      */
 	}
 	
 	public void move(){
@@ -83,8 +91,15 @@ class Hero extends Plane{
 			return false;
 	}
 
-	public Bullet[] shoot(){
+	public Bullet shoot(){
 		if(source.check("SHOOT")){
+			Point bulletPoint = new Point( position);
+			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0);
+			int x = (int)position.getX();
+			int y = (int)position.getY()-1;
+			Point destiny = new Point(x, y);
+			Route bulletRoute = RouteFactory.getRoute(position, destiny, BULLETSPEED, "linear");
+			bullet.setRoute(bulletRoute);
 			return bullet;
 		}
 		return null;

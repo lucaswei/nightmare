@@ -5,13 +5,13 @@ class EnemyFactory{
 		String enemyType = inst.getEnemyType();
 		Point point = inst.getPoint();
 		int enemyId = inst.getEnemyId();
-		if(enemyType == "small"){
+		if(enemyType.equals("small")){
 			return new SmallEnemy(enemyId, point);
 		}
-		else if(enemyType == "normal"){
+		else if(enemyType.equals("normal")){
 			return new NormalEnemy(enemyId, point);
 		}
-		else if(enemyType == "large"){
+		else if(enemyType.equals("large")){
 			return new LargeEnemy(enemyId, point); 
 		}
 		return null;

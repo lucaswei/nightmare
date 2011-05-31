@@ -6,9 +6,10 @@ interface ActionSource{
 }
 
 class KeyboardListener implements KeyListener,ActionSource{
-	private Map<String,Boolean> actions = new HashMap<String , Boolean>();
+	private Map<String,Boolean> actions;
 	private Map<Integer,String> EventToString = new HashMap<Integer , String>();
 	public KeyboardListener(){
+		actions = new HashMap<String , Boolean>();
 		actions.put("UP"   ,false);
 		actions.put("DOWN" ,false);
 		actions.put("LEFT" ,false);
@@ -28,7 +29,10 @@ class KeyboardListener implements KeyListener,ActionSource{
 		EventToString.put(KeyEvent.VK_C,"SLOW");
 	}
 	public boolean check(String s){
-		return actions.get(s);
+		Boolean bool = actions.get(s);
+		if(bool != null)
+			return bool;
+		return false;
 	}
 	public void keyPressed(KeyEvent e){
 		keyToggle(e,true);
