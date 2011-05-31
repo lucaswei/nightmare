@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.io.*;
 
-public class GScreen extends JFrame implements Runnable{
+public class GScreen implements KeyListener, Runnable{
 
 	private static final long serialVersionUID = -2440508607507254216L;
 	
@@ -14,7 +14,6 @@ public class GScreen extends JFrame implements Runnable{
 	private Image palyBg,scrollBg;
 	private BufferedImage setPlayImg,setScrollImg;
 	private Panel play,scrollBar,whenPause;
-	private Graphics graph;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
@@ -32,20 +31,18 @@ public class GScreen extends JFrame implements Runnable{
 			}
 		};
 		play.setBounds(0,0,450,600);
-		play.setBackground(Color.yellow);
 		game.cp.add(play);
 		
 		/*
 		 * set scroll bar
 		 */
 		scrollBar = new Panel(){
-			public void paint(Graphics g){		
+			public void paint(Graphics g){
 				g.drawImage(setScrollImg, 0, 0, null);
 			}
 		};
 		
 		scrollBar.setBounds(450,0,350,600);
-		scrollBar.setBackground(Color.pink);
 		game.cp.add(scrollBar);
 		
 		whenPause = new Panel();
@@ -59,8 +56,8 @@ public class GScreen extends JFrame implements Runnable{
 			scrollBg = ImageIO.read(new File("image/scrollBg.png"));
 		}
 		catch(IOException e){}
-		
-		this.addKeyListener(key);
+			 
+		game.addKeyListener(key);
 		
 		this.queue = queue;
 		
@@ -69,11 +66,19 @@ public class GScreen extends JFrame implements Runnable{
 		
 		run();
 	}
-	
+
+
+
+
+
 	public void run(){
 		while(true){
 			
-			Printable[] list = queue.take();
+			Printable[] list = null;
+			try {
+				list = queue.take();
+			} catch (InterruptedException e) {}
+			
 			int length = list.length;
 			
 			for(int i=0;i<length;i++){
@@ -99,16 +104,7 @@ public class GScreen extends JFrame implements Runnable{
 
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
-			case KeyEvent.VK_UP:break;
-			case KeyEvent.VK_RIGHT:break;
-			case KeyEvent.VK_DOWN:break;
-			case KeyEvent.VK_LEFT:break;
-			case KeyEvent.VK_Z:
-				break;
-			case KeyEvent.VK_X:
-				break;
-			case KeyEvent.VK_C:
-					break;
+			
 			case KeyEvent.VK_ESCAPE:
 				game.removeKeyListener(this);
 				
@@ -131,14 +127,12 @@ public class GScreen extends JFrame implements Runnable{
 				});
 				
 				break;
-			case KeyEvent.VK_F4:
-				if(e.isAltDown())
-					System.exit(0);
-				break;
+			
 			case KeyEvent.VK_ENTER:break;
 			
 		}
 	}
+	
 	public void keyReleased(KeyEvent e){}
 	public void keyTyped(KeyEvent e){}
 	
@@ -146,8 +140,8 @@ public class GScreen extends JFrame implements Runnable{
 		Graphics g = scrollBar.getGraphics();
 		Graphics gg = setScrollImg.getGraphics();
 
-		g.drawImage(scrollBg,0,0,800,600,null);
-		gg.drawImage(scrollBg,0,0,800,600,null);
+		g.drawImage(scrollBg,0,0,450,600,null);
+		gg.drawImage(scrollBg,0,0,450,600,null);
 
 		g.dispose();
 		gg.dispose();
@@ -157,8 +151,8 @@ public class GScreen extends JFrame implements Runnable{
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
-		g.drawImage(palyBg,0,0,800,600,null);
-		gg.drawImage(palyBg,0,0,800,600,null);
+		g.drawImage(palyBg,450,0,800,600,null);
+		gg.drawImage(palyBg,450,0,800,600,null);
 
 		g.dispose();
 		gg.dispose();

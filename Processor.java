@@ -131,7 +131,7 @@ public class Processor implements Runnable{
 	}
 	private Point calcTarget(Point self, String pointRefer, int pointAngle, Point offset){
 		int x,y;
-		Point selfOffset;
+		Point selfOffset = null;
 		if(pointRefer == "global"){
 			if(pointAngle == 0){
 				Point point = new Point(offset);
@@ -170,10 +170,15 @@ public class Processor implements Runnable{
 				selfOffset = round(point, pointAngle);
 			}
 		}
-		x = (int)(selfOffset.getX()+self.getX());
-		y = (int)(selfOffset.getY()+self.getY());
-		Point target = new Point(x, y);
-		return target;
+		if(selfOffset != null){
+			x = (int)(selfOffset.getX()+self.getX());
+			y = (int)(selfOffset.getY()+self.getY());
+			Point target = new Point(x, y);
+			return target;
+		}
+		else{
+			return null;
+		}
 	}
 	private Point round(Point point,int degree){
 		double x = point.getX();

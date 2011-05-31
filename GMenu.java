@@ -103,11 +103,11 @@ public class GMenu implements KeyListener{
 		game.addKeyListener(this);
 		
 		try{
-			play1 = ImageIO.read(new File("image/play1.png"));
-			play2 = ImageIO.read(new File("image/play2.png"));
-			exit1 = ImageIO.read(new File("image/exit1.png"));
-			exit2 = ImageIO.read(new File("image/exit2.png"));
-			bg = ImageIO.read(new File("image/bg.png"));
+			play1 = ImageIO.read(new File("map/default/image/play1.png"));
+			play2 = ImageIO.read(new File("map/default/image/play2.png"));
+			exit1 = ImageIO.read(new File("map/default/image/exit1.png"));
+			exit2 = ImageIO.read(new File("map/default/image/exit2.png"));
+			bg = ImageIO.read(new File("map/default/image/menubg.png"));
 		}
 		catch(IOException e){}
 		
@@ -121,8 +121,8 @@ public class GMenu implements KeyListener{
 	public void drawRoleMenu(){
 		
 		try{
-			sword = ImageIO.read(new File("image/sword2.png"));
-			bg = ImageIO.read(new File("image/rolebg.png"));
+			sword = ImageIO.read(new File("map/default/image/sword2.png"));
+			bg = ImageIO.read(new File("map/default/image/rolebg.png"));
 		}
 		catch(IOException e){}
 		
