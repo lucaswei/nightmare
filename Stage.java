@@ -12,16 +12,12 @@ public class Stage{
 	int PC = 0;
 	
 	public Stage(String stageName){
-		try{
-			FileReader reader = new FileReader(stageName);
-			ImageMapper mapper = new ImageMapper(reader);
-			images = mapper.get();
-	
-			InstructionParser parser = new InstructionParser(reader);
-			instructions = parser.get();
-		}
-		catch(FileNotFoundException e){
-		}
+		String path = "map/" + stageName + "/";
+		ImageMapper mapper = new ImageMapper(path);
+		images = mapper.get();
+
+		InstructionParser parser = new InstructionParser(path);
+		instructions = (Instruction[][])parser.get();
 	}
 	public Instruction[] get(){
 		return instructions[PC];
@@ -38,22 +34,31 @@ public class Stage{
 }
 
 class ImageMapper{
+	String path;
 	BufferedReader reader;
-	public ImageMapper(FileReader map){
-		reader = new BufferedReader(map);
-		mapImages(reader);
+	public ImageMapper(String path){
+		images = new ArrayList<Image>();
+		this.path = path;
+		try{
+			reader = new BufferedReader(new FileReader(path+"map"));
+			mapImages(reader);
+		}
+		catch(FileNotFoundException e){
+			System.err.println("File not found");
+		}
 	}
 	public Image[] get(){
-		return (Image[])images.toArray();
+		Image[] array = new Image[1];
+		return images.toArray(array);
 	}
 	private ArrayList<Image> images;
 	private Image background;
 	private void mapImages(BufferedReader reader){
-		String line;
+		String line = null;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
-				int time = tokens.nextInt();
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
 				if(statement == "IMAGE"){
 					stateImage();
@@ -61,27 +66,28 @@ class ImageMapper{
 			}
 		}
 		catch(IOException e){
+			System.err.println("Error statement:"+line);
 			return;
 		}
 	}
 	
 	private void stateImage(){
+		String imagePath = path + "image/";
 		String line;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
-				int time = tokens.nextInt();
 				String statement = tokens.next();
 				if(statement == "IMG"){
 					int imageId = tokens.nextInt();
 					String imageName = tokens.next();
-					File file = new File("image/" + imageName);
+					File file = new File(imagePath + imageName);
 					Image img = ImageIO.read(file);
 					images.add(img);
 				}
 				else if(statement == "BG"){
 					String imageName = tokens.next();
-					File file = new File("image/" + imageName);
+					File file = new File(imagePath + imageName);
 					background = ImageIO.read(file);
 				}
 				else if(statement == "END"){
@@ -90,6 +96,7 @@ class ImageMapper{
 			}
 		}
 		catch(IOException e){
+			System.err.println("Can not read");
 			return;
 		}
 	}
@@ -104,36 +111,48 @@ class InstructionParser{
 	int bulletId = 0;
 	int wave = 0;
 	
-	public InstructionParser(FileReader map){
-		reader = new BufferedReader(map);
-		parseInstruction();
+	public InstructionParser(String path){
+		instructions = new ArrayList<ArrayList<Instruction>>();
+		try{
+			reader = new BufferedReader(new FileReader(path + "map"));
+			parseInstruction();
+		}
+		catch(FileNotFoundException e){
+			System.err.println("File not found");
+		}
 	}
 	public Instruction[][] get(){
-		ArrayList<Instruction>[] inter = (ArrayList<Instruction>[])instructions.toArray();
-		Instruction[][] out = new Instruction[inter.length][];
-		for(int i=0;i<inter.length;i++){
-			out[i] = (Instruction[])inter[i].toArray();
+		int length = instructions.size();
+		Instruction[][] out = new Instruction[length][];
+		for(int i=0;i<length;i++){
+			ArrayList<Instruction> array = instructions.get(i);
+			out[i] = (Instruction[])array.toArray();
 		}
+		
 		return out;
 	}
 	private void parseInstruction(){
 		ArrayList<ArrayList<Instruction>> instructions;
 		String line;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
-				int time = tokens.nextInt();
+				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
 				if(statement == "PARTA"){
+					int time = tokens.nextInt();
 					statePart(time);
 				}
 				else if(statement == "PARTB"){
+					int time = tokens.nextInt();
 					statePart(time);
 				}
 				else if(statement == "BOSSA"){
+					int time = tokens.nextInt();
 					stateBoss(time);
 				}
 				else if(statement == "BOSSB"){
+					int time = tokens.nextInt();
 					stateBoss(time);
 				}
 			}
@@ -147,7 +166,7 @@ class InstructionParser{
 		String line;
 		int time;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "GROUP"){
@@ -181,7 +200,7 @@ class InstructionParser{
 		arguments[1] = Integer.toString(id);
 		
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "TYPE"){
@@ -216,7 +235,7 @@ class InstructionParser{
 	private void stateShoot(int baseTime,int enemyId){
 		String line;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "BULLET"){
@@ -248,7 +267,7 @@ class InstructionParser{
 		arguments[1] = Integer.toString(enemyId);
 		
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "TYPE"){
@@ -281,7 +300,7 @@ class InstructionParser{
 		String line;
 		String[] arguments = new String[9];
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "Route"){
@@ -341,7 +360,7 @@ class InstructionParser{
 		
 		String line;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "TYPE"){
@@ -374,7 +393,7 @@ class InstructionParser{
 		String[] arguments = new String[9];
 		String line;
 		try{
-			while((line = reader.readLine()) != null){
+			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
 				if(statement == "MOVE"){
