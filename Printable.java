@@ -57,7 +57,7 @@ class Hero extends Plane{
 		/*set bullet information*/
 		this.BULLETRADIUS  = 8;
 		this.BULLETIMAGEID = 17;
-		this.BULLETSPEED   = 5;
+		this.BULLETSPEED   = 25;
 		/*                      */
 	}
 	
@@ -68,7 +68,6 @@ class Hero extends Plane{
 		if(source.check("SLOW"))
 			speed = slowSpeed;
 		if(source.check("UP")){
-			System.out.println("UP");
 			if(y-speed>=0)
 				y = y-speed;
 		}
@@ -99,7 +98,6 @@ class Hero extends Plane{
 			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0);
 			int x = (int)position.getX();
 			int y = (int)position.getY()-10;
-			System.out.println(position.getY()+"\t"+y);
 			Point destiny = new Point(x, y);
 			Route bulletRoute = RouteFactory.getRoute(position, destiny, BULLETSPEED, "linear");
 			bullet.setRoute(bulletRoute);

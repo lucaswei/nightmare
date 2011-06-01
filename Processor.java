@@ -110,6 +110,18 @@ public class Processor implements Runnable{
 			}
 			*/
 		}
+		for(Bullet bullet : playerBulletList){
+			if(bullet ==null)
+				continue;
+			
+			bullet.move();
+			position = bullet.getPosition();
+			/*	
+			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
+				//bulletList.remove(bullet);
+			}
+			*/
+		}
 	}
 	private void calcEnemy(){
 		Point position;
@@ -138,7 +150,10 @@ public class Processor implements Runnable{
 		for(Bullet bullet : playerBulletList){
 			if(bullet == null)
 				continue;
-			for(Enemy enemy: enemyList){
+			
+			Object[] enemies = enemyList.toArray();
+			for(int i=0;i<enemies.length;i++){
+				Enemy enemy = (Enemy)enemies[i];
 				if(enemy == null)
 					continue;
 				if(bullet.collision(enemy)){

@@ -42,7 +42,7 @@ PARTA 00000
 		END
 	ENEMY 003
 		TYPE normal
-		POSITION 0,150
+		POSITION 450,150
 		MOVE
 			ROUTE 0 1 line global 450,150 0
 			ROUTE 0 2 line global 450,0   0 
