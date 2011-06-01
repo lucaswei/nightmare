@@ -83,7 +83,7 @@ public class GMenu implements KeyListener{
 										Nightmare.newGame(game,stage,"Rio");
 										break;
 									case KeyEvent.VK_ESCAPE://Back to Menu
-										game.removeKeyListener(this);		
+										game.removeKeyListener(this);
 										drawMenu();
 										break;
 								}
