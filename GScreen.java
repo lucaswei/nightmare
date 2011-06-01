@@ -205,8 +205,6 @@ public class GScreen implements Runnable{
 	
 	private void drawPlayArea(Image img, int dx, int dy){ 
 		
-		System.out.println("123");
-		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
@@ -219,8 +217,6 @@ public class GScreen implements Runnable{
 	
 	
 	private void drawPauseBg(){
-
-		System.out.println("123");
 		
 		try{
 			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));

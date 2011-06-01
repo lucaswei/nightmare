@@ -55,7 +55,8 @@ public class Processor implements Runnable{
 					/* do not use i */
 					for(int j=bulletList.size();j<bulletId;j++)
 						bulletList.add(null);
-					bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType) );
+					Bullet bullet = BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType);
+					bulletList.add(bulletId,bullet);
 				}
 			}
 			else if(instType.equals("route")){
