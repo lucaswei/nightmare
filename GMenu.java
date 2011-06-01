@@ -36,13 +36,27 @@ public class GMenu implements KeyListener{
 		
 		canvas.setBounds(0, 0, 800, 600);
 		game.cp.add(canvas);
+		g = canvas.getGraphics();
+		canvas.setFocusable(false);
 		
 		drawMenu();
-		
+		/*
+		FocusListener listener = new FocusListener(){
+			public void focusGained(FocusEvent event){
+				System.out.println("GAIN");
+			}
+			public void focusLost(FocusEvent event){
+				System.out.println("LOSE");
+				Component com = event.getOppositeComponent();
+				System.out.println(com == game.cp);
+			}
+		};
+		canvas.addFocusListener(listener);
+		*/
 	}
 
 	public void keyPressed(KeyEvent e){
-		
+		System.out.println("Press");
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_UP:
 				keyFlag--;

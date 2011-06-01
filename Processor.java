@@ -146,8 +146,9 @@ public class Processor implements Runnable{
 			if(bullet.collision(player)){
 				int life = player.crash();
 				eventConnect.dispatch("crash");
-				if(life < 0)
-					eventConnect.dispatch("end");
+				if(life < 0){
+					//eventConnect.dispatch("end");
+				}
 			}
 		}
 		for(Bullet bullet : playerBulletList){

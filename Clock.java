@@ -6,7 +6,7 @@ class ExceedException extends Exception{}
 class Clock implements GameEventListener{
 	public final static int START = 1;
 	public final static int STOP  = 0;
-	public final static int PAUSE = 0;
+	public final static int PAUSE = 2;
 	private int status;
 	
 	private Timer timer;

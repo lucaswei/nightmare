@@ -5,7 +5,6 @@ public class Nightmare{
 	public static void main(String[] args){
 		//Main menu
 		GMenu menu = new GMenu();
-		//
 	}
 	public static void newGame(GWindow window,Stage stage,String hero){
 		Clock clock = new Clock(32);

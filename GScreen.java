@@ -18,33 +18,35 @@ public class GScreen implements Runnable,GameEventListener{
 	private Image playBg,scoreBg,pauseBg;
 	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setImg;
-	private Panel play,scoreBar;
+	private Component play,scoreBar;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
 	private EventConnect checkKeyEvent;
 	private KeyListener key;
 	private Hero player;
+	private Graphics playGraphics;
+	
+	private Image buffer;
+	private Graphics bufferGraphics;
 	
 	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent,Hero player){
 		
-		this.game = game;
-		this.key = key;
+		this.game  = game;
+		this.key   = key;
 		this.stage = stage;
 		this.checkKeyEvent = checkKeyEvent;
 		this.player = player;
-		life = player.getLife();
+		this.queue = queue;
 		
 		/*
 		 * set playArea
 		 */
-		play = new Panel(){
-			public void paint(Graphics g){
-				g.drawImage(setPlayImg, 0, 0, null);
+		play = new Canvas(){
+			public void update(Graphics g){
+				System.out.println("OUT");
+				super.paint(g);
 			}
-			public void update(Graphics g) { 
-		        this.paint(g);  // call paint() 
-		    }
 		};
 		
 		play.setBounds(0,0,450,600);
@@ -68,36 +70,48 @@ public class GScreen implements Runnable,GameEventListener{
 		pause.setBounds(0,0,450,600);*/
 
 		setPlayImg = new BufferedImage(450,600,BufferedImage.TYPE_INT_ARGB);
-		setImg = new BufferedImage(350,600,BufferedImage.TYPE_INT_ARGB);
-			 
-		game.addKeyListener(key);
+		setImg     = new BufferedImage(350,600,BufferedImage.TYPE_INT_ARGB);
 		
-		this.queue = queue;
+		try{
+			playBg = ImageIO.read(new File("map/default/image/testbg.gif"));
+		}
+		catch(IOException e){
+			System.err.println("Background can't load");
+		}
+		
+		 
 		
 		game.cp.add(play);
 		game.cp.add(scoreBar);
 
-		drawPlayBg();
+		playGraphics = play.getGraphics();
+		buffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
+		bufferGraphics = buffer.getGraphics();
 		
+		game.addKeyListener(key);
+		
+		life = player.getLife();
 	}
 
 	public void run(){
 		while(true){
-			drawPlayBg();
 			drawscoreBg();
 			
 			Printable[] list = null;
 			try {
 				list = queue.take();
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+				System.err.println("Thread is interupted");
+			}
 			
+			/* Background */
+			bufferGraphics.drawImage(playBg,0,0,null);
 			
+			/* Printables */
 			int length = list.length;
-			
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];
-				
 				int id = fly.getImageId();
 				image = stage.getImage(id);
 				if(image != null){
@@ -109,12 +123,13 @@ public class GScreen implements Runnable,GameEventListener{
 					int dx = praseInt(targetCoord.getX()) - imageWidth/2;
 					int dy = praseInt(targetCoord.getY()) - imageHeight/2;
 					
-					drawPlayArea(image, dx, dy);
-				}
-				else{
-					System.out.println(image == null);
+					bufferGraphics.drawImage(image, dx, dy,null);
+					
 				}			
-			}		
+			}
+			
+			/* Paste buffer */
+			playGraphics.drawImage(buffer,0,0,null);
 			
 			if(state == PAUSE){
 				game.removeKeyListener(key);
@@ -182,22 +197,6 @@ public class GScreen implements Runnable,GameEventListener{
 		
 	}
 	
-	public void drawPlayBg(){ 
-		try{
-			playBg = ImageIO.read(new File("map/default/image/testbg.gif"));
-		}
-		catch(IOException e){}
-		
-		Graphics g = play.getGraphics();
-		Graphics gg = setPlayImg.getGraphics();
-
-		g.drawImage(playBg,0,0,450,600,null);
-		gg.drawImage(playBg,0,0,450,600,null);
-
-		g.dispose();
-		gg.dispose();
-	}
-	
 	public void drawscoreBg(){
 		
 		Image lifeImg = null;
@@ -217,18 +216,6 @@ public class GScreen implements Runnable,GameEventListener{
 			g.drawImage(lifeImg, 95 + 25*i, 80, null);
 			gg.drawImage(lifeImg, 95 + 25*i, 80,null);
 		}
-
-		g.dispose();
-		gg.dispose();
-	}
-	
-	public void drawPlayArea(Image img, int dx, int dy){ 
-		
-		Graphics g = play.getGraphics();
-		Graphics gg = setPlayImg.getGraphics();
-
-		g.drawImage(img, dx, dy, null);
-		gg.drawImage(img, dx, dy, null);
 
 		g.dispose();
 		gg.dispose();
