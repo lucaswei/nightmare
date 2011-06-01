@@ -144,8 +144,10 @@ public class Processor implements Runnable{
 			if(bullet == null)
 				continue;
 			if(bullet.collision(player)){
-				if(player.crash()==0)
-					eventConnect.setEnd(true);
+				int life = player.crash();
+				eventConnect.dispatch("crash");
+				if(life < 0)
+					eventConnect.dispatch("end");
 			}
 		}
 		for(Bullet bullet : playerBulletList){
@@ -313,7 +315,7 @@ public class Processor implements Runnable{
 	}
 	public void stateCheck(){
 		if(player.isPause()){
-			eventConnect.setPause(true);
+			eventConnect.diapatch("pause");
 			clock.pause();
 		}
 	}
@@ -350,6 +352,7 @@ public class Processor implements Runnable{
 		this.time = 0;
 		this.HEIGHT = 600;
 		this.WIDTH  = 450;
+		
 	}
 }
 

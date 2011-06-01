@@ -235,6 +235,7 @@ class InstructionParser{
 				Scanner tokens = new Scanner(line);
 				if(!tokens.hasNext())continue;
 				String statement = tokens.next();
+				/*
 				if(statement.equals("GROUP")){
 						time  = tokens.nextInt();
 					int times = tokens.nextInt();
@@ -244,7 +245,9 @@ class InstructionParser{
 						time += inter;
 					}
 				}
-				else if(statement.equals("ENEMY")){
+				
+				else*/
+				if(statement.equals("ENEMY")){
 					time  = tokens.nextInt();
 					stateEnemy(baseTime + time);
 				}

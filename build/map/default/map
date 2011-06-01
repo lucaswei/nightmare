@@ -28,11 +28,11 @@ PARTA 00000
 		TYPE normal
 		POSITION 0,150
 		MOVE
-			ROUTE 0 1 line global 60,150 0
-			ROUTE 0 2 line global 60,0   0 
+			ROUTE 0 5 line global 100,150 0
+			ROUTE 10 10 line global 100,0   0 
 			END
 		SHOOT
-			BULLET 0 3 10 5
+			BULLET 10 3 10 5
 				TYPE normal
 				MOVE
 					ROUTE 0 10 fan player 0,0 0 50
@@ -44,14 +44,63 @@ PARTA 00000
 		TYPE normal
 		POSITION 450,150
 		MOVE
-			ROUTE 0 1 line global 450,150 0
-			ROUTE 0 2 line global 450,0   0 
+			ROUTE 0 5 line global 350,150 0
+			ROUTE 10 10 line global 350,0   0 
 			END
 		SHOOT
-			BULLET 0 3 10 5
+			BULLET 10 3 10 5
 				TYPE normal
 				MOVE
 					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	ENEMY 0030
+		TYPE normal
+		POSITION 0,150
+		MOVE
+			ROUTE 0 5 line global 100,150 0
+			ROUTE 10 10 line global 100,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	ENEMY 0030
+		TYPE normal
+		POSITION 450,150
+		MOVE
+			ROUTE 0 5 line global 350,150 0
+			ROUTE 10 10 line global 350,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	END
+	ENEMY 0040
+		TYPE small
+		POSITION 225,0
+		MOVE
+			ROUTE 0 5 line self 0,1 0
+			ROUTE 10 10 line global 350,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan self 0,1 0 50
 					END
 				END
 			END

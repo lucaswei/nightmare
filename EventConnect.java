@@ -1,22 +1,17 @@
 public class EventConnect{
-	private boolean pause;
-	private boolean end;
+	private ArrayList<GameEventListener> listeners;
 
 	public EventConnect(){
-		pause = false;
-		end   = false;
+		listeners = new ArrayList<GameEventListener>();
 	}
-	public boolean isPause(){
-		return pause;
+	public void addEventListener(GameEventListener listener){
+		this.listeners.add(listener);
 	}
-	public boolean isEnd(){
-		return end;
-	}
-	public void setPause(boolean toggle){
-		pause = toggle;
-	}
-	public void setEnd(boolean toggle){
-		end = toggle;
-	}
+	public void dispatch (String event){
+		for(GameEventListener listener: listeners){
+			listener.trigger(event);
+		}
 }
-
+interface GameEventListener {
+	void trigger(String event);
+}

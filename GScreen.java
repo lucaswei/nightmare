@@ -84,7 +84,7 @@ public class GScreen implements Runnable{
 
 	public void run(){
 		while(true){
-			
+			drawPlayBg();
 			game.repaint();
 			
 			Printable[] list = null;
