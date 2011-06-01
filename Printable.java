@@ -108,7 +108,7 @@ class Hero extends Plane{
 
 	public int crash(){
 		life--;
-		position.setLocation(225, 500);
+		position.setLocation(225, 580);
 		return life;
 	}
 	public int getPower(){

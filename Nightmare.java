@@ -18,8 +18,7 @@ public class Nightmare{
 		
 		GScreen output = new GScreen(window,channel,keyboard,stage,connect);
 		
-		connect.addEventListener(Processor);
-		connect.addEventListener(GScreen);
+		connect.addEventListener(output);
 		
 		
 		Thread processorThread = new Thread(processor);

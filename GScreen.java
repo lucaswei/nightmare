@@ -6,11 +6,12 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.io.*;
 
-public class GScreen implements Runnable{
+public class GScreen implements Runnable,GameEventListener{
 
-	private static final long serialVersionUID = -2440508607507254216L;
-	
-	
+
+	private int state = 0;
+	private static int PAUSE = 1;
+	private static int END = 2;
 	
 	private Image image;
 	private Image playBg,scoreBg,pauseBg;
@@ -88,7 +89,7 @@ public class GScreen implements Runnable{
 			
 			
 			int length = list.length;
-			if(checkKeyEvent.isPause()){
+			if(state == PAUSE){
 				System.out.println("123");
 
 				game.removeKeyListener(key);
@@ -127,11 +128,10 @@ public class GScreen implements Runnable{
 	public void paused(){
 
 		drawPauseMenu(1);
-			
-		game.addKeyListener(new KeyAdapter(){
+		KeyAdapter pauseKeyAdapter = new KeyAdapter(){
+			private int keyFlag = 1;
 			public void keyPressed(KeyEvent e){
 			
-			int keyFlag = 1;
 			
 			switch(e.getKeyCode()){
 				case KeyEvent.VK_UP:
@@ -144,7 +144,6 @@ public class GScreen implements Runnable{
 					break;
 				case KeyEvent.VK_DOWN:
 					keyFlag++;
-				
 					if(keyFlag > 3)
 						keyFlag = 3;
 					
@@ -175,7 +174,9 @@ public class GScreen implements Runnable{
 			}
 			public void keyReleased(KeyEvent e){}
 			public void keyTyped(KeyEvent e){}
-		});		
+		};
+		
+		game.addKeyListener(pauseKeyAdapter);		
 		//}
 	}
 	
@@ -276,8 +277,18 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
+	
 	public int praseInt(double value){
 		return (new Double(value)).intValue();
+	}
+
+	public void trigger(String event){
+		if(event.equals("pause")){
+			state = PAUSE;
+		}
+		if(event.equals("end")){
+			state = END;
+		}
 	}
 }
 

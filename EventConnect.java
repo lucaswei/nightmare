@@ -1,3 +1,4 @@
+import java.util.*;
 public class EventConnect{
 	private ArrayList<GameEventListener> listeners;
 
@@ -11,7 +12,9 @@ public class EventConnect{
 		for(GameEventListener listener: listeners){
 			listener.trigger(event);
 		}
+	}
 }
+
 interface GameEventListener {
 	void trigger(String event);
 }

@@ -63,7 +63,7 @@ class Clock implements GameEventListener{
 			timer.cancel();
 		}
 	}
-	public trigger(String event){
+	public void trigger(String event){
 		if(event.equals("pause")){
 			pause();
 		}

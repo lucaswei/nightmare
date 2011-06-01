@@ -315,7 +315,7 @@ public class Processor implements Runnable{
 	}
 	public void stateCheck(){
 		if(player.isPause()){
-			eventConnect.diapatch("pause");
+			eventConnect.dispatch("pause");
 			clock.pause();
 		}
 	}
