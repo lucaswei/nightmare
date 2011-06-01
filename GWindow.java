@@ -42,7 +42,10 @@ public class GWindow {
 	public void addKeyListener(KeyAdapter keyAdapter) {
 		game.addKeyListener(keyAdapter);
 	}
-	
+		
+	public void removeKeyListener(KeyListener key) {
+		game.removeKeyListener(key);
+	}
 	public void removeKeyListener(GMenu menu) {
 		game.removeKeyListener(menu);
 	}
@@ -51,15 +54,15 @@ public class GWindow {
 		game.removeKeyListener(keyAdapter);
 	}
 
-	public void removeKeyListener(GScreen gScreen) {
-		game.removeKeyListener((KeyListener) gScreen);
-		
-	}
+
 
 	public void repaint() {
 		// TODO Auto-generated method stub
 		game.repaint();
 	}
+
+
+
 
 
 

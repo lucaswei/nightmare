@@ -10,13 +10,13 @@ public class GScreen implements Runnable{
 
 	private static final long serialVersionUID = -2440508607507254216L;
 	
-	private int keyFlag = 1;
+	
+	
 	private Image image;
 	private Image playBg,scoreBg,pauseBg;
 	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setImg;
-	private Graphics graph;
-	private Panel play,scoreBar,whenPause;
+	private Panel play,scoreBar;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	protected GWindow game;
@@ -54,21 +54,15 @@ public class GScreen implements Runnable{
 		
 		scoreBar.setBounds(450,0,800,600);
 		
-		whenPause = new Panel();
-		whenPause.setBounds(0,0,450,600);
+		/*pause = new Panel(){
+			public void paint(Graphics g){
+				g.drawImage(setImg, 0, 0, null);
+			}
+		};
+		pause.setBounds(0,0,450,600);*/
 
-		setPlayImg = new BufferedImage(play.getWidth(),play.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		setImg = new BufferedImage(scoreBar.getWidth(),scoreBar.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		
-		try{
-			a = ImageIO.read(new File("map/default/image/continue1.png"));
-			b = ImageIO.read(new File("map/default/image/continue2.png"));
-			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
-			d = ImageIO.read(new File("map/default/image/exitgame2.png"));
-			e = ImageIO.read(new File("map/default/image/restart1.png"));
-			f = ImageIO.read(new File("map/default/image/restart2.png"));
-		}
-		catch(IOException e){}
+		setPlayImg = new BufferedImage(450,600,BufferedImage.TYPE_INT_ARGB);
+		setImg = new BufferedImage(350,600,BufferedImage.TYPE_INT_ARGB);
 			 
 		game.addKeyListener(key);
 		
@@ -85,7 +79,7 @@ public class GScreen implements Runnable{
 	public void run(){
 		while(true){
 			
-			game.repaint();
+			drawPlayBg();
 			
 			Printable[] list = null;
 			try {
@@ -94,11 +88,12 @@ public class GScreen implements Runnable{
 			
 			
 			int length = list.length;
-			
 			if(checkKeyEvent.isPause()){
 				System.out.println("123");
-				
-				//game.removeKeyListener(this);
+
+				game.removeKeyListener(key);
+				//game.cp.remove(play);
+				//game.cp.add(pause);
 				paused();
 				//game.addKeyListener(key);
 			}
@@ -123,60 +118,69 @@ public class GScreen implements Runnable{
 				else{
 					System.out.println(image == null);
 				}
+				
 			}
+
 		}
 
 	}
 
 	public void paused(){
-		drawPauseBg();
-		
-		System.out.println("123");
-		
+
+		drawPauseMenu(1);
+			
 		game.addKeyListener(new KeyAdapter(){
 			public void keyPressed(KeyEvent e){
-				switch(e.getKeyCode()){
-					case KeyEvent.VK_UP:
-						keyFlag--;
+			
+			int keyFlag = 1;
+			
+			switch(e.getKeyCode()){
+				case KeyEvent.VK_UP:
+					keyFlag--;
+				
+					if(keyFlag < 1)
+						keyFlag = 1;
 					
-						if(keyFlag < 1)
-							keyFlag = 1;
-						
-						drawPauseMenu(keyFlag);
-						
-						break;
-					case KeyEvent.VK_DOWN:
-						keyFlag++;
+					drawPauseMenu(keyFlag);		
+					break;
+				case KeyEvent.VK_DOWN:
+					keyFlag++;
+				
+					if(keyFlag > 3)
+						keyFlag = 3;
 					
-						if(keyFlag > 3)
-							keyFlag = 3;
-						
-						drawPauseMenu(keyFlag);
-						
-						break;
-					case KeyEvent.VK_ENTER:
-						switch(keyFlag){
-							case 1:
-								break;
-							case 2:
-								break;
-							case 3:
-								break;
-							default:break;
-						}
-						break;
-					case KeyEvent.VK_ESCAPE:
-						game.removeKeyListener(this);
-						break;
+					drawPauseMenu(keyFlag);
+					break;
+				case KeyEvent.VK_ENTER:
+					switch(keyFlag){
+						case 1:
+							
+							break;
+						case 2:
+							break;
+						case 3:
+							break;
+						default:break;
+					}
+					break;
+				case KeyEvent.VK_ESCAPE:
+					game.removeKeyListener(this);
+					game.addKeyListener(key);
+					//game.cp.remove(pause);
+					//game.cp.add(play);
+					break;
+				default:
+					System.out.println("No this operator");
+					break;
 				}
 			}
 			public void keyReleased(KeyEvent e){}
 			public void keyTyped(KeyEvent e){}
-		});
-		
+		});		
+		//}
 	}
 	
-	private void drawPlayBg(){ 
+	public void drawPlayBg(){ 
 		try{
 			playBg = ImageIO.read(new File("map/default/image/testbg.gif"));
 		}
@@ -192,7 +196,7 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	private void drawscoreBg(){
+	public void drawscoreBg(){
 		try{
 			scoreBg = ImageIO.read(new File("map/default/image/scroeBg.png"));
 		}
@@ -208,7 +212,7 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	private void drawPlayArea(Image img, int dx, int dy){ 
+	public void drawPlayArea(Image img, int dx, int dy){ 
 		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
@@ -220,34 +224,26 @@ public class GScreen implements Runnable{
 		gg.dispose();
 	}
 	
-	
-	private void drawPauseBg(){
+	public void drawPauseMenu(int keyFlag){
+		
+		Graphics g = play.getGraphics();
+		Graphics gg = setPlayImg.getGraphics();
 		
 		try{
-			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));
+			pauseBg = ImageIO.read(new File("map/default/image/pauseBg.png"));
+			a = ImageIO.read(new File("map/default/image/continue1.png"));
+			b = ImageIO.read(new File("map/default/image/continue2.png"));
+			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
+			d = ImageIO.read(new File("map/default/image/exitgame2.png"));
+			e = ImageIO.read(new File("map/default/image/restart1.png"));
+			f = ImageIO.read(new File("map/default/image/restart2.png"));
 		}
-		catch(IOException e){}
+		catch(IOException e){
+			System.out.println("no image");
+		}
 		
-		Graphics g = play.getGraphics();
-		Graphics gg = setPlayImg.getGraphics();
-
-		g.drawImage(pauseBg, 0, 0, null);
-		g.drawImage(b, 80, 300, null);
-		g.drawImage(c, 80, 350, null);
-		g.drawImage(e, 80, 400, null);
-		gg.drawImage(pauseBg, 0, 0, null);
-		gg.drawImage(b, 80, 300, null);
-		gg.drawImage(c, 80, 350, null);
-		gg.drawImage(e, 80, 400, null);
-		
-		g.dispose();
-		gg.dispose();
-	}
-	
-	private void drawPauseMenu(int keyFlag){
-		
-		Graphics g = play.getGraphics();
-		Graphics gg = setPlayImg.getGraphics();
+		//g.drawImage(pauseBg, 0, 0, null);
+		//gg.drawImage(pauseBg, 0, 0, null);
 		
 		switch(keyFlag){
 			case 1:
