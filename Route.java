@@ -43,6 +43,7 @@ class StraightRoute extends Route{
 		calcVector();
 	}
 	public Point move(){
+		System.out.println(x+","+y);
 		x = x+vectorX;
 		y = y+vectorY;
 		Point point = new Point((int)x, (int)y);
