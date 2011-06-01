@@ -39,9 +39,9 @@ public class Processor implements Runnable{
 			}
 			else if(instType.equals("bullet")){
 				BulletInstruction inst = insts[i];
-				if(enemyList.get(inst.getEnemyId()) != null){
+				int enemyId = inst.getEnemyId();
+				if(enemyId < enemyList.size() && enemyList.get(enemyId) != null){
 					String bulletType = inst.getBulletType();
-					int enemyId = inst.getEnemyId();
 					int bulletId= inst.getBulletId();
 					int radius = 0;
                     int power  = 0;
@@ -70,7 +70,7 @@ public class Processor implements Runnable{
 				Point  offset     = inst.getPointOffset();
 				Point target;
 				if(targetType.equals("enemy")){
-					if(enemyList.get(targetId) != null){
+					if(targetId < enemyList.size() && enemyList.get(targetId) != null){
 						Enemy enemy;
 						enemy = enemyList.get(targetId);
 						target = calcTarget(enemy.getPosition(), pointRefer, pointAngle, offset);
@@ -79,7 +79,7 @@ public class Processor implements Runnable{
 					}
 				}
 				else if(targetType.equals("bullet")){
-					if(bulletList.get(targetId) != null){
+					if(targetId < bulletList.size() && bulletList.get(targetId) != null){
 						Bullet bullet;
 						bullet = bulletList.get(targetId);
 						target = calcTarget(bullet.getPosition(), pointRefer, pointAngle, offset);

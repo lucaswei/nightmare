@@ -23,8 +23,8 @@ IMAGE
 	IMG 22 24_bullet_2.png
 	END
 
-PARTA 00000
-	ENEMY 003
+PARTA 0
+	ENEMY 0
 		TYPE normal
 		POSITION 0,150
 		MOVE
@@ -40,7 +40,7 @@ PARTA 00000
 				END
 			END
 		END
-	ENEMY 003
+	ENEMY 0
 		TYPE normal
 		POSITION 450,150
 		MOVE
@@ -56,7 +56,7 @@ PARTA 00000
 				END
 			END
 		END
-	ENEMY 0030
+	ENEMY 60
 		TYPE normal
 		POSITION 0,150
 		MOVE
@@ -72,41 +72,102 @@ PARTA 00000
 				END
 			END
 		END
-	ENEMY 0030
-		TYPE normal
-		POSITION 450,150
-		MOVE
-			ROUTE 0 5 line global 350,150 0
-			ROUTE 10 10 line global 350,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	END
-	ENEMY 0040
+	ENEMY 60
 		TYPE small
+		POSITION 450,150
+		MOVE
+			ROUTE 0 5 line global 350,150 0
+			ROUTE 10 10 line global 350,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	ENEMY 90
+		TYPE small
+		POSITION 450,150
+		MOVE
+			ROUTE 0 5 line global 350,150 0
+			ROUTE 10 10 line global 350,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	ENEMY 90
+		TYPE normal
+		POSITION 0,150
+		MOVE
+			ROUTE 0 5 line global 100,150 0
+			ROUTE 10 10 line global 100,0   0 
+			END
+		SHOOT
+			BULLET 10 3 10 5
+				TYPE normal
+				MOVE
+					ROUTE 0 10 fan player 0,0 0 50
+					END
+				END
+			END
+		END
+	ENEMY 120
+		TYPE normal
+		POSITION 0,150
+		MOVE
+			ROUTE 0 5 line self 100,0 0
+			END
+		SHOOT
+			BULLET 10 5 20 3
+				TYPE small
+				MOVE
+					ROUTE 0 10 fan self 0,10 0 50
+					END
+				END
+			END
+		END
+	ENEMY 120
+		TYPE normal
+		POSITION 450,150
+		MOVE
+			ROUTE 0 5 line self -100,0 0
+			END
+		SHOOT
+			BULLET 10 5 20 3
+				TYPE small
+				MOVE
+					ROUTE 0 10 fan self 0,10 0 50
+					END
+				END
+			END
+		END
+	ENEMY 180
+		TYPE normal
 		POSITION 225,0
 		MOVE
-			ROUTE 0 5 line self 0,1 0
-			ROUTE 10 10 line global 350,0   0 
+			ROUTE 0 5 line self 0,10 0
+			ROUTE 20 5 stop self 0,0 0
+			ROUTE 50 5 stop self 0,-10 0
 			END
 		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
+			BULLET 10 5 20 30
+				TYPE small
 				MOVE
-					ROUTE 0 10 fan self 0,1 0 50
+					ROUTE 30 10 fan player 0,0 0 359
 					END
 				END
 			END
 		END
-	END
-
+	END	
 BOSSA 01000
 	END
 	

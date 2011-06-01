@@ -447,6 +447,20 @@ class InstructionParser{
 				addInst(baseTime,routeInstruction);
 			}
 		}
+		else if(type.equals("stop")){
+			arguments[3] = "stop";
+			arguments[5] = tokens.next();
+			arguments[6] = tokens.next();
+			
+			int offsetAngle = tokens.nextInt();
+	
+			for(int i=0;i<amount;i++){
+				arguments[2] = Integer.toString(targetId + i);
+				arguments[7] = Integer.toString(offsetAngle);
+				Instruction routeInstruction = new Instruction(arguments);
+				addInst(baseTime,routeInstruction);
+			}
+		}
 	}
 	
 	private void stateBoss(int baseTime){
