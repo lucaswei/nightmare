@@ -31,9 +31,11 @@ public class Processor implements Runnable{
 				EnemyInstruction inst = insts[i];
 				int enemyId = inst.getEnemyId();
 				Enemy e = EnemyFactory.getEnemy(inst);
-				for(i=enemyList.size();i<enemyId;i++)
+				/* do not use i */
+				for(int j=enemyList.size();j<enemyId;j++)
 					enemyList.add(null);
-				enemyList.add(enemyId, EnemyFactory.getEnemy(inst) );
+				Enemy enemy =  EnemyFactory.getEnemy(inst);
+				enemyList.add(enemyId, enemy );
 			}
 			else if(instType.equals("bullet")){
 				BulletInstruction inst = insts[i];
@@ -50,7 +52,8 @@ public class Processor implements Runnable{
 						imageId = inst.getImageId();
 					}
 					Enemy enemy = enemyList.get(enemyId);
-					for(i=bulletList.size();i<bulletId;i++)
+					/* do not use i */
+					for(int j=bulletList.size();j<bulletId;j++)
 						bulletList.add(null);
 					bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType) );
 				}
@@ -84,10 +87,12 @@ public class Processor implements Runnable{
 					}
 				}
 			}
+			/*
 			else if(instType.equals("end")){
 				System.out.println("The End");
 				clock.stop();
 			}
+			*/
 		}
 	}
 	private void calcBullet(){

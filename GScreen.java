@@ -26,6 +26,7 @@ public class GScreen implements Runnable{
 		
 		this.game = game;
 		this.key = key;
+		this.stage = stage;
 		this.checkKeyEvent = checkKeyEvent;
 		/*
 		 * set playArea
