@@ -36,6 +36,7 @@ class CircleBullet extends Bullet{
 		this.imageId  = imageId;
 		this.position = position;
 		this.radius   = radius;
+		this.bulletId = bulletId;
 	}
 	public boolean collision(Plane plain){
 		int x = (int)plain.getPosition().getX() - (int)position.getX();

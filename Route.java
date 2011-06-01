@@ -51,12 +51,14 @@ class StraightRoute extends Route{
 	private void calcVector(){
 		double deltaX;
 		double deltaY;
-		double fraction;
+		double length;
 		deltaX = self.getX()-(double)destiny.getX();
 		deltaY = self.getY()-(double)destiny.getY();
-		fraction = Math.sqrt( (double)(deltaX*deltaX+deltaY*deltaY) );
-		vectorX = (destiny.getX()-self.getX())*fraction;
-		vectorY = (destiny.getY()-self.getY())*fraction;
+		length = Math.sqrt( (double)(deltaX*deltaX+deltaY*deltaY) );
+		vectorX = (destiny.getX()-self.getX())/length * speed;
+		vectorY = (destiny.getY()-self.getY())/length * speed;
+		
+		
 	}
 }
 /*

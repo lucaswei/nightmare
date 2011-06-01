@@ -101,10 +101,14 @@ public class Processor implements Runnable{
 		for(Bullet bullet : bulletList){
 			if(bullet ==null)
 				continue;
+			
 			bullet.move();
 			position = bullet.getPosition();
-			if(position.getX() < 0 || position.getY() < 0)
-				bulletList.remove(bullet);
+			/*	
+			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
+				//bulletList.remove(bullet);
+			}
+			*/
 		}
 	}
 	private void calcEnemy(){
@@ -177,19 +181,34 @@ public class Processor implements Runnable{
 	private void recycle(){
 		int x;
 		int y;
-		for(Bullet bullet : bulletList){
+		
+		Object[] bullets = bulletList.toArray();
+		for(int i=0;i<bullets.length;i++){
+			Bullet bullet = (Bullet)bullets[i];
+			if(bullet == null)
+				continue;
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
 				bulletList.remove(bullet);
 		}
-		for(Bullet bullet : playerBulletList){
+		
+		Object[] playerBullets = playerBulletList.toArray();
+		for(int i=0;i<playerBullets.length;i++){
+			Bullet bullet = (Bullet)bullets[i];
+			if(bullet == null)
+				continue;
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
 				playerBulletList.remove(bullet);
 		}
-		for(Enemy enemy : enemyList){
+		
+		Object[] enemies = enemyList.toArray();
+		for(int i=0;i<enemies.length;i++){
+			Enemy enemy = (Enemy)enemies[i];
+			if(enemy == null)
+				continue;
 			x = (int)enemy.getPosition().getX();
 			y = (int)enemy.getPosition().getY();
 			if( calcRecycle(x, y) )
@@ -292,6 +311,7 @@ public class Processor implements Runnable{
 			calcEnemy();
 			calcPlayer();
 			collision();
+			recycle();
 			outputToScreem();
 		}
 	}

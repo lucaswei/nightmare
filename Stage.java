@@ -400,7 +400,9 @@ class InstructionParser{
 		
 		String[] arguments = new String[9];
 		arguments[0] = "route";
+		//time
 		arguments[1] = targetType;
+		//speed
 		arguments[4] = tokens.next();
 
 		String type = tokens.next();
@@ -408,6 +410,8 @@ class InstructionParser{
 			arguments[3] = "linear";
 			arguments[5] = tokens.next();
 			arguments[6] = tokens.next();
+			
+			int offsetAngle = tokens.nextInt();
 			
 			int angle = tokens.nextInt();
 	
@@ -419,6 +423,7 @@ class InstructionParser{
 			}
 			else{
 				float theta = angle/amount;
+					System.out.println(theta);
 				float startAngle = -1 * theta * ((amount - 1)/2);
 				for(int i=0;i<amount;i++){
 					arguments[2] = Integer.toString(targetId + i);
