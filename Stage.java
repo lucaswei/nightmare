@@ -136,7 +136,7 @@ class InstructionParser{
 			}
 		}
 		
-		/*dump*/
+		/*
 		int len = out.length;
 		for(int i=0;i<len;i++){
 			if(out[i] != null){
@@ -150,9 +150,14 @@ class InstructionParser{
 					if(inst.getInstType().equals("bullet")){
 						System.out.println("\t"+inst.getInstType()+"\t"+inst.getEnemyId()+"\t"+inst.getBulletId());
 					}
+					if(inst.getInstType().equals("route")){
+						System.out.println("\t"+inst.getInstType()+"\t"+inst.getTargetType()+"\t"+inst.getTargetId());
+					}
+					System.out.println("\t"+inst.getInstType());
 				}
 			}
 		}
+		*/
 		return out;
 	}
 	private void parseInstruction(){
@@ -306,7 +311,7 @@ class InstructionParser{
 				if(statement.equals("TYPE")){
 					String type  = tokens.next();
 					arguments[3] = type;
-					if(type == "custom"){
+					if(type.equals("custom")){
 						arguments[4] = tokens.next();
 						arguments[5] = tokens.next();
 						arguments[6] = tokens.next();
@@ -341,7 +346,8 @@ class InstructionParser{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement.equals("Route")){
+			
+				if(statement.equals("ROUTE")){
 					int time = tokens.nextInt();
 					for(int i=0;i<times;i++){
 						stateRoute(baseTime+time + i*interval,targetType,targetId + i*amount,amount,line);
@@ -361,16 +367,16 @@ class InstructionParser{
 		String statement = tokens.next();
 		int time = tokens.nextInt();
 		
-		
 		String[] arguments = new String[9];
 		arguments[0] = "route";
 		arguments[1] = targetType;
 		arguments[4] = tokens.next();
-		
+
 		String type = tokens.next();
-		if(type.equals("FAN")){
+		if(type.equals("fan")){
 			arguments[3] = "linear";
 			arguments[5] = tokens.next();
+			arguments[6] = tokens.next();
 			
 			int angle = tokens.nextInt();
 	
@@ -385,7 +391,7 @@ class InstructionParser{
 				float startAngle = -1 * theta * ((amount - 1)/2);
 				for(int i=0;i<amount;i++){
 					arguments[2] = Integer.toString(targetId + i);
-					arguments[6] = Integer.toString((int)(startAngle + i*theta));
+					arguments[7] = Integer.toString((int)(startAngle + i*theta));
 					Instruction routeInstruction = new Instruction(arguments);
 					addInst(baseTime,routeInstruction);
 				}

@@ -129,21 +129,21 @@ class Instruction implements
 		return arguments[5];
 	}
 	public  String getPointRefer(){
-		return arguments[6];
-	}
-	public  int    getPointAngle(){
-		return Integer.valueOf(arguments[7]);
+		return arguments[5];
 	}
 	public  Point  getPointOffset(){
-		String[] pair = arguments[7].split(",");
+		String[] pair = arguments[6].split(",");
 		int x = Integer.valueOf(pair[0]);
 		int y = Integer.valueOf(pair[1]);
 		return new Point(x,y);
 	}
+	public  int    getPointAngle(){
+		return Integer.valueOf(arguments[7]);
+	}
 	public  float  getCurveRadius(){
-		return Float.valueOf(arguments[7]);
+		return Float.valueOf(arguments[8]);
 	}
 	public  int    getCurveAngle(){
-		return Integer.valueOf(arguments[7]);
+		return Integer.valueOf(arguments[9]);
 	}
 }
