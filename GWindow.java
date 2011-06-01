@@ -56,6 +56,11 @@ public class GWindow {
 		
 	}
 
+	public void repaint() {
+		// TODO Auto-generated method stub
+		game.repaint();
+	}
+
 
 
 	

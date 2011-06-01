@@ -15,6 +15,7 @@ public class GScreen implements Runnable{
 	private Image playBg,scoreBg,pauseBg;
 	private Image a,b,c,d,e,f;
 	private BufferedImage setPlayImg,setImg;
+	private Graphics graph;
 	private Panel play,scoreBar,whenPause;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
@@ -35,6 +36,9 @@ public class GScreen implements Runnable{
 			public void paint(Graphics g){
 				g.drawImage(setPlayImg, 0, 0, null);
 			}
+			public void update(Graphics g) { 
+		        this.paint(g);  // call paint() 
+		    }
 		};
 		
 		play.setBounds(0,0,450,600);
@@ -81,7 +85,7 @@ public class GScreen implements Runnable{
 	public void run(){
 		while(true){
 			
-			drawPlayBg();
+			game.repaint();
 			
 			Printable[] list = null;
 			try {
@@ -123,7 +127,6 @@ public class GScreen implements Runnable{
 		}
 
 	}
-
 
 	public void paused(){
 		drawPauseBg();
