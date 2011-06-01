@@ -78,13 +78,8 @@ public class GScreen implements Runnable{
 
 	public void run(){
 		while(true){
-<<<<<<< HEAD
-			drawPlayBg();
-			game.repaint();
-=======
 			
 			drawPlayBg();
->>>>>>> 408affc365d970c40ea29de2052618fe7ba55613
 			
 			Printable[] list = null;
 			try {
@@ -97,10 +92,9 @@ public class GScreen implements Runnable{
 				System.out.println("123");
 
 				game.removeKeyListener(key);
-				//game.cp.remove(play);
-				//game.cp.add(pause);
+	
 				paused();
-				//game.addKeyListener(key);
+				game.addKeyListener(key);
 			}
 			
 			for(int i=0;i<length;i++){
