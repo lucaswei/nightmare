@@ -81,6 +81,8 @@ public class GScreen implements Runnable{
 	public void run(){
 		while(true){
 			
+			drawPlayBg();
+			
 			Printable[] list = null;
 			try {
 				list = queue.take();

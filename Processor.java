@@ -155,6 +155,7 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
+		output.add(player);
 		ArrayList<Printable> temp = new ArrayList<Printable>();
 		for(Printable toPrint: output){
 			if(toPrint != null)
@@ -195,7 +196,7 @@ public class Processor implements Runnable{
 		
 		Object[] playerBullets = playerBulletList.toArray();
 		for(int i=0;i<playerBullets.length;i++){
-			Bullet bullet = (Bullet)bullets[i];
+			Bullet bullet = (Bullet)playerBullets[i];
 			if(bullet == null)
 				continue;
 			x = (int)bullet.getPosition().getX();

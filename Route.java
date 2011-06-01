@@ -2,10 +2,10 @@ import java.awt.Point;
 class RouteFactory{
 	private RouteFactory(){}
 	public static Route getRoute(Point self, Point target, int speed, String routeType){
-		if(routeType == "linear"){
+		if(routeType.equals("linear")){
 			return new StraightRoute(self, target, speed);
 		}
-		else if(routeType == "stop"){
+		else if(routeType.equals("stop")){
 			return new StopRoute(self, target, speed);
 		}
 		return null;

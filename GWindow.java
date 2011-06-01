@@ -55,6 +55,9 @@ public class GWindow {
 		game.removeKeyListener((KeyListener) gScreen);
 		
 	}
+
+
+
 	
 }
 

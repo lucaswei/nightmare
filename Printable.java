@@ -30,8 +30,8 @@ abstract class Plane extends Printable{
 
 class Hero extends Plane{
 	private ActionSource source;
-	private int slowSpeed;
-	private int normalSpeed;
+	private int slowSpeed = 5;
+	private int normalSpeed = 15;
 
 	private int life;
 	private int power;
@@ -53,6 +53,7 @@ class Hero extends Plane{
 		this.source = source;
 		this.life = life;
 		this.radius = radius;
+		this.imageId = 11;
 		/*set bullet information*/
 		this.BULLETRADIUS  = 8;
 		this.BULLETIMAGEID = 17;
@@ -67,11 +68,12 @@ class Hero extends Plane{
 		if(source.check("SLOW"))
 			speed = slowSpeed;
 		if(source.check("UP")){
+			System.out.println("UP");
 			if(y-speed>=0)
 				y = y-speed;
 		}
 		else if(source.check("DOWN")){
-			if(y+speed>HEIGHT)
+			if(y+speed<HEIGHT)
 				y = y+speed;
 		}
 
@@ -96,7 +98,8 @@ class Hero extends Plane{
 			Point bulletPoint = new Point( position);
 			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0);
 			int x = (int)position.getX();
-			int y = (int)position.getY()-1;
+			int y = (int)position.getY()-10;
+			System.out.println(position.getY()+"\t"+y);
 			Point destiny = new Point(x, y);
 			Route bulletRoute = RouteFactory.getRoute(position, destiny, BULLETSPEED, "linear");
 			bullet.setRoute(bulletRoute);

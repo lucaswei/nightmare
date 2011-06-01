@@ -7,7 +7,7 @@ interface ActionSource{
 
 class KeyboardListener implements KeyListener,ActionSource{
 	private Map<String,Boolean> actions;
-	private Map<Integer,String> EventToString = new HashMap<Integer , String>();
+	private Map<Integer,String> EventToString;
 	public KeyboardListener(){
 		actions = new HashMap<String , Boolean>();
 		actions.put("UP"   ,false);
@@ -18,7 +18,8 @@ class KeyboardListener implements KeyListener,ActionSource{
 		actions.put("BOMB" ,false);
 		actions.put("PAUSE",false);
 		actions.put("SLOW" ,false);
-
+		
+		EventToString = new HashMap<Integer , String>();
 		EventToString.put(KeyEvent.VK_UP,"UP");
 		EventToString.put(KeyEvent.VK_DOWN,"DOWN");
 		EventToString.put(KeyEvent.VK_LEFT,"LEFT");
@@ -29,6 +30,7 @@ class KeyboardListener implements KeyListener,ActionSource{
 		EventToString.put(KeyEvent.VK_C,"SLOW");
 	}
 	public boolean check(String s){
+		
 		Boolean bool = actions.get(s);
 		if(bool != null)
 			return bool;
@@ -41,7 +43,7 @@ class KeyboardListener implements KeyListener,ActionSource{
 		keyToggle(e,false);
 	}
 	private void keyToggle(KeyEvent e,boolean turn){
-		String output = EventToString.get(e);
+		String output = EventToString.get(e.getKeyCode());
 		actions.put(output, turn);
 	}
 	public void keyTyped(KeyEvent e){}
