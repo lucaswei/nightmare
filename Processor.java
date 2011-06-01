@@ -20,16 +20,13 @@ public class Processor implements Runnable{
 
 	private Hero player;
 
-private static void printf(String s){ System.out.println(s);}
 	private void runInstructions(){
 		Instruction[] insts = stage.get();
 		if(insts == null){
 			return ;
 		}
-		System.out.println(insts.length);
 		for(int i=0;i<insts.length;i++){
 			String instType = insts[i].getInstType();
-			System.out.println(instType);
 			if(instType.equals("enemy")){
 				EnemyInstruction inst = insts[i];
 				int enemyId = inst.getEnemyId();
@@ -37,7 +34,6 @@ private static void printf(String s){ System.out.println(s);}
 				for(i=enemyList.size();i<enemyId;i++)
 					enemyList.add(null);
 				enemyList.add(enemyId, EnemyFactory.getEnemy(inst) );
-				//System.out.println("enemyid:"+enemyId);
 			}
 			else if(instType.equals("bullet")){
 				BulletInstruction inst = insts[i];
@@ -57,7 +53,6 @@ private static void printf(String s){ System.out.println(s);}
 					for(i=bulletList.size();i<bulletId;i++)
 						bulletList.add(null);
 					bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType) );
-					//System.out.println("bulletid:"+bulletId);
 				}
 			}
 			else if(instType.equals("route")){
