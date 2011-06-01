@@ -58,6 +58,7 @@ class SmallEnemy extends Enemy{
 		position  = point;
 		enemyId = id;
 		hp=10;
+		imageId = 14;
 	}
 }
 class NormalEnemy extends Enemy{
@@ -66,6 +67,7 @@ class NormalEnemy extends Enemy{
 		position  = point;
 		enemyId = id;
 		hp=20;
+		imageId = 16;
 	}
 }
 class LargeEnemy extends Enemy{
@@ -74,5 +76,6 @@ class LargeEnemy extends Enemy{
 		position  = point;
 		enemyId = id;
 		hp=30;
+		imageId = 15;
 	}
 }

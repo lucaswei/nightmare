@@ -8,7 +8,7 @@ public class Nightmare{
 		//
 	}
 	public static void newGame(GWindow window,Stage stage,String hero){
-		Clock clock = new Clock(100);
+		Clock clock = new Clock(32);
 		KeyboardListener keyboard = new KeyboardListener();
 		EventConnect connect = new EventConnect();
 		

@@ -20,7 +20,12 @@ public class Stage{
 		instructions = (Instruction[][])parser.get();
 	}
 	public Instruction[] get(){
-		return instructions[PC++];
+		if(PC < instructions.length){
+			return instructions[PC++];
+		}
+		else{
+			return null;
+		}
 	}
 	public void jump(String anchor){
 		Integer target = anchors.get(anchor);
@@ -48,8 +53,22 @@ class ImageMapper{
 		}
 	}
 	public Image[] get(){
-		Image[] array = new Image[1];
-		return images.toArray(array);
+		Object[] objs = images.toArray();
+		int length = objs.length;
+		Image[] out = new Image[length];
+		for(int i=0;i<length;i++){
+			out[i] = (Image)objs[i];
+		}
+		
+		/*dump*/
+		/*
+		int len = out.length;
+		for(int i=0;i<len;i++){
+			if(out[i] != null)
+				System.out.println(i+"\t"+out[i].getHeight(null));
+		}
+		*/
+		return out;
 	}
 	private ArrayList<Image> images;
 	private Image background;
@@ -78,25 +97,34 @@ class ImageMapper{
 			while((line = reader.readLine()) != null && line != ""){
 				Scanner tokens = new Scanner(line);
 				String statement = tokens.next();
-				if(statement.equals("IMG")){
-					int imageId = tokens.nextInt();
-					String imageName = tokens.next();
-					File file = new File(imagePath + imageName);
-					Image img = ImageIO.read(file);
-					images.add(img);
+				try{
+					if(statement.equals("IMG")){
+						int imageId = tokens.nextInt();
+						String imageName = tokens.next();
+						File file = new File(imagePath + imageName);
+						Image img = ImageIO.read(file);
+						
+						int size = images.size();
+						for(int i=size;i<imageId;i++)
+							images.add(null);
+						images.add(imageId,img);
+					}
+					else if(statement.equals("BG")){
+						String imageName = tokens.next();
+						File file = new File(imagePath + imageName);
+						background = ImageIO.read(file);
+					}
+					else if(statement.equals("END")){
+						return;
+					}
 				}
-				else if(statement.equals("BG")){
-					String imageName = tokens.next();
-					File file = new File(imagePath + imageName);
-					background = ImageIO.read(file);
-				}
-				else if(statement.equals("END")){
-					return;
+				catch(IOException e){
+					System.out.println("Image can't read");
 				}
 			}
 		}
 		catch(IOException e){
-			System.err.println("Can not read");
+			System.out.println("Map file can't read");
 			return;
 		}
 	}
@@ -136,6 +164,7 @@ class InstructionParser{
 			}
 		}
 		
+		/*dump*/
 		/*
 		int len = out.length;
 		for(int i=0;i<len;i++){
@@ -189,11 +218,13 @@ class InstructionParser{
 			System.out.println("IOException");
 			return;
 		}
+		/*
 		String arguments[] = {"end"};
 		Instruction endInstruction = new Instruction(arguments);
 		ArrayList<Instruction> insts = new ArrayList<Instruction>();
 		insts.add(endInstruction);
 		instructions.add(insts);
+		*/
 	}
 	
 	private void statePart(int baseTime){
@@ -370,6 +401,7 @@ class InstructionParser{
 		String[] arguments = new String[9];
 		arguments[0] = "route";
 		arguments[1] = targetType;
+		//speed
 		arguments[4] = tokens.next();
 
 		String type = tokens.next();
@@ -378,6 +410,7 @@ class InstructionParser{
 			arguments[5] = tokens.next();
 			arguments[6] = tokens.next();
 			
+			int offsetAngle = tokens.nextInt();
 			int angle = tokens.nextInt();
 	
 			if(amount == 1){
@@ -388,13 +421,27 @@ class InstructionParser{
 			}
 			else{
 				float theta = angle/amount;
-				float startAngle = -1 * theta * ((amount - 1)/2);
+				float startAngle = offsetAngle -1 * theta * ((amount - 1)/2);
 				for(int i=0;i<amount;i++){
 					arguments[2] = Integer.toString(targetId + i);
 					arguments[7] = Integer.toString((int)(startAngle + i*theta));
 					Instruction routeInstruction = new Instruction(arguments);
 					addInst(baseTime,routeInstruction);
 				}
+			}
+		}
+		else if(type.equals("line")){
+			arguments[3] = "linear";
+			arguments[5] = tokens.next();
+			arguments[6] = tokens.next();
+			
+			int offsetAngle = tokens.nextInt();
+	
+			for(int i=0;i<amount;i++){
+				arguments[2] = Integer.toString(targetId + i);
+				arguments[7] = Integer.toString(offsetAngle);
+				Instruction routeInstruction = new Instruction(arguments);
+				addInst(baseTime,routeInstruction);
 			}
 		}
 	}

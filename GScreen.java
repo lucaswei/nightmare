@@ -26,6 +26,7 @@ public class GScreen implements Runnable{
 		
 		this.game = game;
 		this.key = key;
+		this.stage = stage;
 		this.checkKeyEvent = checkKeyEvent;
 		/*
 		 * set playArea
@@ -79,6 +80,8 @@ public class GScreen implements Runnable{
 
 	public void run(){
 		while(true){
+			
+			drawPlayBg();
 			
 			Printable[] list = null;
 			try {
@@ -204,8 +207,6 @@ public class GScreen implements Runnable{
 	
 	private void drawPlayArea(Image img, int dx, int dy){ 
 		
-		System.out.println("123");
-		
 		Graphics g = play.getGraphics();
 		Graphics gg = setPlayImg.getGraphics();
 
@@ -218,8 +219,6 @@ public class GScreen implements Runnable{
 	
 	
 	private void drawPauseBg(){
-
-		System.out.println("123");
 		
 		try{
 			pauseBg = ImageIO.read(new File("map/default/image/pasueBg.png"));

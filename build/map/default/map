@@ -10,7 +10,7 @@ IMAGE
 	IMG 9 Rio1.png
 	IMG 10 Rio2.png
 	IMG 11 Rio.png
-	BG testbg.png
+	BG testbg.gif
 	IMG 13 50_enemy_1.png
 	IMG 14 50_enemy_2.png
 	IMG 15 60_enemy_1.png
@@ -32,26 +32,26 @@ PARTA 00000
 			ROUTE 0 2 line global 60,0   0 
 			END
 		SHOOT
-			BULLET 0 3 1 5
+			BULLET 0 3 10 5
 				TYPE normal
 				MOVE
-					ROUTE 0 1 fan player 0,0 0
+					ROUTE 0 10 fan player 0,0 0 50
 					END
 				END
 			END
 		END
 	ENEMY 003
 		TYPE normal
-		POSITION 0,150
+		POSITION 450,150
 		MOVE
 			ROUTE 0 1 line global 450,150 0
 			ROUTE 0 2 line global 450,0   0 
 			END
 		SHOOT
-			BULLET 0 3 1 5
+			BULLET 0 3 10 5
 				TYPE normal
 				MOVE
-					ROUTE 0 1 fan player 0,0 0
+					ROUTE 0 10 fan player 0,0 0 50
 					END
 				END
 			END

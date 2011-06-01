@@ -2,10 +2,10 @@ import java.awt.Point;
 class RouteFactory{
 	private RouteFactory(){}
 	public static Route getRoute(Point self, Point target, int speed, String routeType){
-		if(routeType == "linear"){
+		if(routeType.equals("linear")){
 			return new StraightRoute(self, target, speed);
 		}
-		else if(routeType == "stop"){
+		else if(routeType.equals("stop")){
 			return new StopRoute(self, target, speed);
 		}
 		return null;
@@ -43,6 +43,7 @@ class StraightRoute extends Route{
 		calcVector();
 	}
 	public Point move(){
+		System.out.println(x+","+y);
 		x = x+vectorX;
 		y = y+vectorY;
 		Point point = new Point((int)x, (int)y);
@@ -51,12 +52,14 @@ class StraightRoute extends Route{
 	private void calcVector(){
 		double deltaX;
 		double deltaY;
-		double fraction;
+		double length;
 		deltaX = self.getX()-(double)destiny.getX();
 		deltaY = self.getY()-(double)destiny.getY();
-		fraction = Math.sqrt( (double)(deltaX*deltaX+deltaY*deltaY) );
-		vectorX = (destiny.getX()-self.getX())*fraction;
-		vectorY = (destiny.getY()-self.getY())*fraction;
+		length = Math.sqrt( (double)(deltaX*deltaX+deltaY*deltaY) );
+		vectorX = (destiny.getX()-self.getX())/length * speed;
+		vectorY = (destiny.getY()-self.getY())/length * speed;
+		
+		
 	}
 }
 /*

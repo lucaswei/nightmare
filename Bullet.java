@@ -3,13 +3,13 @@ import java.awt.Point;
 class BulletFactory{
 	private BulletFactory(){}
 	public static Bullet getBullet(int imageId, int bulletId, int radius, int power, Point enemy, String bulletType){
-		if(bulletType == "large"){
+		if(bulletType.equals("large")){
 			return new CircleBullet(enemy, 32, 15, bulletId);
 		}
-		else if (bulletType ==  "normal"){
+		else if (bulletType.equals("normal")){
 			return new CircleBullet(enemy, 12, 21, bulletId);
 		}
-		else if(bulletType == "small"){
+		else if(bulletType.equals("small")){
 			return new CircleBullet(enemy, 8, 17, bulletId);
 		}
 		return null;
@@ -36,6 +36,7 @@ class CircleBullet extends Bullet{
 		this.imageId  = imageId;
 		this.position = position;
 		this.radius   = radius;
+		this.bulletId = bulletId;
 	}
 	public boolean collision(Plane plain){
 		int x = (int)plain.getPosition().getX() - (int)position.getX();

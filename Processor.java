@@ -31,9 +31,11 @@ public class Processor implements Runnable{
 				EnemyInstruction inst = insts[i];
 				int enemyId = inst.getEnemyId();
 				Enemy e = EnemyFactory.getEnemy(inst);
-				for(i=enemyList.size();i<enemyId;i++)
+				/* do not use i */
+				for(int j=enemyList.size();j<enemyId;j++)
 					enemyList.add(null);
-				enemyList.add(enemyId, EnemyFactory.getEnemy(inst) );
+				Enemy enemy =  EnemyFactory.getEnemy(inst);
+				enemyList.add(enemyId, enemy );
 			}
 			else if(instType.equals("bullet")){
 				BulletInstruction inst = insts[i];
@@ -50,9 +52,11 @@ public class Processor implements Runnable{
 						imageId = inst.getImageId();
 					}
 					Enemy enemy = enemyList.get(enemyId);
-					for(i=bulletList.size();i<bulletId;i++)
+					/* do not use i */
+					for(int j=bulletList.size();j<bulletId;j++)
 						bulletList.add(null);
-					bulletList.add(bulletId, BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType) );
+					Bullet bullet = BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType);
+					bulletList.add(bulletId,bullet);
 				}
 			}
 			else if(instType.equals("route")){
@@ -84,10 +88,12 @@ public class Processor implements Runnable{
 					}
 				}
 			}
+			/*
 			else if(instType.equals("end")){
 				System.out.println("The End");
 				clock.stop();
 			}
+			*/
 		}
 	}
 	private void calcBullet(){
@@ -95,10 +101,26 @@ public class Processor implements Runnable{
 		for(Bullet bullet : bulletList){
 			if(bullet ==null)
 				continue;
+			
 			bullet.move();
 			position = bullet.getPosition();
-			if(position.getX() < 0 || position.getY() < 0)
-				bulletList.remove(bullet);
+			/*	
+			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
+				//bulletList.remove(bullet);
+			}
+			*/
+		}
+		for(Bullet bullet : playerBulletList){
+			if(bullet ==null)
+				continue;
+			
+			bullet.move();
+			position = bullet.getPosition();
+			/*	
+			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
+				//bulletList.remove(bullet);
+			}
+			*/
 		}
 	}
 	private void calcEnemy(){
@@ -128,7 +150,10 @@ public class Processor implements Runnable{
 		for(Bullet bullet : playerBulletList){
 			if(bullet == null)
 				continue;
-			for(Enemy enemy: enemyList){
+			
+			Object[] enemies = enemyList.toArray();
+			for(int i=0;i<enemies.length;i++){
+				Enemy enemy = (Enemy)enemies[i];
 				if(enemy == null)
 					continue;
 				if(bullet.collision(enemy)){
@@ -145,6 +170,7 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
+		output.add(player);
 		ArrayList<Printable> temp = new ArrayList<Printable>();
 		for(Printable toPrint: output){
 			if(toPrint != null)
@@ -171,19 +197,34 @@ public class Processor implements Runnable{
 	private void recycle(){
 		int x;
 		int y;
-		for(Bullet bullet : bulletList){
+		
+		Object[] bullets = bulletList.toArray();
+		for(int i=0;i<bullets.length;i++){
+			Bullet bullet = (Bullet)bullets[i];
+			if(bullet == null)
+				continue;
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
 				bulletList.remove(bullet);
 		}
-		for(Bullet bullet : playerBulletList){
+		
+		Object[] playerBullets = playerBulletList.toArray();
+		for(int i=0;i<playerBullets.length;i++){
+			Bullet bullet = (Bullet)playerBullets[i];
+			if(bullet == null)
+				continue;
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
 				playerBulletList.remove(bullet);
 		}
-		for(Enemy enemy : enemyList){
+		
+		Object[] enemies = enemyList.toArray();
+		for(int i=0;i<enemies.length;i++){
+			Enemy enemy = (Enemy)enemies[i];
+			if(enemy == null)
+				continue;
 			x = (int)enemy.getPosition().getX();
 			y = (int)enemy.getPosition().getY();
 			if( calcRecycle(x, y) )
@@ -286,6 +327,7 @@ public class Processor implements Runnable{
 			calcEnemy();
 			calcPlayer();
 			collision();
+			recycle();
 			outputToScreem();
 		}
 	}
