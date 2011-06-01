@@ -144,7 +144,8 @@ public class Processor implements Runnable{
 			if(bullet == null)
 				continue;
 			if(bullet.collision(player)){
-				player.crash();
+				if(player.crash()==0)
+					eventConnect.setEnd(true);
 			}
 		}
 		for(Bullet bullet : playerBulletList){
@@ -311,8 +312,10 @@ public class Processor implements Runnable{
 		return new Point((int)newX,(int)newY);
 	}
 	public void stateCheck(){
-		if(player.isPause())
+		if(player.isPause()){
 			eventConnect.setPause(true);
+			clock.pause();
+		}
 	}
 	public void run(){
 		while(true){

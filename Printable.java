@@ -49,7 +49,7 @@ class Hero extends Plane{
 		this.position = position;
 		this.HEIGHT=600;
 		this.WIDTH=450;
-		power = 1;
+		this.power = 1;
 		this.source = source;
 		this.life = life;
 		this.radius = radius;
@@ -86,7 +86,7 @@ class Hero extends Plane{
 		position.setLocation(x,y);
 	}
 	public boolean isPause(){
-		if(source.check("Pause"))
+		if(source.check("PAUSE"))
 			return true;
 		else
 			return false;
@@ -108,6 +108,7 @@ class Hero extends Plane{
 
 	public int crash(){
 		life--;
+		position.setLocation(225, 500);
 		return life;
 	}
 	public int getPower(){
