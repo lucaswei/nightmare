@@ -136,10 +136,26 @@ class InstructionParser{
 			}
 		}
 		
+		/*dump*/
+		int len = out.length;
+		for(int i=0;i<len;i++){
+			if(out[i] != null){
+				int slen = out[i].length;
+				System.out.println(i+":");
+				for(int j=0;j<slen;j++){
+					Instruction inst = out[i][j];
+					if(inst.getInstType().equals("enemy")){
+						System.out.println("\t"+inst.getInstType()+"\t"+inst.getEnemyId());
+					}
+					if(inst.getInstType().equals("bullet")){
+						System.out.println("\t"+inst.getInstType()+"\t"+inst.getEnemyId()+"\t"+inst.getBulletId());
+					}
+				}
+			}
+		}
 		return out;
 	}
 	private void parseInstruction(){
-		ArrayList<ArrayList<Instruction>> instructions;
 		String line;
 		try{
 			while((line = reader.readLine()) != null && line != ""){
@@ -165,8 +181,14 @@ class InstructionParser{
 			}
 		}
 		catch(IOException e){
+			System.out.println("IOException");
 			return;
 		}
+		String arguments[] = {"end"};
+		Instruction endInstruction = new Instruction(arguments);
+		ArrayList<Instruction> insts = new ArrayList<Instruction>();
+		insts.add(endInstruction);
+		instructions.add(insts);
 	}
 	
 	private void statePart(int baseTime){
@@ -253,10 +275,7 @@ class InstructionParser{
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
 					int amount = tokens.nextInt();
-					for(int i=0;i<times;i++){
-						stateBullet(time + baseTime,enemyId,amount);
-						time += inter;
-					}
+					stateBullet(baseTime,times,inter,enemyId,amount);
 				}
 				else if(statement.equals("END")){
 					return;
@@ -268,9 +287,12 @@ class InstructionParser{
 		}
 	}
 	private void stateBullet(int baseTime,int enemyId,int amount){
+		stateBullet(baseTime,1,0,enemyId,amount);
+	}
+	private void stateBullet(int baseTime,int times,int interval,int enemyId,int amount){
 		String line;
 		int id = bulletId;
-		bulletId += amount;
+		bulletId += times * amount;
 		
 		String[] arguments = new String[7];
 		arguments[0] = "bullet";
@@ -289,14 +311,16 @@ class InstructionParser{
 						arguments[5] = tokens.next();
 						arguments[6] = tokens.next();
 					}
-					for(int i=0;i<amount;i++){
-						arguments[2] = Integer.toString(id + i);
-						Instruction bulletInstruction = new Instruction(arguments);
-						addInst(baseTime,bulletInstruction);
+					for(int i=0;i<times;i++){
+						for(int j=0;j<amount;j++){
+							arguments[2] = Integer.toString(id + i*amount + j);
+							Instruction bulletInstruction = new Instruction(arguments);
+							addInst(baseTime + i*interval,bulletInstruction);
+						}
 					}
 				}
 				else if(statement.equals("MOVE")){
-					stateMove(baseTime,"bullet",id,amount);
+					stateMove(baseTime,times,interval,"bullet",id,amount);
 				}
 				else if(statement.equals("END")){
 					return;
@@ -308,6 +332,9 @@ class InstructionParser{
 		}
 	}
 	private void stateMove(int baseTime,String targetType,int targetId,int amount){
+		stateMove(baseTime,1,0,targetType,targetId,amount);
+	}
+	private void stateMove(int baseTime,int times,int interval,String targetType,int targetId,int amount){
 		String line;
 		String[] arguments = new String[9];
 		try{
@@ -316,8 +343,10 @@ class InstructionParser{
 				String statement = tokens.next();
 				if(statement.equals("Route")){
 					int time = tokens.nextInt();
-					stateRoute(baseTime+time,targetType,targetId,amount,tokens);
+					for(int i=0;i<times;i++){
+						stateRoute(baseTime+time + i*interval,targetType,targetId + i*amount,amount,line);
 					}
+				}
 				else if(statement.equals("END")){
 					return;
 				}	
@@ -327,14 +356,19 @@ class InstructionParser{
 			return;
 		}
 	}
-	private void stateRoute(int baseTime,String targetType,int targetId,int amount,Scanner tokens){
+	private void stateRoute(int baseTime,String targetType,int targetId,int amount,String line){
+		Scanner tokens = new Scanner(line);
+		String statement = tokens.next();
+		int time = tokens.nextInt();
+		
+		
 		String[] arguments = new String[9];
 		arguments[0] = "route";
 		arguments[1] = targetType;
 		arguments[4] = tokens.next();
 		
-		String statement = tokens.next();
-		if(statement.equals("FAN")){
+		String type = tokens.next();
+		if(type.equals("FAN")){
 			arguments[3] = "linear";
 			arguments[5] = tokens.next();
 			

@@ -96,7 +96,6 @@ public class GScreen implements Runnable{
 				//game.addKeyListener(key);
 			}
 			
-			System.out.println(length);
 			for(int i=0;i<length;i++){
 				
 				Printable fly = list[i];

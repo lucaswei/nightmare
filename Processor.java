@@ -84,6 +84,10 @@ public class Processor implements Runnable{
 					}
 				}
 			}
+			else if(instType.equals("end")){
+				System.out.println("The End");
+				clock.stop();
+			}
 		}
 	}
 	private void calcBullet(){
@@ -141,7 +145,6 @@ public class Processor implements Runnable{
 		output.addAll(enemyList);
 		output.addAll(bulletList);
 		output.addAll(playerBulletList);
-		System.out.println(output.size());
 		ArrayList<Printable> temp = new ArrayList<Printable>();
 		for(Printable toPrint: output){
 			if(toPrint != null)
