@@ -86,8 +86,10 @@ class Hero extends Plane{
 		position.setLocation(x,y);
 	}
 	public boolean isPause(){
-		if(source.check("PAUSE"))
+		if(source.check("PAUSE")){
+			source.clear();
 			return true;
+		}
 		else
 			return false;
 	}
@@ -113,5 +115,8 @@ class Hero extends Plane{
 	}
 	public int getPower(){
 		return power;
+	}
+	public int getLife(){
+		return life;
 	}
 }

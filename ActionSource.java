@@ -3,6 +3,7 @@ import java.util.*;
 
 interface ActionSource{
 	public boolean check(String s);
+	public void clear();
 }
 
 class KeyboardListener implements KeyListener,ActionSource{
@@ -28,6 +29,16 @@ class KeyboardListener implements KeyListener,ActionSource{
 		EventToString.put(KeyEvent.VK_Z,"SHOOT");
 		EventToString.put(KeyEvent.VK_X,"BOMB");
 		EventToString.put(KeyEvent.VK_C,"SLOW");
+	}
+	public void clear(){
+		actions.put("UP"   ,false);
+		actions.put("DOWN" ,false);
+		actions.put("LEFT" ,false);
+		actions.put("RIGHT",false);
+		actions.put("SHOOT",false);
+		actions.put("BOMB" ,false);
+		actions.put("PAUSE",false);
+		actions.put("SLOW" ,false);
 	}
 	public boolean check(String s){
 		

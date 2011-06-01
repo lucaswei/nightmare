@@ -16,9 +16,10 @@ public class Nightmare{
 		ArrayBlockingQueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>(1);
 		Processor processor = new Processor(stage,clock,player,channel,connect);
 		
-		GScreen output = new GScreen(window,channel,keyboard,stage,connect);
+		GScreen output = new GScreen(window,channel,keyboard,stage,connect,player);
 		
 		connect.addEventListener(output);
+		connect.addEventListener(clock);
 		
 		
 		Thread processorThread = new Thread(processor);

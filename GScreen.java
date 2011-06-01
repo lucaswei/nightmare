@@ -12,6 +12,7 @@ public class GScreen implements Runnable,GameEventListener{
 	private int state = 0;
 	private static int PAUSE = 1;
 	private static int END = 2;
+	private int life = 0;
 	
 	private Image image;
 	private Image playBg,scoreBg,pauseBg;
@@ -23,13 +24,17 @@ public class GScreen implements Runnable,GameEventListener{
 	protected GWindow game;
 	private EventConnect checkKeyEvent;
 	private KeyListener key;
+	private Hero player;
 	
-	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent){
+	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent,Hero player){
 		
 		this.game = game;
 		this.key = key;
 		this.stage = stage;
 		this.checkKeyEvent = checkKeyEvent;
+		this.player = player;
+		life = player.getLife();
+		
 		/*
 		 * set playArea
 		 */
@@ -73,14 +78,13 @@ public class GScreen implements Runnable,GameEventListener{
 		game.cp.add(scoreBar);
 
 		drawPlayBg();
-		drawscoreBg();
 		
 	}
 
 	public void run(){
 		while(true){
-			
 			drawPlayBg();
+			drawscoreBg();
 			
 			Printable[] list = null;
 			try {
@@ -89,14 +93,6 @@ public class GScreen implements Runnable,GameEventListener{
 			
 			
 			int length = list.length;
-			if(state == PAUSE){
-				System.out.println("123");
-
-				game.removeKeyListener(key);
-	
-				paused();
-				game.addKeyListener(key);
-			}
 			
 			for(int i=0;i<length;i++){
 				
@@ -117,12 +113,14 @@ public class GScreen implements Runnable,GameEventListener{
 				}
 				else{
 					System.out.println(image == null);
-				}
-				
+				}			
+			}		
+			
+			if(state == PAUSE){
+				game.removeKeyListener(key);
+				paused();
 			}
-
 		}
-
 	}
 
 	public void paused(){
@@ -152,9 +150,13 @@ public class GScreen implements Runnable,GameEventListener{
 				case KeyEvent.VK_ENTER:
 					switch(keyFlag){
 						case 1:
-							
+							checkKeyEvent.dispatch("continue");
+							game.removeKeyListener(this);
+							game.addKeyListener(key);
+							state = 0;
 							break;
 						case 2:
+							System.exit(0);
 							break;
 						case 3:
 							break;
@@ -162,10 +164,10 @@ public class GScreen implements Runnable,GameEventListener{
 					}
 					break;
 				case KeyEvent.VK_ESCAPE:
+					checkKeyEvent.dispatch("continue");
 					game.removeKeyListener(this);
 					game.addKeyListener(key);
-					//game.cp.remove(pause);
-					//game.cp.add(play);
+					state = 0;
 					break;
 				default:
 					System.out.println("No this operator");
@@ -177,7 +179,7 @@ public class GScreen implements Runnable,GameEventListener{
 		};
 		
 		game.addKeyListener(pauseKeyAdapter);		
-		//}
+		
 	}
 	
 	public void drawPlayBg(){ 
@@ -197,8 +199,12 @@ public class GScreen implements Runnable,GameEventListener{
 	}
 	
 	public void drawscoreBg(){
+		
+		Image lifeImg = null;
+		
 		try{
 			scoreBg = ImageIO.read(new File("map/default/image/scroeBg.png"));
+			lifeImg = ImageIO.read(new File("map/default/image/life.png"));
 		}
 		catch(IOException e){}
 		
@@ -207,6 +213,10 @@ public class GScreen implements Runnable,GameEventListener{
 
 		g.drawImage(scoreBg,0,0,350,600,null);
 		gg.drawImage(scoreBg,0,0,350,600,null);
+		for(int i=0;i<life;i++){
+			g.drawImage(lifeImg, 95 + 25*i, 80, null);
+			gg.drawImage(lifeImg, 95 + 25*i, 80,null);
+		}
 
 		g.dispose();
 		gg.dispose();
@@ -288,6 +298,9 @@ public class GScreen implements Runnable,GameEventListener{
 		}
 		if(event.equals("end")){
 			state = END;
+		}
+		if(event.equals("crash")){
+			life = player.getLife();
 		}
 	}
 }

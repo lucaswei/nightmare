@@ -145,44 +145,13 @@ public class GMenu implements KeyListener{
 		catch(IOException e){}
 		
 		g.drawImage(bg, 0, 0, null);
-		g.drawImage(sword, 400, 200, null);
+		g.drawImage(sword, 400, 300, null);
 		gg.drawImage(bg, 0, 0, null);
-		gg.drawImage(sword, 400, 200, null);
+		gg.drawImage(sword, 400, 300, null);
 		
 		g.dispose();
 		gg.dispose();
 	}
 	
-	/*
-	ctest = new Panel(){
-	public void paint(Graphics g){		
-			g.drawImage(img, 0, 0, null);
-		}
-	};
-	
-	ctest.setBounds(0, 0, 800, 600);
-	img = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
-
-	public void drawbg(){ 
-		Graphics g = ctest.getGraphics();
-		Graphics gg = img.getGraphics();
-
-		g.drawImage(bg,0,0,800,600,null);
-		gg.drawImage(bg,0,0,800,600,null);
-
-		g.dispose();
-		gg.dispose();
-	}
-	public void drawLine(int x,int y){ 
-		Graphics g = ctest.getGraphics();
-		Graphics gg = img.getGraphics();
-
-		g.drawLine(x,y,800,600);
-		gg.drawLine(x,y,800,600);
-
-		g.dispose();
-		gg.dispose();
-	}
-	*/
 }
 
