@@ -155,14 +155,36 @@ PARTA 0
 		POSITION 225,0
 		MOVE
 			ROUTE 0 5 line self 0,10 0
-			ROUTE 20 5 stop self 0,0 0
-			ROUTE 50 5 stop self 0,-10 0
+			ROUTE 30 5 stop self 0,0 0
+			ROUTE 80 5 line self 0,-10 0
 			END
 		SHOOT
-			BULLET 10 5 20 30
+			BULLET 30 5 5 30
 				TYPE small
 				MOVE
-					ROUTE 30 10 fan player 0,0 0 359
+					ROUTE 0 20 fan player 0,0 0 360
+					ROUTE 10 20 stop self 0,0 0 
+					ROUTE 20 5 line player 0,0 0
+					END
+				END
+			END
+		SHOOT
+			BULLET 120 5 5 30
+				TYPE small
+				MOVE
+					ROUTE 0 20 fan player 0,0 0 360
+					ROUTE 10 20 stop self 0,0 0 
+					ROUTE 20 5 line player 0,0 0
+					END
+				END
+			END
+		SHOOT
+			BULLET 210 5 5 30
+				TYPE small
+				MOVE
+					ROUTE 0 20 fan player 0,0 0 360
+					ROUTE 10 20 stop self 0,0 0 
+					ROUTE 20 5 line player 0,0 0
 					END
 				END
 			END

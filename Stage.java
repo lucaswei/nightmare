@@ -314,7 +314,7 @@ class InstructionParser{
 					int times  = tokens.nextInt();
 					int inter  = tokens.nextInt();
 					int amount = tokens.nextInt();
-					stateBullet(baseTime,times,inter,enemyId,amount);
+					stateBullet(baseTime + time,times,inter,enemyId,amount);
 				}
 				else if(statement.equals("END")){
 					return;
@@ -397,6 +397,7 @@ class InstructionParser{
 		}
 	}
 	private void stateRoute(int baseTime,String targetType,int targetId,int amount,String line){
+	System.out.println(line);
 		Scanner tokens = new Scanner(line);
 		String statement = tokens.next();
 		int time = tokens.nextInt();
@@ -420,7 +421,7 @@ class InstructionParser{
 				arguments[2] = Integer.toString(targetId);
 				arguments[7] = "0";
 				Instruction routeInstruction = new Instruction(arguments);
-				addInst(baseTime,routeInstruction);
+				addInst(baseTime + time,routeInstruction);
 			}
 			else{
 				float theta = angle/amount;
@@ -429,7 +430,7 @@ class InstructionParser{
 					arguments[2] = Integer.toString(targetId + i);
 					arguments[7] = Integer.toString((int)(startAngle + i*theta));
 					Instruction routeInstruction = new Instruction(arguments);
-					addInst(baseTime,routeInstruction);
+					addInst(baseTime + time,routeInstruction);
 				}
 			}
 		}
