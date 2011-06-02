@@ -38,515 +38,630 @@ public class Stage{
 	}
 }
 
-class ImageMapper{
-	String path;
-	BufferedReader reader;
-	public ImageMapper(String path){
-		images = new ArrayList<Image>();
-		this.path = path;
-		try{
-			reader = new BufferedReader(new FileReader(path+"map"));
-			mapImages(reader);
-		}
-		catch(FileNotFoundException e){
-			System.err.println("File not found");
-		}
-	}
-	public Image[] get(){
-		Object[] objs = images.toArray();
-		int length = objs.length;
-		Image[] out = new Image[length];
-		for(int i=0;i<length;i++){
-			out[i] = (Image)objs[i];
-		}
-		
-		/*dump*/
-		/*
-		int len = out.length;
-		for(int i=0;i<len;i++){
-			if(out[i] != null)
-				System.out.println(i+"\t"+out[i].getHeight(null));
-		}
-		*/
-		return out;
-	}
-	private ArrayList<Image> images;
-	private Image background;
-	private void mapImages(BufferedReader reader){
-		String line = null;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				if(statement.equals("IMAGE")){
-					stateImage();
-				}
-			}
-		}
-		catch(IOException e){
-			System.err.println("Error statement:"+line);
-			return;
-		}
-	}
-	
-	private void stateImage(){
-		String imagePath = path + "image/";
-		String line = null;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				String statement = tokens.next();
-				try{
-					if(statement.equals("IMG")){
-						int imageId = tokens.nextInt();
-						String imageName = tokens.next();
-						File file = new File(imagePath + imageName);
-						Image img = ImageIO.read(file);
-						
-						int size = images.size();
-						for(int i=size;i<imageId;i++)
-							images.add(null);
-						images.add(imageId,img);
-					}
-					else if(statement.equals("BG")){
-						String imageName = tokens.next();
-						File file = new File(imagePath + imageName);
-						background = ImageIO.read(file);
-					}
-					else if(statement.equals("END")){
-						return;
-					}
-				}
-				catch(IOException e){
-					System.out.println("Image can't read");
-				}
-			}
-		}
-		catch(IOException e){
-			System.out.println("Map file can't read");
-			return;
-		}
-	}
-}
 
-class InstructionParser{
-	ArrayList<ArrayList<Instruction>> instructions;
-	Map<String,Integer> anchors;
-	BufferedReader reader;
+class InstructionCompiler{
+	private ArrayList<ArrayList<Instruction>> instructionTable;
+	private BufferedReader reader;
+	private Root root;
 	
-	int enemyId = 0;
-	int bulletId = 0;
-	int wave = 0;
+	private VariableTable variables;
+	private enemyID = 1;
+	private bulletID = 1;
+	private wave = 1;
 	
-	public InstructionParser(String path){
-		instructions = new ArrayList<ArrayList<Instruction>>();
-		try{
-			reader = new BufferedReader(new FileReader(path + "map"));
-			parseInstruction();
-		}
-		catch(FileNotFoundException e){
-			System.err.println("File not found");
-		}
+	
+	public InstructionCompiler(File map){
+		analyze();
+		compile();
 	}
-	public Instruction[][] get(){
-		int length = instructions.size();
-		Instruction[][] out = new Instruction[length][];
-		for(int i=0;i<length;i++){
-			ArrayList<Instruction> array = instructions.get(i);
-			if(array != null){
-				Object[] arr = array.toArray();
-				int len = arr.length;
-				out[i] = new Instruction[len];
-				for(int j=0;j<len;j++){
-					out[i][j] = (Instruction)arr[j];
-				}
-			}
-		}
-		
-		/*dump*/
-		/*
-		int len = out.length;
-		for(int i=0;i<len;i++){
-			if(out[i] != null){
-				int slen = out[i].length;
-				System.out.println(i+":");
-				for(int j=0;j<slen;j++){
-					Instruction inst = out[i][j];
-					if(inst.getInstType().equals("enemy")){
-						System.out.println("\t"+inst.getInstType()+"\t"+inst.getEnemyId());
-					}
-					if(inst.getInstType().equals("bullet")){
-						System.out.println("\t"+inst.getInstType()+"\t"+inst.getEnemyId()+"\t"+inst.getBulletId());
-					}
-					if(inst.getInstType().equals("route")){
-						System.out.println("\t"+inst.getInstType()+"\t"+inst.getTargetType()+"\t"+inst.getTargetId());
-					}
-					System.out.println("\t"+inst.getInstType());
-				}
-			}
-		}
-		*/
-		return out;
+	private analyze(BufferedReader reader){
+		this.reader = reader;
+		root = new Root();
 	}
-	private void parseInstruction(){
-		String line;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				if(statement.equals("PARTA")){
-					int time = tokens.nextInt();
-					statePart(time);
-				}
-				else if(statement.equals("PARTB")){
-					int time = tokens.nextInt();
-					statePart(time);
-				}
-				else if(statement.equals("BOSSA")){
-					int time = tokens.nextInt();
-					stateBoss(time);
-				}
-				else if(statement.equals("BOSSB")){
-					int time = tokens.nextInt();
-					stateBoss(time);
-				}
-			}
+	private compile(){
+		instructionTable = new ArrayList<ArrayList<Instruction>>();
+		variables = new VariableTable();
+		root.calc();
+	}
+	private addInstruction(int time,Instruction instruction){
+		int size = instructionTable.size();
+		for(int i=size;i<time;i++)
+			instructionTable.add(null);
+		ArrayList<Instruction> instructions;
+		if((instructions = instructionTable.get(time)) == null){
+			instructions = new ArrayList<Instruction>();
+			instructionTable.set(time,instructions);
 		}
-		catch(IOException e){
-			System.out.println("IOException");
-			return;
-		}
-		/*
-		String arguments[] = {"end"};
-		Instruction endInstruction = new Instruction(arguments);
-		ArrayList<Instruction> insts = new ArrayList<Instruction>();
-		insts.add(endInstruction);
-		instructions.add(insts);
-		*/
+		instructions.add(instruction);
 	}
 	
-	private void statePart(int baseTime){
-		String line;
-		int time;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				/*
-				if(statement.equals("GROUP")){
-						time  = tokens.nextInt();
-					int times = tokens.nextInt();
-					int inter = tokens.nextInt();
-					for(int i=0;i<times;i++){
-						stateEnemy(baseTime + time);
-						time += inter;
-					}
-				}
-				
-				else*/
-				if(statement.equals("ENEMY")){
-					time  = tokens.nextInt();
-					stateEnemy(baseTime + time);
-				}
-				else if(statement.equals("END")){
-					return;
-				}
-			}
-		}
-		catch(IOException e){
-			return;
-		}
+	private interface Element{
+		void calc();
 	}
-	private void stateEnemy(int baseTime){
-		String line;
-		int id = enemyId;
-		enemyId++;
-		String[] arguments = new String[7];
-		arguments[0] = "enemy";
-		arguments[1] = Integer.toString(id);
-		
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				if(statement.equals("TYPE")){
-					String type  = tokens.next();
-					arguments[2] = type;
-					if(type == "custom"){
-						arguments[4] = tokens.next();
-						arguments[5] = tokens.next();
-						arguments[6] = tokens.next();
-					}
-				}
-				else if(statement.equals("POSITION")){
-					arguments[3] = tokens.next();
-					Instruction enemyInstruction = new Instruction(arguments);
-					addInst(baseTime,enemyInstruction);
-				}
-				else if(statement.equals("MOVE")){
-					stateMove(baseTime,"enemy",id,1);
-				}
-				else if(statement.equals("SHOOT")){
-					stateShoot(baseTime,id);
-				}
-				else if(statement.equals("END")){
-					return;
-				}
-			}
-		}
-		catch(IOException e){
-			return;
-		}
-	}
-	private void stateShoot(int baseTime,int enemyId){
-		String line;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				if(statement.equals("BULLET")){
-					int time   = tokens.nextInt();
-					int times  = tokens.nextInt();
-					int inter  = tokens.nextInt();
-					int amount = tokens.nextInt();
-					stateBullet(baseTime + time,times,inter,enemyId,amount);
-				}
-				else if(statement.equals("END")){
-					return;
-				}
-			}
-		}
-		catch(IOException e){
-			return;
-		}
-	}
-	private void stateBullet(int baseTime,int enemyId,int amount){
-		stateBullet(baseTime,1,0,enemyId,amount);
-	}
-	private void stateBullet(int baseTime,int times,int interval,int enemyId,int amount){
-		String line;
-		int id = bulletId;
-		bulletId += times * amount;
-		
-		String[] arguments = new String[7];
-		arguments[0] = "bullet";
-		arguments[1] = Integer.toString(enemyId);
-		
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				if(!tokens.hasNext())continue;
-				String statement = tokens.next();
-				if(statement.equals("TYPE")){
-					String type  = tokens.next();
-					arguments[3] = type;
-					if(type.equals("custom")){
-						arguments[4] = tokens.next();
-						arguments[5] = tokens.next();
-						arguments[6] = tokens.next();
-					}
-					for(int i=0;i<times;i++){
-						for(int j=0;j<amount;j++){
-							arguments[2] = Integer.toString(id + i*amount + j);
-							Instruction bulletInstruction = new Instruction(arguments);
-							addInst(baseTime + i*interval,bulletInstruction);
-						}
-					}
-				}
-				else if(statement.equals("MOVE")){
-					stateMove(baseTime,times,interval,"bullet",id,amount);
-				}
-				else if(statement.equals("END")){
-					return;
-				}
-			}
-		}
-		catch(IOException e){
-			return;
-		}
-	}
-	private void stateMove(int baseTime,String targetType,int targetId,int amount){
-		stateMove(baseTime,1,0,targetType,targetId,amount);
-	}
-	private void stateMove(int baseTime,int times,int interval,String targetType,int targetId,int amount){
-		String line;
-		String[] arguments = new String[9];
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				String statement = tokens.next();
-			
-				if(statement.equals("ROUTE")){
-					int time = tokens.nextInt();
-					for(int i=0;i<times;i++){
-						stateRoute(baseTime+time + i*interval,targetType,targetId + i*amount,amount,line);
-					}
-				}
-				else if(statement.equals("END")){
-					return;
-				}	
-			}
-		}
-		catch(IOException e){
-			return;
-		}
-	}
-	private void stateRoute(int baseTime,String targetType,int targetId,int amount,String line){
-	System.out.println(line);
-		Scanner tokens = new Scanner(line);
-		String statement = tokens.next();
-		int time = tokens.nextInt();
-		
-		String[] arguments = new String[9];
-		arguments[0] = "route";
-		arguments[1] = targetType;
-		//speed
-		arguments[4] = tokens.next();
+	
 
-		String type = tokens.next();
-		if(type.equals("fan")){
-			arguments[3] = "linear";
-			arguments[5] = tokens.next();
-			arguments[6] = tokens.next();
-			
-			int offsetAngle = tokens.nextInt();
-			int angle = tokens.nextInt();
-	
-			if(amount == 1){
-				arguments[2] = Integer.toString(targetId);
-				arguments[7] = "0";
-				Instruction routeInstruction = new Instruction(arguments);
-				addInst(baseTime + time,routeInstruction);
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+	private class Root{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		public Root(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("PATH"))      {elements.add(new Path(line));}
+					//else if(statement.equals("ROLE")) {elements.add(new Role(line));}
+					//else if(statement.equals("IMAGE")){elements.add(new Image(line));}
+					//else if(statement.equals("BOSS")) {elements.add(new Boss(line));}
+				}
 			}
-			else{
-				float theta = angle/amount;
-				float startAngle = offsetAngle -1 * theta * ((amount - 1)/2);
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		void calc(){
+			for(Element e:elements){
+				e.calc(null);
+			}
+		}
+	}
+	
+
+
+////////////////////////////////////////////////////////////////////////////////
+	
+	
+	private class Path{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		private String attribute;
+		public Path(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("ENEMY"))   {elements.add(new Enemy(line));}
+					if(statement.equals("GROUP"))   {elements.add(new Group(line));}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		void calc(){
+			String time = attr(attribute,1);
+			variables.set("time",time);
+			for(Element e:elements){
+				e.calc();
+			}
+		}
+	}
+	
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Group{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		private String attribute;
+		public Group(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("ENEMY"))   {elements.add(new Enemy(line));}
+					if(statement.equals("GROUP"))   {elements.add(new Group(line));}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		
+		
+		
+		void calc(){
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int times    = parseInt(attr(attribute,2));
+			int interval = parseInt(attr(attribute,3));
+			for(Element e:elements){
+				for(int i=0;i<times;i++){
+					variables.push();
+					variables.set("time",(String)(baseTime + plusTime + i * interval));
+					e.calc();
+					variables.pop();
+				}
+			}
+		}
+	}
+	
+	
+////////////////////////////////////////////////////////////////////////////////	
+
+
+	private class Enemy{
+		private Type type;
+		private Position position;
+		private Move move;
+		private Shoot shoot;
+		
+		private String attribute;
+		private String[] arguments = new String[7];
+		public Enemy(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("TYPE"))    {type     = new Type(line);}
+					if(statement.equals("POSITION")){position = new Position(line);}
+					if(statement.equals("MOVE"))    {move     = new Move(line);}
+					if(statement.equals("SHOOT"))   {shoot    = new Shoot(line);}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		
+		
+		
+		void calc(){
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int time = baseTime + plusTime;
+			
+			/* inst_type */
+			arguments[0] = "enemy";
+			/* enemy_ID */
+			arguments[1] = (String)enemyID;
+			type.calc();
+			position.calc();
+			Instruction instruction = new Instruction(arguments);
+			addInstruction(time,instruction);
+			
+			variables.push();
+			variables.set("time",(String)time);
+			variables.set("target_ID",(String)enemyID);
+			variables.set("target_type","enemy");
+			move.calc();
+			shoot.calc();
+			variables.pop();
+			
+			enemyID += 1;
+		}
+		
+		
+		
+		private class Type{
+			private String attribute;
+			public EnemyType(String attribute){
+				this.attribute = attribute;
+			}
+			void calc(String line){
+				/* enemy_type*/
+				String type = attr(attribute,1);
+				arguments[2] = type;
+				if(type.equals("custom")){
+					/* image_ID */
+					arguments[4] = attr(attribute,2);
+					/* radius */
+					arguments[5] = attr(attribute,3);
+					/* HP */
+					arguments[6] = attr(attribute,4);
+				}
+			}
+		}
+		private class Position{
+			private String attribute;
+			public Position(String attribute){
+				this.attribute = attribute;
+			}
+			void calc(String line){
+				arguments[3] = attr(attribute,1);
+			}
+		}
+	}
+	
+	
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Move{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		private String attribute;
+		public Move(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("ROUTE"))   {elements.add(new Route(line));}
+					if(statement.equals("SHAPE"))   {elements.add(new Shape(line));}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		void calc(){
+			for(Element e:elements){
+				calc();
+			}
+		}
+	}
+	
+	
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Shoot{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		private String attribute;
+		public Shoot(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("BULLET"))  {elements.add(new Bullet(line));}
+					if(statement.equals("CLIP"))    {elements.add(new Clip(line));}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		void calc(){
+			for(Element e:elements){
+				calc();
+			}
+		}
+	}
+	
+	
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Clip{
+		private ArrayList<Element> elements = new ArrayList<Element>();
+		private String attribute;
+		public Clip(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("BULLET"))  {elements.add(new Bullet(line));}
+					if(statement.equals("CLIP"))    {elements.add(new Clip(line));}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		
+		
+		
+		void calc(){
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int times    = parseInt(attr(attribute,2));
+			int interval = parseInt(attr(attribute,3));
+			for(Element e:elements){
+				for(int i=0;i<times;i++){
+					variables.push();
+					variables.set("time",(String)(baseTime + plusTime + i * interval));
+					e.calc();
+					variables.pop();
+				}
+			}
+		}
+	}
+	
+	
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Bullet{
+		private Type type;
+		private Position position;
+		private Move move;
+		
+		private String attribute;
+		public Bullet(String attribute){
+			this.attribute = attribute;
+			parse();
+		}
+		public parse(){
+			String line = null;
+			try{
+				while((line = readerLine()) != null && !("".equals(line))){
+					String statement = line.split(" ",2)[0];
+					if(statement.equals("TYPE"))    {type     = new Type(line);}
+					if(statement.equals("POSITION")){position = new Position(line);}
+					if(statement.equals("MOVE"))    {move     = new Move(line);}
+					else if(statement.equals("END")){return;}
+				}
+			}
+			catch(IOException){
+				System.err.println("IOException");
+			}
+		}
+		
+		
+		
+		void calc(){
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int time = baseTime + plusTime;
+			
+			int amount = parseInt(attr(attribute,2));
+			/* inst_type */
+			arguments[0] = "bullet";
+			/* enemy_ID */
+			arguments[1] = enemyID;
+			type.calc();
+			position.calc();
+			for(int i=0;i<amount;i++){
+				/* bullet_ID */
+				arguments[2] = (String)bulletID + i;
+				Instruction instruction = new Instruction(arguments);
+				addInstruction(time,instruction);
+			}
+			variables.push();
+			variables.set("time",(String)time);
+			variables.set("target_ID",(String)bulletID);
+			variables.set("amount",(String)amount);
+			variables.set("target_type","bullet");
+			move.calc();
+			variables.pop();
+			
+			bulletID += amount;
+		}
+		
+		
+		
+		private class Type{
+			private String attribute;
+			public EnemyType(String attribute){
+				this.attribute = attribute;
+			}
+			void calc(String line){
+				/* bullet_type*/
+				String type = attr(attribute,1);
+				arguments[3] = type;
+				if(type.equals("custom")){
+					/* image_ID */
+					arguments[4] = attr(attribute,2);
+					/* radius */
+					arguments[5] = attr(attribute,3);
+					/* Power */
+					arguments[6] = attr(attribute,4);
+				}
+			}
+		}
+	}
+	
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Route{
+		private Type type;
+		private Position position;
+		private Move move;
+		
+		private String attribute;
+		public Bullet(String attribute){
+			this.attribute = attribute;
+		}
+		
+		
+		
+		void calc(){
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int time = baseTime + plusTime;
+			
+			/* inst_type */
+			arguments[0] = "route";
+			
+			
+			/* route_type */
+			String routeType = attr(attribute,2);
+			if(routeType.equals("stop")){
+				arguments[3] = "stop";
+				/* point_refer */
+				arguments[5] = attr(attribute,3);
+				/* point_offset */
+				arguments[5] = attr(attribute,4);
+				/* point_angle */
+				arguments[6] = attr(attribute,5);
+			}
+			else if(routeType.equals("beeline")){
+				arguments[3] = "linear";
+				/* speed */
+				arguments[4] = attr(attribute,3);
+				/* point_refer */
+				arguments[5] = attr(attribute,4);
+				/* point_offset */
+				arguments[5] = attr(attribute,5);
+				/* point_angle */
+				arguments[6] = attr(attribute,6);
+			}
+			
+			
+			/* target_type */
+			String targetType = variables.gete("target_type");
+			if(targetType.equals("enemy")){
+				arguments[1] = "enemy";
+				/* target_ID */
+				arguments[2] = variables.get("target_ID");
+				Instruction instruction = new Instruction(arguments);
+				addInstruction(time,instruction);
+			}
+			else if(targetType.equals("bullet")){
+				arguments[1] = "bullet";
+				/* target_ID */
+				int targetID = parseInt(variables.get("target_ID"));
+				int amount   = parseInt(variables.get("amount"));
 				for(int i=0;i<amount;i++){
-					arguments[2] = Integer.toString(targetId + i);
-					arguments[7] = Integer.toString((int)(startAngle + i*theta));
-					Instruction routeInstruction = new Instruction(arguments);
-					addInst(baseTime + time,routeInstruction);
+					arguments[2] = targetID + i;
+					Instruction instruction = new Instruction(arguments);
+					addInstruction(time,instruction);
 				}
-			}
-		}
-		else if(type.equals("line")){
-			arguments[3] = "linear";
-			arguments[5] = tokens.next();
-			arguments[6] = tokens.next();
-			
-			int offsetAngle = tokens.nextInt();
-	
-			for(int i=0;i<amount;i++){
-				arguments[2] = Integer.toString(targetId + i);
-				arguments[7] = Integer.toString(offsetAngle);
-				Instruction routeInstruction = new Instruction(arguments);
-				addInst(baseTime,routeInstruction);
-			}
-		}
-		else if(type.equals("stop")){
-			arguments[3] = "stop";
-			arguments[5] = tokens.next();
-			arguments[6] = tokens.next();
-			
-			int offsetAngle = tokens.nextInt();
-	
-			for(int i=0;i<amount;i++){
-				arguments[2] = Integer.toString(targetId + i);
-				arguments[7] = Integer.toString(offsetAngle);
-				Instruction routeInstruction = new Instruction(arguments);
-				addInst(baseTime,routeInstruction);
 			}
 		}
 	}
 	
-	private void stateBoss(int baseTime){
-		int time = 0;
-		int id = enemyId;
-		enemyId++;
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+	
+	private class Shape{
+		private Type type;
+		private Position position;
+		private Move move;
 		
-		String[] arguments = new String[7];
-		arguments[0] = "enemy";
-		arguments[1] = Integer.toString(enemyId);
-		arguments[2] = "custom";
+		private String attribute;
+		public Bullet(String attribute){
+			this.attribute = attribute;
+		}
 		
-		String line;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				String statement = tokens.next();
-				if(statement.equals("TYPE")){
-					arguments[4] = tokens.next();
-					arguments[5] = tokens.next();
-					}
-				else if(statement.equals("WAVE")){
-					int period = tokens.nextInt();
-					time += period;
-					anchors.put("WAVE"+wave,new Integer(baseTime + time));
-					wave++;
-					arguments[6] = tokens.next();
+		
+		
+		void calc(){
+			/* target_type */
+			String targetType = variables.get("target_type");
+			if(targetType.equals("enemy")){
+				return;
+			}
+			arguments[1] = "bullet";
+			
+			int baseTime = parseInt(variables.get("time"));
+			int plusTime = parseInt(attr(attribute,1));
+			int time = baseTime + plusTime;
+			
+			/* inst_type */
+			arguments[0] = "route";
+			
+			
+			/* shape_type */
+			String shapeType = attr(attribute,2);
+			if(shapeType.equals("fan")){
+				/* route_type */
+				arguments[3] = "linear";
+				/* speed */
+				arguments[4] = attr(attribute,3);
+				/* point_refer */
+				arguments[5] = attr(attribute,4);
+				/* point_offset */
+				arguments[6] = attr(attribute,5);
+				/* target_ID */
+				int targetID = parseInt(variables.get("target_ID"));
 				
-					Instruction enemyInstruction = new Instruction(arguments);
-					addInst(baseTime + time,enemyInstruction);
-					Instruction bossInstruction = new Instruction(new String[]{"boss",Integer.toString(period)});
-					addInst(baseTime + time,bossInstruction);
-					stateWave(baseTime,id);
+				int offsetAngle = parseInt(attr(attribute,6));
+				int amount   = parseInt(variables.get("amount"));
+				if(amount == 1){
+					/* target_ID */
+					arguments[2] = (String)targetID;
+					/* point_angle */
+					arguments[7] = (String)offsetAngle;
+					Instruction instruction = new Instruction(arguments);
+					addInstruction(time,instruction);
+				}
+				else{
+					int angle = parseInt(attr(attribute,7));
+					float theta = angle / (amount-1);
+					float startAngle = offsetAngle - theta * (amount - 1) / 2;
+					for(int i=0;i<amount;i++){
+						/* target_ID */
+						arguments[2] = (String)(targetID + i);
+						/* point_angle */
+						arguments[7] = (String)(startAngle + i * theta);
+						Instruction instruction = new Instruction(arguments);
+						addInstruction(time,instruction);
 					}
-				else if(statement.equals("END")){
-					return;
 				}
 			}
-		}
-		catch(IOException e){
-			return;
-		}
-	}
-	private void stateWave(int baseTime,int id){
-		String[] arguments = new String[9];
-		String line;
-		try{
-			while((line = reader.readLine()) != null && line != ""){
-				Scanner tokens = new Scanner(line);
-				String statement = tokens.next();
-				if(statement.equals("MOVE")){
-					stateMove(baseTime,"enemy",id,1);
-					}
-				else if(statement.equals("BULLET")){
-					int time   = tokens.nextInt();
-					int times  = tokens.nextInt();
-					int inter  = tokens.nextInt();
-					int amount = tokens.nextInt();
-					for(int i=0;i<times;i++){
-						stateBullet(baseTime,id,amount);
-						time += inter;
-					}
-					}
-				else if(statement.equals("END")){
-					return;
-				}
-			}
-		}
-		catch(IOException e){
-			return;
 		}
 	}
 	
-	private void addInst(int time,Instruction inst){
-		int size = instructions.size();
-		int sub  = time - size;
-		for(int i=0;i<=sub;i++){
-			instructions.add(null);
-		}
-		ArrayList<Instruction> list = instructions.get(time);
-		if(list == null){
-			list = new ArrayList<Instruction>();
-			instructions.set(time,list);
-		}
-		list.add(inst);
-	}
+
+
+////////////////////////////////////////////////////////////////////////////////	
+
+	
+	private int parseInt(String i)     {return Integer(i);}
 }
 
+
+class VariableTable{
+	private Stack<HashMap<String,String>> stack = new Stack<HashMap<String,String>>();
+
+	public VariableTable(){
+	}
+	public void push(){
+		stack.push(new HashMap<String,String>());
+	}
+	public void pop(){
+		stack.pop();
+		if(stack.empty()){
+			push();
+		}
+	}
+	public void set(String key,String value){
+		stack.peek().put(key,value);
+	}
+	public String get(String key){
+		String out = stack.peek().put(key,value);
+		if( out != null){
+			return out;
+		}
+		else{
+			int size = stack.size() - 2;
+			for(int i=size;i>=0;i--){
+				out = stack.get(i).put(key,value);
+				if( out != null){
+					return out;
+				}
+			}
+		}
+		return null;
+	}
+}

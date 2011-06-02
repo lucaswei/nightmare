@@ -68,7 +68,14 @@ class Instruction implements
 		return arguments[0];
 	}
 	
-	
+	public  String toString(){
+		String out = "";
+		int length = arguments.length;
+		for(int i=0;i<length;i++){
+			out += arguments[i] + "\t";
+		}
+		return out;
+	}
 	
 	/* Printable */
 	public  int    getImageId(){
