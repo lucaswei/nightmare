@@ -5,15 +5,17 @@ import javax.imageio.ImageIO;
 import java.lang.Math.*;
 
 public class Stage{
-	Image[] images;
-	Instruction[][] instructions;
-	Map<String,Integer> anchors;
+	private String stageName;
+	private Image[] images;
+	private Instruction[][] instructions;
+	private Map<String,Integer> anchors;
 	private int enemyTotal;
 	private int bulletTotal;
 	
 	int PC = 0;
 	
 	public Stage(String stageName){
+		this.stageName = stageName;
 		String path = "map/" + stageName + "/";
 		InstructionCompiler compiler = new InstructionCompiler(path);
 		instructions = compiler.getInstructionTable();
@@ -29,11 +31,22 @@ public class Stage{
 			return null;
 		}
 	}
+	public Instruction[] get(long time){
+		if(time < instructions.length){
+			return instructions[(new Long(time)).intValue()];
+		}
+		else{
+			return null;
+		}
+	}
 	public void jump(String anchor){
 		Integer target = anchors.get(anchor);
 		if(target != null){
 			PC = target;
 		}
+	}
+	public void restart(){
+		PC = 0;
 	}
 	public Image getImage(int imageId){
 		if(imageId < images.length)

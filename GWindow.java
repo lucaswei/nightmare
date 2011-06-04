@@ -3,6 +3,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyListener;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.JFrame;
 
 
@@ -15,24 +16,32 @@ public class GWindow implements GameEventListener{
 	private static int width = 800;
 	private static int height = 600; 
 	
-	private JFrame window;
+	private Frame window;
 	public Container content;
-	
-	private String state;
 	
 	public GWindow(){
 		
-		window = new JFrame();
+		window = new Frame();
 		window.setTitle("Nightmare");
 		window.setLayout(null);
 		window.setSize(width, height);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setLocationRelativeTo(null);
 		window.setResizable(false);
 		window.setVisible(true);
 		
-		//cp = window.getContentPane();
+		window.addWindowListener(new GameWindowListener());
+		
 		menu();
+	}
+	
+	private class GameWindowListener implements WindowListener{
+		public void windowActivated(WindowEvent e){}
+		public void windowClosed(WindowEvent e){}
+		public void windowClosing(WindowEvent e){System.exit(0);}
+		public void windowDeactivated(WindowEvent e){}
+		public void windowDeiconified(WindowEvent e){}
+		public void windowIconified(WindowEvent e){}
+		public void windowOpened(WindowEvent e){}
 	}
 
 	public static int getWidth() {
@@ -41,32 +50,6 @@ public class GWindow implements GameEventListener{
 
 	public static int getHeight() {
 		return height;
-	}
-	
-	public void addKeyListener(KeyListener key) {
-		window.addKeyListener(key);
-	}
-
-	public void addKeyListener(KeyAdapter keyAdapter) {
-		window.addKeyListener(keyAdapter);
-	}
-		
-	public void removeKeyListener(KeyListener key) {
-		window.removeKeyListener(key);
-	}
-	public void removeKeyListener(GMenu menu) {
-		window.removeKeyListener(menu);
-	}
-
-	public void removeKeyListener(KeyAdapter keyAdapter) {
-		window.removeKeyListener(keyAdapter);
-	}
-
-
-
-	public void repaint() {
-		// TODO Auto-generated method stub
-		window.repaint();
 	}
 	
 	private void add(Container content){
@@ -81,6 +64,7 @@ public class GWindow implements GameEventListener{
 		GMenu menu = new GMenu();
 		add(menu.getContent());
 		menu.display();
+		menu.drawMenu();
 	}
 	
 	private void gameStart(Stage stage,String hero){
@@ -90,6 +74,7 @@ public class GWindow implements GameEventListener{
 	}
 	
 	private void gameEnd(){
+		menu();
 	}
 	
 	private void close(){
@@ -100,9 +85,16 @@ public class GWindow implements GameEventListener{
 		if(signal.equals("menu")){
 			menu();
 		}
-		if(signal.equals("start")){
+		else if(signal.equals("start")){
 			Object[] data = event.getData();
 			Stage stage = (Stage)data[0];
+			String hero = (String)data[1];
+			gameStart(stage,hero);
+		}
+		else if(signal.equals("restart")){
+			Object[] data = event.getData();
+			Stage stage = (Stage)data[0];
+			stage.restart();
 			String hero = (String)data[1];
 			gameStart(stage,hero);
 		}

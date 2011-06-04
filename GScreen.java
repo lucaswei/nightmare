@@ -10,78 +10,83 @@ public class GScreen implements Runnable,GameEventListener{
 
 	private Container game;
 
-	private int state = 0;
+	private static int PLAY = 0;
 	private static int PAUSE = 1;
 	private static int END = 2;
+	
+	private int state = PLAY;
 	private int life = 0;
 	private String imagePath = "image/";
 	
 	private Image image;
 	private Image playBg,scoreBg,pauseBg;
 	private Image a,b,c,d,e,f;
-	private BufferedImage setPlayImg,setImg;
+	private Image lifeImg;
 	private Component play,scoreBar;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
 	
-	private EventConnect checkKeyEvent;
 	private KeyListener key;
+	
 	private Hero player;
 	private Graphics playGraphics;
+	private Image    playBuffer;
+	private Graphics playBufferGraphics;
 	
-	private Image buffer;
-	private Graphics bufferGraphics;
+	private Graphics scoreGraphics;
+	private Image    scoreBuffer;
+	private Graphics scoreBufferGraphics;
+	
+	private PauseMenu pauseMenu;
 	
 	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,Hero player){
+		
+		this.key   = key;
+		this.stage = stage;
+		this.player = player;
+		this.queue = queue;
 		
 		game = new Container();
 		game.setBounds(0,0,800,600);
 		game.setVisible(true);
-		game.setBackground(Color.yellow);
-		
-		this.key   = key;
-		this.stage = stage;
-		this.checkKeyEvent = checkKeyEvent;
-		this.player = player;
-		this.queue = queue;
-		
-		/*
-		 * set playArea
-		 */
-		play = new Canvas(){
-			public void update(Graphics g){
-				super.paint(g);
-			}
-		};
-		
+				
+		play = new Canvas();
 		play.setBounds(0,0,450,600);
+		playBuffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
+		playBufferGraphics = playBuffer.getGraphics();
 		
-		/*
-		 * set score bar
-		 */
-		scoreBar = new Panel(){
-			public void paint(Graphics g){
-				g.drawImage(setImg, 0, 0, null);
-			}
-		};
 		
+		scoreBar = new Canvas();
 		scoreBar.setBounds(450,0,800,600);
-
-		setPlayImg = new BufferedImage(450,600,BufferedImage.TYPE_INT_ARGB);
-		setImg     = new BufferedImage(350,600,BufferedImage.TYPE_INT_ARGB);
+		scoreBuffer = new BufferedImage(350,600,BufferedImage.TYPE_4BYTE_ABGR);
+		scoreBufferGraphics = scoreBuffer.getGraphics();
+		
+		pauseMenu = new PauseMenu();
+		pauseMenu.setVisible(false);
 		
 		try{
 			playBg = ImageIO.read(new File(imagePath + "testbg.gif"));
+			pauseBg = ImageIO.read(new File(imagePath + "pauseBg.png"));
+			scoreBg = ImageIO.read(new File(imagePath + "scroeBg.png"));
+			lifeImg = ImageIO.read(new File(imagePath + "life.png"));
+			a = ImageIO.read(new File(imagePath + "continue1.png"));
+			b = ImageIO.read(new File(imagePath + "continue2.png"));
+			c = ImageIO.read(new File(imagePath + "exitgame1.png"));
+			d = ImageIO.read(new File(imagePath + "exitgame2.png"));
+			e = ImageIO.read(new File(imagePath + "restart1.png"));
+			f = ImageIO.read(new File(imagePath + "restart2.png"));
 		}
 		catch(IOException e){
 			System.err.println("Background can't load");
 		}
+		/*
+		OverlayLayout layout = new OverlayLayout(game);
+		game.setLayout(layout);
+		*/
 		
+		game.add(pauseMenu);
 		game.add(play);
 		game.add(scoreBar);
-
-		buffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
-		bufferGraphics = buffer.getGraphics();
 		
 		game.addKeyListener(key);
 		
@@ -94,10 +99,15 @@ public class GScreen implements Runnable,GameEventListener{
 
 	public void run(){
 		playGraphics = play.getGraphics();
+		scoreGraphics = scoreBar.getGraphics();
 		game.requestFocus();
 		
-		while(true){
-			drawscoreBg();
+		while(state != END){
+			
+			if(state == PAUSE){
+				paused();
+			}
+			drawScore();
 			
 			Printable[] list = null;
 			try {
@@ -107,7 +117,7 @@ public class GScreen implements Runnable,GameEventListener{
 			}
 			
 			/* Background */
-			bufferGraphics.drawImage(playBg,0,0,null);
+			playBufferGraphics.drawImage(playBg,0,0,null);
 			
 			/* Printables */
 			int length = list.length;
@@ -125,155 +135,23 @@ public class GScreen implements Runnable,GameEventListener{
 					int dx = praseInt(targetCoord.getX()) - imageWidth/2;
 					int dy = praseInt(targetCoord.getY()) - imageHeight/2;
 					
-					bufferGraphics.drawImage(image, dx, dy,null);
+					playBufferGraphics.drawImage(image, dx, dy,null);
 					
 				}			
 			}
 			
-			/* Paste buffer */
-			playGraphics.drawImage(buffer,0,0,null);
+			/* Paste playBuffer */
+			playGraphics.drawImage(playBuffer,0,0,null);
 			
-			if(state == PAUSE){
-				game.removeKeyListener(key);
-				paused();
-			}
 		}
-	}
-
-	public void paused(){
-
-		drawPauseMenu(1);
-		KeyAdapter pauseKeyAdapter = new KeyAdapter(){
-			private int keyFlag = 1;
-			public void keyPressed(KeyEvent e){
-			
-			
-			switch(e.getKeyCode()){
-				case KeyEvent.VK_UP:
-					keyFlag--;
-				
-					if(keyFlag < 1)
-						keyFlag = 1;
-					
-					drawPauseMenu(keyFlag);		
-					break;
-				case KeyEvent.VK_DOWN:
-					keyFlag++;
-					if(keyFlag > 3)
-						keyFlag = 3;
-					
-					drawPauseMenu(keyFlag);
-					break;
-				case KeyEvent.VK_ENTER:
-					switch(keyFlag){
-						case 1:
-							checkKeyEvent.dispatch("continue");
-							game.removeKeyListener(this);
-							game.addKeyListener(key);
-							state = 0;
-							break;
-						case 2:
-							System.exit(0);
-							break;
-						case 3:
-							break;
-						default:break;
-					}
-					break;
-				case KeyEvent.VK_ESCAPE:
-					checkKeyEvent.dispatch("continue");
-					game.removeKeyListener(this);
-					game.addKeyListener(key);
-					state = 0;
-					break;
-				default:
-					System.out.println("No this operator");
-					break;
-				}
-			}
-			public void keyReleased(KeyEvent e){}
-			public void keyTyped(KeyEvent e){}
-		};
-		
-		game.addKeyListener(pauseKeyAdapter);		
-		
 	}
 	
-	public void drawscoreBg(){
-		
-		Image lifeImg = null;
-		
-		try{
-			scoreBg = ImageIO.read(new File(imagePath + "scroeBg.png"));
-			lifeImg = ImageIO.read(new File(imagePath + "life.png"));
-		}
-		catch(IOException e){}
-		
-		Graphics g = scoreBar.getGraphics();
-		Graphics gg = setImg.getGraphics();
-
-		g.drawImage(scoreBg,0,0,350,600,null);
-		gg.drawImage(scoreBg,0,0,350,600,null);
+	public void drawScore(){
+		scoreBufferGraphics.drawImage(scoreBg,0,0,null);
 		for(int i=0;i<life;i++){
-			g.drawImage(lifeImg, 95 + 25*i, 80, null);
-			gg.drawImage(lifeImg, 95 + 25*i, 80,null);
+			scoreBufferGraphics.drawImage(lifeImg, 95 + 25*i, 80,25,25, null);
 		}
-
-		g.dispose();
-		gg.dispose();
-	}
-	
-	public void drawPauseMenu(int keyFlag){
-		
-		Graphics g = play.getGraphics();
-		Graphics gg = setPlayImg.getGraphics();
-		
-		try{
-			pauseBg = ImageIO.read(new File(imagePath + "pauseBg.png"));
-			a = ImageIO.read(new File(imagePath + "continue1.png"));
-			b = ImageIO.read(new File(imagePath + "continue2.png"));
-			c = ImageIO.read(new File(imagePath + "exitgame1.png"));
-			d = ImageIO.read(new File(imagePath + "exitgame2.png"));
-			e = ImageIO.read(new File(imagePath + "restart1.png"));
-			f = ImageIO.read(new File(imagePath + "restart2.png"));
-		}
-		catch(IOException e){
-			System.out.println("no image");
-		}
-		
-		//g.drawImage(pauseBg, 0, 0, null);
-		//gg.drawImage(pauseBg, 0, 0, null);
-		
-		switch(keyFlag){
-			case 1:
-				g.drawImage(b, 80, 300, null);
-				g.drawImage(c, 80, 350, null);
-				g.drawImage(e, 80, 400, null);
-				gg.drawImage(b, 80, 300, null);
-				gg.drawImage(c, 80, 350, null);
-				gg.drawImage(e, 80, 400, null);
-				break;
-			case 2:
-				g.drawImage(a, 80, 300, null);
-				g.drawImage(d, 80, 350, null);
-				g.drawImage(e, 80, 400, null);
-				gg.drawImage(a, 80, 300, null);
-				gg.drawImage(d, 80, 350, null);
-				gg.drawImage(e, 80, 400, null);
-				break;
-			case 3:
-				g.drawImage(a, 80, 300, null);
-				g.drawImage(c, 80, 350, null);
-				g.drawImage(f, 80, 400, null);
-				gg.drawImage(a, 80, 300, null);
-				gg.drawImage(c, 80, 350, null);
-				gg.drawImage(f, 80, 400, null);
-				break;
-			default:break;
-		}
-		
-		g.dispose();
-		gg.dispose();
+		scoreGraphics.drawImage(scoreBuffer,0,0,null);
 	}
 	
 	
@@ -293,6 +171,94 @@ public class GScreen implements Runnable,GameEventListener{
 			life = player.getLife();
 		}
 	}
+
+	private void paused(){
+		pauseMenu.display();
+	}
+	private void gameContinue(){
+		state = PLAY;
+		pauseMenu.setVisible(false);
+		game.requestFocus();
+	}
+	
+	private class PauseMenu extends Panel{
+		private PauseMenu menu;
+		private Graphics graphics;
+		public PauseMenu(){
+			setBounds(0,0,450,600);
+			//setBackground(new Color(0,0,0,0));
+			addKeyListener(new PauseKeyListener());
+		}
+		public void display(){
+			setVisible(true);
+			graphics = this.getGraphics();
+			drawPauseMenu(1);
+			requestFocus();
+		}
+		class PauseKeyListener implements KeyListener{
+			private int keyFlag = 1;
+			public void keyPressed(KeyEvent e){
+			switch(e.getKeyCode()){
+				case KeyEvent.VK_UP:
+					keyFlag--;
+					if(keyFlag < 1)	keyFlag += 3;
+					drawPauseMenu(keyFlag);		
+					break;
+				case KeyEvent.VK_DOWN:
+					keyFlag++;
+					if(keyFlag > 3)	keyFlag -= 3;
+					drawPauseMenu(keyFlag);
+					break;
+				case KeyEvent.VK_ENTER:
+					switch(keyFlag){
+						case 1:
+							EventConnect.dispatch("continue");
+							gameContinue();
+							break;
+						case 2:
+							EventConnect.dispatch("menu");
+							break;
+						case 3:
+							stage.restart();
+							EventConnect.dispatch(new GameEvent("restart",new Object[]{stage,"Rio"}));
+							break;
+						default:break;
+					}
+					break;
+				case KeyEvent.VK_ESCAPE:
+					EventConnect.dispatch("continue");
+					gameContinue();
+					break;
+				default:
+					break;
+				}
+			}
+			public void keyReleased(KeyEvent e){}
+			public void keyTyped(KeyEvent e){}
+		}
+		public void drawPauseMenu(int keyFlag){
+			//graphics.drawImage(playBuffer,0,0,null);
+			switch(keyFlag){
+				case 1:
+					graphics.drawImage(b, 80, 300, null);
+					graphics.drawImage(c, 80, 350, null);
+					graphics.drawImage(e, 80, 400, null);
+					break;
+				case 2:
+					graphics.drawImage(a, 80, 300, null);
+					graphics.drawImage(d, 80, 350, null);
+					graphics.drawImage(e, 80, 400, null);
+					break;
+				case 3:
+					graphics.drawImage(a, 80, 300, null);
+					graphics.drawImage(c, 80, 350, null);
+					graphics.drawImage(f, 80, 400, null);
+					break;
+				default:break;
+			}
+		}
+	}
+	
 }
 
 

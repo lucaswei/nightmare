@@ -7,7 +7,7 @@ class BulletFactory{
 			return new CircleBullet(enemy, angle, 32, 15, bulletId);
 		}
 		else if (bulletType.equals("normal")){
-			return new CircleBullet(enemy, angle, 12, 21, bulletId);
+			return new CircleBullet(enemy, angle, 12, 22, bulletId);
 		}
 		else if(bulletType.equals("small")){
 			return new CircleBullet(enemy, angle, 8, 17, bulletId);
@@ -24,7 +24,7 @@ class BulletFactory{
 			return new CircleBullet(position, angle, 32, 15, bulletId);
 		}
 		else if (bulletType.equals("normal")){
-			return new CircleBullet(position, angle, 12, 21, bulletId);
+			return new CircleBullet(position, angle, 12, 22, bulletId);
 		}
 		else if(bulletType.equals("small")){
 			return new CircleBullet(position, angle, 8, 17, bulletId);

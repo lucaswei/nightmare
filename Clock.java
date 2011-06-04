@@ -24,7 +24,7 @@ class Clock{
 			throw new DelayException();
 		}
 		try{
-			while(previousTime == currentTime){
+			while(previousTime >= currentTime){
 				Thread.sleep(1);
 			}
 		}

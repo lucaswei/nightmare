@@ -12,7 +12,7 @@ public class EventConnect{
 		listeners.remove(listener);
 	}
 	
-	public static void dispatch (String signal){
+	public static synchronized void dispatch (String signal){
 		GameEvent event = new GameEvent(signal);
 		dispatch(event);
 	}

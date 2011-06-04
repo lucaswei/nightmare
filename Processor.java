@@ -4,12 +4,17 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import static java.lang.Math.*;
 
-public class Processor implements Runnable{
+public class Processor implements Runnable,GameEventListener{
+
+	private final int END   = 0;
+	private final int PLAY  = 1;
+	private final int PAUSE = 2;
+	private int state = PLAY;
+
 	private Stage stage;
 	private Clock clock;
 	//private State myState;
 	private long time;
-	private EventConnect eventConnect;
 	private int HEIGHT;
 	private int WIDTH;
 
@@ -118,8 +123,8 @@ public class Processor implements Runnable{
 			if(bullet.collision(player)){
 				int life = player.crash();
 				EventConnect.dispatch("crash");
-				if(life < 0){
-					//eventConnect.dispatch("end");
+				if(life < 0 && Nightmare.debug == false){
+					EventConnect.dispatch("end");
 				}
 			}
 		}
@@ -211,11 +216,10 @@ public class Processor implements Runnable{
 	public void stateCheck(){
 		if(player.isPause()){
 			EventConnect.dispatch("pause");
-			clock.pause();
 		}
 	}
 	public void run(){
-		while(true){
+		while(state != END){
 			try{
 				time = clock.next(time);
 			}
@@ -247,6 +251,15 @@ public class Processor implements Runnable{
 		this.HEIGHT = 600;
 		this.WIDTH  = 450;
 		
+	}
+	public void trigger(GameEvent event){
+		String signal = event.getSignal();
+		if(signal.equals("pause")){
+			state = PAUSE;
+		}
+		if(signal.equals("end")){
+			state = END;
+		}
 	}
 }
 

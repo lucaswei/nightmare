@@ -3,7 +3,9 @@ import java.awt.Point;
 import java.awt.Container;
 
 public class Nightmare{
+	public static boolean debug = false;
 	public static void main(String[] args){
+		if(args.length > 0 && args[1].equals("debug")) debug = true;
 		GWindow  window = new GWindow();
 		EventConnect.addEventListener(window);
 	}
@@ -13,6 +15,9 @@ class Game implements GameEventListener{
 	private GScreen output;
 	private Clock clock;
 	private Processor processor;
+	
+	Thread processorThread;
+	Thread outputThread;
 
 	public Game(Stage stage,String hero){
 		clock = new Clock(32);
@@ -23,7 +28,6 @@ class Game implements GameEventListener{
 		processor = new Processor(stage,clock,player,channel);
 		
 		output = new GScreen(channel,keyboard,stage,player);
-		EventConnect.addEventListener(output);
 	}
 	
 	public Container getContent(){
@@ -31,8 +35,12 @@ class Game implements GameEventListener{
 	}
 	
 	public void display(){
-		Thread processorThread = new Thread(processor);
-		Thread outputThread = new Thread(output);
+		EventConnect.addEventListener(processor);
+		EventConnect.addEventListener(output);
+		EventConnect.addEventListener(this);
+		
+		processorThread = new Thread(processor);
+		outputThread = new Thread(output);
 		
 		processorThread.start();
 		outputThread.start();
@@ -44,16 +52,20 @@ class Game implements GameEventListener{
 		if(signal.equals("pause")){
 			clock.pause();
 		}
-		else if(signal.equals("continu")){
+		else if(signal.equals("continue")){
 			clock.start();
 		}
+		else if(signal.equals("restart")){
+			gameEnd();
+		}
 		else if(signal.equals("end")){
-			clock.stop();
-			finalize();
+			gameEnd();
 		}
 	}
-	
-	protected void finalize(){
+	public void gameEnd(){
+		clock.stop();
+		EventConnect.removeEventListener(processor);
 		EventConnect.removeEventListener(output);
+		EventConnect.removeEventListener(this);
 	}
 }
