@@ -37,6 +37,9 @@ public class GScreen implements Runnable,GameEventListener{
 	private Image    scoreBuffer;
 	private Graphics scoreBufferGraphics;
 	
+	private Image    pauseBuffer;
+	private Graphics pauseBufferGraphics;
+	
 	private PauseMenu pauseMenu;
 	
 	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,Hero player){
@@ -55,14 +58,17 @@ public class GScreen implements Runnable,GameEventListener{
 		playBuffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
 		playBufferGraphics = playBuffer.getGraphics();
 		
+		pauseBuffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
+		pauseBufferGraphics = pauseBuffer.getGraphics();
 		
 		scoreBar = new Canvas();
 		scoreBar.setBounds(450,0,800,600);
+		scoreBar.setFocusable(false);
 		scoreBuffer = new BufferedImage(350,600,BufferedImage.TYPE_4BYTE_ABGR);
 		scoreBufferGraphics = scoreBuffer.getGraphics();
 		
 		pauseMenu = new PauseMenu();
-		pauseMenu.setVisible(false);
+		//pauseMenu.setVisible(false);
 		
 		try{
 			playBg = ImageIO.read(new File(imagePath + "testbg.gif"));
@@ -181,12 +187,12 @@ public class GScreen implements Runnable,GameEventListener{
 		game.requestFocus();
 	}
 	
-	private class PauseMenu extends Panel{
+	private class PauseMenu extends JPanel{
 		private PauseMenu menu;
 		private Graphics graphics;
 		public PauseMenu(){
 			setBounds(0,0,450,600);
-			//setBackground(new Color(0,0,0,0));
+			setOpaque(true);
 			addKeyListener(new PauseKeyListener());
 		}
 		public void display(){
@@ -237,25 +243,26 @@ public class GScreen implements Runnable,GameEventListener{
 			public void keyTyped(KeyEvent e){}
 		}
 		public void drawPauseMenu(int keyFlag){
-			//graphics.drawImage(playBuffer,0,0,null);
+			pauseBufferGraphics.drawImage(playBuffer,0,0,null);
 			switch(keyFlag){
 				case 1:
-					graphics.drawImage(b, 80, 300, null);
-					graphics.drawImage(c, 80, 350, null);
-					graphics.drawImage(e, 80, 400, null);
+					pauseBufferGraphics.drawImage(b, 80, 300, null);
+					pauseBufferGraphics.drawImage(c, 80, 350, null);
+					pauseBufferGraphics.drawImage(e, 80, 400, null);
 					break;
 				case 2:
-					graphics.drawImage(a, 80, 300, null);
-					graphics.drawImage(d, 80, 350, null);
-					graphics.drawImage(e, 80, 400, null);
+					pauseBufferGraphics.drawImage(a, 80, 300, null);
+					pauseBufferGraphics.drawImage(d, 80, 350, null);
+					pauseBufferGraphics.drawImage(e, 80, 400, null);
 					break;
 				case 3:
-					graphics.drawImage(a, 80, 300, null);
-					graphics.drawImage(c, 80, 350, null);
-					graphics.drawImage(f, 80, 400, null);
+					pauseBufferGraphics.drawImage(a, 80, 300, null);
+					pauseBufferGraphics.drawImage(c, 80, 350, null);
+					pauseBufferGraphics.drawImage(f, 80, 400, null);
 					break;
 				default:break;
 			}
+			playGraphics.drawImage(pauseBuffer,0,0,null);
 		}
 	}
 	
