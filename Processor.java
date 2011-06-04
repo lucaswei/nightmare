@@ -43,19 +43,11 @@ public class Processor implements Runnable{
 				if(enemyId < enemyList.size() && enemyList.get(enemyId) != null){
 					String bulletType = inst.getBulletType();
 					int bulletId= inst.getBulletId();
-					int radius = 0;
-                    int power  = 0;
-                    int imageId= 0;
-					if(bulletType.equals("costum")){
-						radius  = inst.getRadius();
-						power   = inst.getPower();
-						imageId = inst.getImageId();
-					}
 					Enemy enemy = enemyList.get(enemyId);
 					/* do not use i */
 					for(int j=bulletList.size();j<bulletId;j++)
 						bulletList.add(null);
-					Bullet bullet = BulletFactory.getBullet(imageId, bulletId, radius, power, enemy.getPosition(), bulletType);
+					Bullet bullet = BulletFactory.getBullet(inst,enemy);
 					bulletList.add(bulletId,bullet);
 				}
 			}
@@ -63,28 +55,18 @@ public class Processor implements Runnable{
 				RouteInstruction inst = insts[i];
 				String targetType = inst.getTargetType();
 				int    targetId   = inst.getTargetId();
-				int    speed      = inst.getSpeed();
-				String pointRefer = inst.getPointRefer();
-				String routeType  = inst.getRouteType();
-				int    pointAngle = inst.getPointAngle();
-				Point  offset     = inst.getPointOffset();
-				Point target;
 				if(targetType.equals("enemy")){
 					if(targetId < enemyList.size() && enemyList.get(targetId) != null){
-						Enemy enemy;
-						enemy = enemyList.get(targetId);
-						target = calcTarget(enemy.getPosition(), pointRefer, pointAngle, offset);
-						Route route = RouteFactory.getRoute(enemy.getPosition(), target, speed, routeType);
-						enemy.setRoute(route);
+						Enemy target = enemyList.get(targetId);
+						Route route = RouteFactory.getRoute(inst,target,player.getPosition());
+						target.setRoute(route);
 					}
 				}
 				else if(targetType.equals("bullet")){
 					if(targetId < bulletList.size() && bulletList.get(targetId) != null){
-						Bullet bullet;
-						bullet = bulletList.get(targetId);
-						target = calcTarget(bullet.getPosition(), pointRefer, pointAngle, offset);
-						Route route = RouteFactory.getRoute(bullet.getPosition(), target, speed, routeType);
-						bullet.setRoute(route);
+						Bullet target = bulletList.get(targetId);
+						Route route = RouteFactory.getRoute(inst,target,player.getPosition());
+						target.setRoute(route);
 					}
 				}
 			}
@@ -104,11 +86,6 @@ public class Processor implements Runnable{
 			
 			bullet.move();
 			position = bullet.getPosition();
-			/*	
-			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
-				//bulletList.remove(bullet);
-			}
-			*/
 		}
 		for(Bullet bullet : playerBulletList){
 			if(bullet ==null)
@@ -116,11 +93,6 @@ public class Processor implements Runnable{
 			
 			bullet.move();
 			position = bullet.getPosition();
-			/*	
-			if(position.getX() < 0 || position.getY() < 0 || position.getX() > 450 || position.getY() > 600){
-				//bulletList.remove(bullet);
-			}
-			*/
 		}
 	}
 	private void calcEnemy(){
@@ -186,16 +158,6 @@ public class Processor implements Runnable{
 			array[i] = (Printable)obj[i];
 		}
 		queue.offer(array);
-		/*
-		Printable[] enemy = enemyList.toArray();
-		Printable[] bullet = bulletList.toArray();
-		Printable[] playerBullet = playerBulletList.toArray();
-		int elength = enemy.length;
-		int blength = bullet.length;
-		int plength = playerBullet.length;
-		Printable[] output = new Printable[];
-		Systme.
-		*/
 	}
 	/*recycle trash over the screen*/
 	private void recycle(){
@@ -245,75 +207,7 @@ public class Processor implements Runnable{
 		else
 			return false;
 	}
-	private Point calcTarget(Point self, String pointRefer, int pointAngle, Point offset){
-		int x,y;
-		Point selfOffset = null;
-		if(pointRefer.equals("global")){
-			if(pointAngle == 0){
-				Point point = new Point(offset);
-				return point;
-			}else{
-				x = (int)offset.getX()-(int)self.getX();
-				y = (int)offset.getY()-(int)self.getY();
-				Point point = new Point(x,y);
-				selfOffset = round(point, pointAngle);
-			}
-		}
-		else if(pointRefer.equals("self")){
-			if(pointAngle == 0){
-				x = (int)(self.getX()+offset.getX());
-				y = (int)(self.getY()+offset.getY());
-				Point point = new Point(x, y);
-				return point;
-			}else{
-				x = (int)offset.getX();
-				y = (int)offset.getY();
-				Point point = new Point(x,y);
-				selfOffset = round(point, pointAngle);
-			}
-		}
-		else if(pointRefer.equals("player")){
-			if(pointAngle == 0){
-				x = (int)(player.getPosition().getX()+offset.getX());
-				y = (int)(player.getPosition().getY()+offset.getY());
-				Point point = new Point(x, y);
-				return point;
-			}
-			else{
-				x = (int)((offset.getX()+player.getPosition().getX())-self.getX());
-				y = (int)((offset.getY()+player.getPosition().getY())-self.getY());
-				Point point = new Point(x,y);
-				selfOffset = round(point, pointAngle);
-			}
-		}
-		if(selfOffset != null){
-			x = (int)(selfOffset.getX()+self.getX());
-			y = (int)(selfOffset.getY()+self.getY());
-			Point target = new Point(x, y);
-			return target;
-		}
-		else{
-			return null;
-		}
-	}
-	private Point round(Point point,int degree){
-		double x = point.getX();
-		double y = point.getY();
-		/*
-		 *Before change
-		double length = Math.sqrt(x*x+y*y);
-		double th;
-		th = Math.tan(y, x);
-		th = th+ ((double)degree / 180 * Math.PI);
-		x = length*Math.cos(th);
-		y = length*Math.sin(th);
-		Point afterRound = new Point((int)x, (int)y);
-		*/
-		double radian = PI*degree/180;
-		double newX = x*cos(radian) + y*sin(radian);
-		double newY = y*cos(radian) - x*sin(radian);
-		return new Point((int)newX,(int)newY);
-	}
+	
 	public void stateCheck(){
 		if(player.isPause()){
 			eventConnect.dispatch("pause");

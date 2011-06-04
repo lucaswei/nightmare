@@ -8,16 +8,18 @@ public class Stage{
 	Image[] images;
 	Instruction[][] instructions;
 	Map<String,Integer> anchors;
+	private int enemyTotal;
+	private int bulletTotal;
 	
 	int PC = 0;
 	
 	public Stage(String stageName){
 		String path = "map/" + stageName + "/";
-		ImageMapper mapper = new ImageMapper(path);
-		images = mapper.get();
-
-		InstructionParser parser = new InstructionParser(path);
-		instructions = (Instruction[][])parser.get();
+		InstructionCompiler compiler = new InstructionCompiler(path);
+		instructions = compiler.getInstructionTable();
+		images       = compiler.getImageTable();
+		enemyTotal   = compiler.getEnemyTotal();
+		bulletTotal  = compiler.getBulletTotal();
 	}
 	public Instruction[] get(){
 		if(PC < instructions.length){
@@ -34,38 +36,130 @@ public class Stage{
 		}
 	}
 	public Image getImage(int imageId){
-		return images[imageId];
+		if(imageId < images.length)
+			return images[imageId];
+		else
+			return null;
+	}
+	public int getEnemyTotal(){
+		return enemyTotal;
+	}
+	public int getBulletTotal(){
+		return bulletTotal;
 	}
 }
 
 
 class InstructionCompiler{
 	private ArrayList<ArrayList<Instruction>> instructionTable;
+	private ArrayList<Image> images;
+	private String path;
 	private BufferedReader reader;
 	private Root root;
 	
 	private VariableTable variables;
-	private enemyID = 1;
-	private bulletID = 1;
-	private wave = 1;
+	private int enemyID = 1;
+	private int bulletID = 1;
+	private int wave = 1;
 	
 	
-	public InstructionCompiler(File map){
+	public InstructionCompiler(String path){
+		this.path = path;
+		File map;
+		try{
+			map = new File(path + "map");
+			this.reader = new BufferedReader(new FileReader(map));
+		}
+		catch(FileNotFoundException e){
+			System.err.println("File is not found");
+		}
+		
+		loadDefaultImage();
 		analyze();
 		compile();
 	}
-	private analyze(BufferedReader reader){
-		this.reader = reader;
+	
+	public Instruction[][] getInstructionTable(){
+		Instruction[][] out;
+		Object[] array = instructionTable.toArray();
+		int length = array.length;
+		out = new Instruction[length][];
+		for(int i=0;i<length;i++){
+			ArrayList<Instruction> arr = (ArrayList<Instruction>)array[i];
+			if(array[i] != null)
+				out[i] = arr.toArray(new Instruction[arr.size()]);
+		}
+		
+		
+		/* Dump */
+		/*
+		for(int i=0;i<length;i++){
+			Instruction[] arr = out[i];
+			if(arr != null){
+				for(Instruction inst:arr){
+					System.out.println(i+"\t:\t"+inst.toString());
+				}
+			}
+		}
+		*/
+		
+		
+		return out;
+	}
+	
+	public Image[] getImageTable(){
+		Image[] out =  images.toArray(new Image[images.size()]);
+		return out;
+	}
+	public int getEnemyTotal(){
+		return enemyID;
+	}
+	public int getBulletTotal(){
+		return bulletID;
+	}
+	
+	
+	private void loadDefaultImage(){
+		images = new ArrayList<Image>();
+		try{
+			File imageIndex;
+			imageIndex = new File("image/image");
+			BufferedReader reader = new BufferedReader(new FileReader(imageIndex));
+			
+			String line;
+			while((line = reader.readLine()) != null && !(line.equals(""))){
+				Scanner tokens = new Scanner(line);
+				int imageID = tokens.nextInt();
+				String imageName = tokens.next();
+				Image image;
+				try{
+					image = ImageIO.read(new File("image/"+imageName));
+					int size = images.size();
+					for(int i=size;i<imageID;i++){
+						images.add(null);
+					}
+				images.add(imageID,image);
+				}
+				catch(IOException e){
+					System.err.println("Image '"+imageName+"' can't open");
+				}
+			}
+		}
+		catch(IOException e){
+			System.err.println(e.getMessage());
+		}
+	}
+	private void analyze(){
 		root = new Root();
 	}
-	private compile(){
+	private void compile(){
 		instructionTable = new ArrayList<ArrayList<Instruction>>();
 		variables = new VariableTable();
 		root.calc();
 	}
-	private addInstruction(int time,Instruction instruction){
+	private void addInstruction(int time,Instruction instruction){
 		int size = instructionTable.size();
-		for(int i=size;i<time;i++)
+		for(int i=size;i<=time;i++)
 			instructionTable.add(null);
 		ArrayList<Instruction> instructions;
 		if((instructions = instructionTable.get(time)) == null){
@@ -75,8 +169,9 @@ class InstructionCompiler{
 		instructions.add(instruction);
 	}
 	
+	
 	private interface Element{
-		void calc();
+		public void calc();
 	}
 	
 
@@ -84,26 +179,26 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 
-	private class Root{
+	private class Root implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		public Root(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("PATH"))      {elements.add(new Path(line));}
 					//else if(statement.equals("ROLE")) {elements.add(new Role(line));}
 					//else if(statement.equals("IMAGE")){elements.add(new Image(line));}
 					//else if(statement.equals("BOSS")) {elements.add(new Boss(line));}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
-		void calc(){
+		public void calc(){
 			for(Element e:elements){
-				e.calc(null);
+				e.calc();
 			}
 		}
 	}
@@ -113,28 +208,28 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 	
 	
-	private class Path{
+	private class Path implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		private String attribute;
 		public Path(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("ENEMY"))   {elements.add(new Enemy(line));}
 					if(statement.equals("GROUP"))   {elements.add(new Group(line));}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
-		void calc(){
+		public void calc(){
 			String time = attr(attribute,1);
 			variables.set("time",time);
 			for(Element e:elements){
@@ -148,31 +243,31 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Group{
+	private class Group implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		private String attribute;
 		public Group(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("ENEMY"))   {elements.add(new Enemy(line));}
 					if(statement.equals("GROUP"))   {elements.add(new Group(line));}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
 			int baseTime = parseInt(variables.get("time"));
 			int plusTime = parseInt(attr(attribute,1));
 			int times    = parseInt(attr(attribute,2));
@@ -180,7 +275,7 @@ class InstructionCompiler{
 			for(Element e:elements){
 				for(int i=0;i<times;i++){
 					variables.push();
-					variables.set("time",(String)(baseTime + plusTime + i * interval));
+					variables.set("time",Integer.toString(baseTime + plusTime + i * interval));
 					e.calc();
 					variables.pop();
 				}
@@ -192,7 +287,7 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////	
 
 
-	private class Enemy{
+	private class Enemy implements Element{
 		private Type type;
 		private Position position;
 		private Move move;
@@ -204,11 +299,11 @@ class InstructionCompiler{
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("TYPE"))    {type     = new Type(line);}
 					if(statement.equals("POSITION")){position = new Position(line);}
 					if(statement.equals("MOVE"))    {move     = new Move(line);}
@@ -216,14 +311,14 @@ class InstructionCompiler{
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
 			int baseTime = parseInt(variables.get("time"));
 			int plusTime = parseInt(attr(attribute,1));
 			int time = baseTime + plusTime;
@@ -231,15 +326,15 @@ class InstructionCompiler{
 			/* inst_type */
 			arguments[0] = "enemy";
 			/* enemy_ID */
-			arguments[1] = (String)enemyID;
+			arguments[1] = Integer.toString(enemyID);
 			type.calc();
 			position.calc();
 			Instruction instruction = new Instruction(arguments);
 			addInstruction(time,instruction);
 			
 			variables.push();
-			variables.set("time",(String)time);
-			variables.set("target_ID",(String)enemyID);
+			variables.set("time",Integer.toString(time));
+			variables.set("target_ID",Integer.toString(enemyID));
 			variables.set("target_type","enemy");
 			move.calc();
 			shoot.calc();
@@ -252,10 +347,10 @@ class InstructionCompiler{
 		
 		private class Type{
 			private String attribute;
-			public EnemyType(String attribute){
+			public Type(String attribute){
 				this.attribute = attribute;
 			}
-			void calc(String line){
+			public void calc(){
 				/* enemy_type*/
 				String type = attr(attribute,1);
 				arguments[2] = type;
@@ -274,7 +369,7 @@ class InstructionCompiler{
 			public Position(String attribute){
 				this.attribute = attribute;
 			}
-			void calc(String line){
+			public void calc(){
 				arguments[3] = attr(attribute,1);
 			}
 		}
@@ -285,30 +380,30 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Move{
+	private class Move implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		private String attribute;
 		public Move(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("ROUTE"))   {elements.add(new Route(line));}
 					if(statement.equals("SHAPE"))   {elements.add(new Shape(line));}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
-		void calc(){
+		public void calc(){
 			for(Element e:elements){
-				calc();
+				e.calc();
 			}
 		}
 	}
@@ -318,30 +413,30 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Shoot{
+	private class Shoot implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		private String attribute;
 		public Shoot(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("BULLET"))  {elements.add(new Bullet(line));}
 					if(statement.equals("CLIP"))    {elements.add(new Clip(line));}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
-		void calc(){
+		public void calc(){
 			for(Element e:elements){
-				calc();
+				e.calc();
 			}
 		}
 	}
@@ -351,31 +446,31 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Clip{
+	private class Clip implements Element{
 		private ArrayList<Element> elements = new ArrayList<Element>();
 		private String attribute;
 		public Clip(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("BULLET"))  {elements.add(new Bullet(line));}
 					if(statement.equals("CLIP"))    {elements.add(new Clip(line));}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
 			int baseTime = parseInt(variables.get("time"));
 			int plusTime = parseInt(attr(attribute,1));
 			int times    = parseInt(attr(attribute,2));
@@ -383,7 +478,7 @@ class InstructionCompiler{
 			for(Element e:elements){
 				for(int i=0;i<times;i++){
 					variables.push();
-					variables.set("time",(String)(baseTime + plusTime + i * interval));
+					variables.set("time",Integer.toString(baseTime + plusTime + i * interval));
 					e.calc();
 					variables.pop();
 				}
@@ -395,35 +490,36 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Bullet{
+	private class Bullet implements Element{
 		private Type type;
-		private Position position;
+		//private Position position;
 		private Move move;
 		
+		private String[] arguments = new String[7];
 		private String attribute;
 		public Bullet(String attribute){
 			this.attribute = attribute;
 			parse();
 		}
-		public parse(){
+		public void parse(){
 			String line = null;
 			try{
-				while((line = readerLine()) != null && !("".equals(line))){
-					String statement = line.split(" ",2)[0];
+				while((line = reader.readLine()) != null && !("".equals(line))){
+					String statement = (new Scanner(line)).next();
 					if(statement.equals("TYPE"))    {type     = new Type(line);}
-					if(statement.equals("POSITION")){position = new Position(line);}
-					if(statement.equals("MOVE"))    {move     = new Move(line);}
+					//else if(statement.equals("POSITION")){position = new Position(line);}
+					else if(statement.equals("MOVE"))    {move     = new Move(line);}
 					else if(statement.equals("END")){return;}
 				}
 			}
-			catch(IOException){
-				System.err.println("IOException");
+			catch(IOException e){
+				System.err.println(e.getMessage());
 			}
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
 			int baseTime = parseInt(variables.get("time"));
 			int plusTime = parseInt(attr(attribute,1));
 			int time = baseTime + plusTime;
@@ -432,19 +528,19 @@ class InstructionCompiler{
 			/* inst_type */
 			arguments[0] = "bullet";
 			/* enemy_ID */
-			arguments[1] = enemyID;
+			arguments[1] = Integer.toString(enemyID);
 			type.calc();
-			position.calc();
+			//position.calc();
 			for(int i=0;i<amount;i++){
 				/* bullet_ID */
-				arguments[2] = (String)bulletID + i;
+				arguments[2] = Integer.toString(bulletID + i);
 				Instruction instruction = new Instruction(arguments);
 				addInstruction(time,instruction);
 			}
 			variables.push();
-			variables.set("time",(String)time);
-			variables.set("target_ID",(String)bulletID);
-			variables.set("amount",(String)amount);
+			variables.set("time",Integer.toString(time));
+			variables.set("target_ID",Integer.toString(bulletID));
+			variables.set("amount",Integer.toString(amount));
 			variables.set("target_type","bullet");
 			move.calc();
 			variables.pop();
@@ -456,10 +552,10 @@ class InstructionCompiler{
 		
 		private class Type{
 			private String attribute;
-			public EnemyType(String attribute){
+			public Type(String attribute){
 				this.attribute = attribute;
 			}
-			void calc(String line){
+			public void calc(){
 				/* bullet_type*/
 				String type = attr(attribute,1);
 				arguments[3] = type;
@@ -473,6 +569,15 @@ class InstructionCompiler{
 				}
 			}
 		}
+		private class Position{
+			private String attribute;
+			public Position(String attribute){
+				this.attribute = attribute;
+			}
+			public void calc(){
+				arguments[3] = attr(attribute,1);
+			}
+		}
 	}
 	
 
@@ -480,19 +585,18 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Route{
-		private Type type;
-		private Position position;
-		private Move move;
-		
+	private class Route implements Element{
 		private String attribute;
-		public Bullet(String attribute){
+		public Route(String attribute){
 			this.attribute = attribute;
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
+			
+			String[] arguments = new String[10];
+		
 			int baseTime = parseInt(variables.get("time"));
 			int plusTime = parseInt(attr(attribute,1));
 			int time = baseTime + plusTime;
@@ -500,49 +604,46 @@ class InstructionCompiler{
 			/* inst_type */
 			arguments[0] = "route";
 			
-			
 			/* route_type */
+			boolean isTypeValid = false;
 			String routeType = attr(attribute,2);
 			if(routeType.equals("stop")){
+				isTypeValid = true;
 				arguments[3] = "stop";
-				/* point_refer */
-				arguments[5] = attr(attribute,3);
-				/* point_offset */
-				arguments[5] = attr(attribute,4);
-				/* point_angle */
-				arguments[6] = attr(attribute,5);
 			}
-			else if(routeType.equals("beeline")){
+			else if(routeType.equals("line")){
+				isTypeValid = true;
 				arguments[3] = "linear";
 				/* speed */
 				arguments[4] = attr(attribute,3);
 				/* point_refer */
 				arguments[5] = attr(attribute,4);
 				/* point_offset */
-				arguments[5] = attr(attribute,5);
+				arguments[6] = attr(attribute,5);
 				/* point_angle */
-				arguments[6] = attr(attribute,6);
+				arguments[7] = attr(attribute,6);
 			}
 			
-			
-			/* target_type */
-			String targetType = variables.gete("target_type");
-			if(targetType.equals("enemy")){
-				arguments[1] = "enemy";
-				/* target_ID */
-				arguments[2] = variables.get("target_ID");
-				Instruction instruction = new Instruction(arguments);
-				addInstruction(time,instruction);
-			}
-			else if(targetType.equals("bullet")){
-				arguments[1] = "bullet";
-				/* target_ID */
-				int targetID = parseInt(variables.get("target_ID"));
-				int amount   = parseInt(variables.get("amount"));
-				for(int i=0;i<amount;i++){
-					arguments[2] = targetID + i;
+			if(isTypeValid){
+				/* target_type */
+				String targetType = variables.get("target_type");
+				if(targetType.equals("enemy")){
+					arguments[1] = "enemy";
+					/* target_ID */
+					arguments[2] = variables.get("target_ID");
 					Instruction instruction = new Instruction(arguments);
 					addInstruction(time,instruction);
+				}
+				else if(targetType.equals("bullet")){
+					arguments[1] = "bullet";
+					/* target_ID */
+					int targetID = parseInt(variables.get("target_ID"));
+					int amount   = parseInt(variables.get("amount"));
+					for(int i=0;i<amount;i++){
+						arguments[2] = Integer.toString(targetID + i);
+						Instruction instruction = new Instruction(arguments);
+						addInstruction(time,instruction);
+					}
 				}
 			}
 		}
@@ -553,19 +654,17 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////
 
 	
-	private class Shape{
-		private Type type;
-		private Position position;
-		private Move move;
-		
+	private class Shape implements Element{
 		private String attribute;
-		public Bullet(String attribute){
+		public Shape(String attribute){
 			this.attribute = attribute;
 		}
 		
 		
 		
-		void calc(){
+		public void calc(){
+			String[] arguments = new String[10];
+		
 			/* target_type */
 			String targetType = variables.get("target_type");
 			if(targetType.equals("enemy")){
@@ -599,9 +698,9 @@ class InstructionCompiler{
 				int amount   = parseInt(variables.get("amount"));
 				if(amount == 1){
 					/* target_ID */
-					arguments[2] = (String)targetID;
+					arguments[2] = Integer.toString(targetID);
 					/* point_angle */
-					arguments[7] = (String)offsetAngle;
+					arguments[7] = Integer.toString(offsetAngle);
 					Instruction instruction = new Instruction(arguments);
 					addInstruction(time,instruction);
 				}
@@ -611,9 +710,9 @@ class InstructionCompiler{
 					float startAngle = offsetAngle - theta * (amount - 1) / 2;
 					for(int i=0;i<amount;i++){
 						/* target_ID */
-						arguments[2] = (String)(targetID + i);
+						arguments[2] = Integer.toString(targetID + i);
 						/* point_angle */
-						arguments[7] = (String)(startAngle + i * theta);
+						arguments[7] = Integer.toString((int)(startAngle + i * theta));
 						Instruction instruction = new Instruction(arguments);
 						addInstruction(time,instruction);
 					}
@@ -627,7 +726,10 @@ class InstructionCompiler{
 ////////////////////////////////////////////////////////////////////////////////	
 
 	
-	private int parseInt(String i)     {return Integer(i);}
+	private int parseInt(String i){return Integer.valueOf(i);}
+	private String attr(String s,int i){
+		return s.split(" +")[i];
+	}
 }
 
 
@@ -635,6 +737,7 @@ class VariableTable{
 	private Stack<HashMap<String,String>> stack = new Stack<HashMap<String,String>>();
 
 	public VariableTable(){
+		push();
 	}
 	public void push(){
 		stack.push(new HashMap<String,String>());
@@ -649,14 +752,14 @@ class VariableTable{
 		stack.peek().put(key,value);
 	}
 	public String get(String key){
-		String out = stack.peek().put(key,value);
+		String out = stack.peek().get(key);
 		if( out != null){
 			return out;
 		}
 		else{
 			int size = stack.size() - 2;
 			for(int i=size;i>=0;i--){
-				out = stack.get(i).put(key,value);
+				out = stack.get(i).get(key);
 				if( out != null){
 					return out;
 				}

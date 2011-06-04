@@ -1,0 +1,21 @@
+PATH 0
+	ENEMY 0
+		TYPE normal
+		POSITION 225,0
+		MOVE
+			ROUTE 0 line 10 self 0,1 0
+			ROUTE 20 stop
+			ROUTE 60 line 10 self 0,-1 0 
+		END
+		SHOOT
+			CLIP 20 3 5
+				BULLET 20 50
+					TYPE normal
+					MOVE
+						SHAPE 30 fan  5 self 0,1 0  360
+					END
+				END
+			END
+		END
+	END
+END

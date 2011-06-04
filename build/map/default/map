@@ -1,200 +1,29 @@
-IMAGE
-	IMG 1 menubg.png
-	IMG 2 play1.png
-	IMG 3 play2.png
-	IMG 4 exit1.png
-	IMG 5 exit2.png
-	IMG 6 rolebg.png
-	IMG 7 sword1.png
-	IMG 8 sword2.png
-	IMG 9 Rio1.png
-	IMG 10 Rio2.png
-	IMG 11 Rio.png
-	BG testbg.gif
-	IMG 13 50_enemy_1.png
-	IMG 14 50_enemy_2.png
-	IMG 15 60_enemy_1.png
-	IMG 16 60_enemy_2.png
-	IMG 17 16_bullet_1.png
-	IMG 18 16_bullet_2.png
-	IMG 19 16_bullet_3.png
-	IMG 20 16_bullet_1.png
-	IMG 21 24_bullet_1.png
-	IMG 22 24_bullet_2.png
-	END
-
-PARTA 0
+PATH 0
 	ENEMY 0
-		TYPE normal
-		POSITION 0,150
-		MOVE
-			ROUTE 0 5 line global 100,150 0
-			ROUTE 10 10 line global 100,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 0
-		TYPE normal
-		POSITION 450,150
-		MOVE
-			ROUTE 0 5 line global 350,150 0
-			ROUTE 10 10 line global 350,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 60
-		TYPE normal
-		POSITION 0,150
-		MOVE
-			ROUTE 0 5 line global 100,150 0
-			ROUTE 10 10 line global 100,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 60
-		TYPE small
-		POSITION 450,150
-		MOVE
-			ROUTE 0 5 line global 350,150 0
-			ROUTE 10 10 line global 350,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 90
-		TYPE small
-		POSITION 450,150
-		MOVE
-			ROUTE 0 5 line global 350,150 0
-			ROUTE 10 10 line global 350,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 90
-		TYPE normal
-		POSITION 0,150
-		MOVE
-			ROUTE 0 5 line global 100,150 0
-			ROUTE 10 10 line global 100,0   0 
-			END
-		SHOOT
-			BULLET 10 3 10 5
-				TYPE normal
-				MOVE
-					ROUTE 0 10 fan player 0,0 0 50
-					END
-				END
-			END
-		END
-	ENEMY 120
-		TYPE normal
-		POSITION 0,150
-		MOVE
-			ROUTE 0 5 line self 100,0 0
-			END
-		SHOOT
-			BULLET 10 5 20 3
-				TYPE small
-				MOVE
-					ROUTE 0 10 fan self 0,10 0 50
-					END
-				END
-			END
-		END
-	ENEMY 120
-		TYPE normal
-		POSITION 450,150
-		MOVE
-			ROUTE 0 5 line self -100,0 0
-			END
-		SHOOT
-			BULLET 10 5 20 3
-				TYPE small
-				MOVE
-					ROUTE 0 10 fan self 0,10 0 50
-					END
-				END
-			END
-		END
-	ENEMY 180
 		TYPE normal
 		POSITION 225,0
 		MOVE
-			ROUTE 0 5 line self 0,10 0
-			ROUTE 30 5 stop self 0,0 0
-			ROUTE 80 5 line self 0,-10 0
-			END
+			ROUTE 0 line 10 self 0,1 0
+			ROUTE 20 stop
+			ROUTE 60 line 10 self 0,-1 0 
+		END
 		SHOOT
-			BULLET 30 5 5 30
-				TYPE small
+			BULLET 20 10
+				TYPE normal
 				MOVE
-					ROUTE 0 20 fan player 0,0 0 360
-					ROUTE 10 20 stop self 0,0 0 
-					ROUTE 20 5 line player 0,0 0
-					END
+					SHAPE 0 fan  20 self -1,-1 0  60
+					ROUTE 10 stop
+					ROUTE 15 line 5 player 0,0 0
 				END
 			END
-		SHOOT
-			BULLET 120 5 5 30
-				TYPE small
+			BULLET 20 10
+				TYPE normal
 				MOVE
-					ROUTE 0 20 fan player 0,0 0 360
-					ROUTE 10 20 stop self 0,0 0 
-					ROUTE 20 5 line player 0,0 0
-					END
-				END
-			END
-		SHOOT
-			BULLET 210 5 5 30
-				TYPE small
-				MOVE
-					ROUTE 0 20 fan player 0,0 0 360
-					ROUTE 10 20 stop self 0,0 0 
-					ROUTE 20 5 line player 0,0 0
-					END
+					SHAPE 0 fan  20 self 1,-1 0  60
+					ROUTE 10 stop
+					ROUTE 15 line 5 player 0,0 0
 				END
 			END
 		END
-	END	
-BOSSA 01000
 	END
-	
-PARTB 02000
-	END
-	
-BOSSB 03000
-	END
+END

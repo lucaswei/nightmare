@@ -56,7 +56,6 @@ public class GMenu implements KeyListener{
 	}
 
 	public void keyPressed(KeyEvent e){
-		System.out.println("Press");
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_UP:
 				keyFlag--;

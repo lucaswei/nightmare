@@ -38,6 +38,11 @@ abstract class Enemy extends Plane{
 	public void move(){
 		if(route != null)
 			position = route.move();
+		try{
+			angle = route.rotate();
+		}
+		catch(Exception e){
+		}
 	}
 	public int crash(){
 		return -2;

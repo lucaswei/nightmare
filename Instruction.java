@@ -43,7 +43,6 @@ interface RouteInstruction extends IInstruction{
 	String getTargetType();
 	String getRouteType();
 	int    getSpeed();
-	String getCoordType();
 	String getPointRefer();
 	int    getPointAngle();
 	Point  getPointOffset();
@@ -79,49 +78,54 @@ class Instruction implements
 	
 	/* Printable */
 	public  int    getImageId(){
-		return Integer.valueOf(arguments[4]);
+		return arguments[4]!=null ? Integer.valueOf(arguments[4]) : 0;
 	}
 	public  int    getRadius(){
-		return Integer.valueOf(arguments[5]);
+		return arguments[5]!=null ? Integer.valueOf(arguments[5]) : 0;
 	}
 	
 	
 	
 	/* EnemyInstruction */
 	public  int    getEnemyId(){
-		return Integer.valueOf(arguments[1]);
+		return arguments[1]!=null ? Integer.valueOf(arguments[1]) : 0;
 	}
 	public  String getEnemyType(){
 		return arguments[2];
 	}
 	public  Point  getPoint(){
-		String[] pair = arguments[3].split(",");
-		int x = Integer.valueOf(pair[0]);
-		int y = Integer.valueOf(pair[1]);
-		return new Point(x,y);
+		if(arguments[3] != null){
+			String[] pair = arguments[3].split(",");
+			int x = Integer.valueOf(pair[0]);
+			int y = Integer.valueOf(pair[1]);
+			return new Point(x,y);
+		}
+		else{
+			return null;	
+		}
 	}
 	public  int    getHp(){
-		return Integer.valueOf(arguments[6]);
+		return arguments[6]!=null ? Integer.valueOf(arguments[6]) : 0;
 	}
 	
 	
 	
 	/* BulletInstruction */
 	public  int    getBulletId(){
-		return Integer.valueOf(arguments[2]);
+		return arguments[2]!=null ? Integer.valueOf(arguments[2]) : 0;
 	}
 	public  String getBulletType(){
 		return arguments[3];
 	}
 	public  int    getPower(){
-		return Integer.valueOf(arguments[6]);
+		return arguments[6]!=null ? Integer.valueOf(arguments[6]) : 0;
 	}
 	
 	
 	
 	/* RouteInstruction */
 	public  int    getTargetId(){
-		return Integer.valueOf(arguments[2]);
+		return arguments[2]!=null ? Integer.valueOf(arguments[2]) : 0;
 	}
 	public  String getTargetType(){
 		return arguments[1];
@@ -130,27 +134,29 @@ class Instruction implements
 		return arguments[3];
 	}
 	public  int    getSpeed(){
-		return Integer.valueOf(arguments[4]);
-	}
-	public  String getCoordType(){
-		return arguments[5];
+		return arguments[4]!=null ? Integer.valueOf(arguments[4]) : 0;
 	}
 	public  String getPointRefer(){
 		return arguments[5];
 	}
 	public  Point  getPointOffset(){
-		String[] pair = arguments[6].split(",");
-		int x = Integer.valueOf(pair[0]);
-		int y = Integer.valueOf(pair[1]);
-		return new Point(x,y);
+		if(arguments[6] != null){
+			String[] pair = arguments[6].split(",");
+			int x = Integer.valueOf(pair[0]);
+			int y = Integer.valueOf(pair[1]);
+			return new Point(x,y);
+		}
+		else{
+			return null;	
+		}
 	}
 	public  int    getPointAngle(){
-		return Integer.valueOf(arguments[7]);
+		return arguments[7]!=null ? Integer.valueOf(arguments[7]) : 0;
 	}
 	public  float  getCurveRadius(){
-		return Float.valueOf(arguments[8]);
+		return arguments[8]!=null ? Float.valueOf(arguments[8]) : 0;
 	}
 	public  int    getCurveAngle(){
-		return Integer.valueOf(arguments[9]);
+		return arguments[9]!=null ? Integer.valueOf(arguments[9]) : 0;
 	}
 }

@@ -11,7 +11,7 @@ public class Nightmare{
 		KeyboardListener keyboard = new KeyboardListener();
 		EventConnect connect = new EventConnect();
 		
-		Hero player = new Hero(keyboard,new Point(225,300),8,2);
+		Hero player = new Hero(keyboard,new Point(225,500),8,2);
 		ArrayBlockingQueue<Printable[]> channel = new ArrayBlockingQueue<Printable[]>(1);
 		Processor processor = new Processor(stage,clock,player,channel,connect);
 		

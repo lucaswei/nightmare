@@ -3,18 +3,15 @@ import java.awt.Point;
 public abstract class Printable{
 	protected int imageId;
 	protected Point position;
-	protected float angle;
+	protected int angle = 90;
 	public int getImageId(){
 		return imageId;
 	}
 	public Point getPosition(){
 		return position;
 	}
-	public float getAngle(){
+	public int getAngle(){
 		return angle;
-	}
-	public void setPosition(Point position){
-		this.position.setLocation(position);
 	}
 }
 
@@ -97,11 +94,11 @@ class Hero extends Plane{
 	public Bullet shoot(){
 		if(source.check("SHOOT")){
 			Point bulletPoint = new Point( position);
-			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0);
+			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0,0);
 			int x = (int)position.getX();
 			int y = (int)position.getY()-10;
-			Point destiny = new Point(x, y);
-			Route bulletRoute = RouteFactory.getRoute(position, destiny, BULLETSPEED, "linear");
+			Point destination = new Point(x, y);
+			Route bulletRoute = RouteFactory.getRoute("linear",position, destination, BULLETSPEED, 0);
 			bullet.setRoute(bulletRoute);
 			return bullet;
 		}
