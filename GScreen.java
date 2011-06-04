@@ -8,11 +8,13 @@ import java.io.*;
 
 public class GScreen implements Runnable,GameEventListener{
 
+	private Container game;
 
 	private int state = 0;
 	private static int PAUSE = 1;
 	private static int END = 2;
 	private int life = 0;
+	private String imagePath = "image/";
 	
 	private Image image;
 	private Image playBg,scoreBg,pauseBg;
@@ -21,7 +23,7 @@ public class GScreen implements Runnable,GameEventListener{
 	private Component play,scoreBar;
 	private BlockingQueue<Printable[]> queue;
 	private Stage stage;
-	protected GWindow game;
+	
 	private EventConnect checkKeyEvent;
 	private KeyListener key;
 	private Hero player;
@@ -30,9 +32,13 @@ public class GScreen implements Runnable,GameEventListener{
 	private Image buffer;
 	private Graphics bufferGraphics;
 	
-	public GScreen(GWindow game, BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,EventConnect checkKeyEvent,Hero player){
+	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,Hero player){
 		
-		this.game  = game;
+		game = new Container();
+		game.setBounds(0,0,800,600);
+		game.setVisible(true);
+		game.setBackground(Color.yellow);
+		
 		this.key   = key;
 		this.stage = stage;
 		this.checkKeyEvent = checkKeyEvent;
@@ -44,7 +50,6 @@ public class GScreen implements Runnable,GameEventListener{
 		 */
 		play = new Canvas(){
 			public void update(Graphics g){
-				System.out.println("OUT");
 				super.paint(g);
 			}
 		};
@@ -61,30 +66,20 @@ public class GScreen implements Runnable,GameEventListener{
 		};
 		
 		scoreBar.setBounds(450,0,800,600);
-		
-		/*pause = new Panel(){
-			public void paint(Graphics g){
-				g.drawImage(setImg, 0, 0, null);
-			}
-		};
-		pause.setBounds(0,0,450,600);*/
 
 		setPlayImg = new BufferedImage(450,600,BufferedImage.TYPE_INT_ARGB);
 		setImg     = new BufferedImage(350,600,BufferedImage.TYPE_INT_ARGB);
 		
 		try{
-			playBg = ImageIO.read(new File("map/default/image/testbg.gif"));
+			playBg = ImageIO.read(new File(imagePath + "testbg.gif"));
 		}
 		catch(IOException e){
 			System.err.println("Background can't load");
 		}
 		
-		 
-		
-		game.cp.add(play);
-		game.cp.add(scoreBar);
+		game.add(play);
+		game.add(scoreBar);
 
-		playGraphics = play.getGraphics();
 		buffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
 		bufferGraphics = buffer.getGraphics();
 		
@@ -92,8 +87,15 @@ public class GScreen implements Runnable,GameEventListener{
 		
 		life = player.getLife();
 	}
+	
+	public Container getContent(){
+		return game;
+	}
 
 	public void run(){
+		playGraphics = play.getGraphics();
+		game.requestFocus();
+		
 		while(true){
 			drawscoreBg();
 			
@@ -202,8 +204,8 @@ public class GScreen implements Runnable,GameEventListener{
 		Image lifeImg = null;
 		
 		try{
-			scoreBg = ImageIO.read(new File("map/default/image/scroeBg.png"));
-			lifeImg = ImageIO.read(new File("map/default/image/life.png"));
+			scoreBg = ImageIO.read(new File(imagePath + "scroeBg.png"));
+			lifeImg = ImageIO.read(new File(imagePath + "life.png"));
 		}
 		catch(IOException e){}
 		
@@ -227,13 +229,13 @@ public class GScreen implements Runnable,GameEventListener{
 		Graphics gg = setPlayImg.getGraphics();
 		
 		try{
-			pauseBg = ImageIO.read(new File("map/default/image/pauseBg.png"));
-			a = ImageIO.read(new File("map/default/image/continue1.png"));
-			b = ImageIO.read(new File("map/default/image/continue2.png"));
-			c = ImageIO.read(new File("map/default/image/exitgame1.png"));
-			d = ImageIO.read(new File("map/default/image/exitgame2.png"));
-			e = ImageIO.read(new File("map/default/image/restart1.png"));
-			f = ImageIO.read(new File("map/default/image/restart2.png"));
+			pauseBg = ImageIO.read(new File(imagePath + "pauseBg.png"));
+			a = ImageIO.read(new File(imagePath + "continue1.png"));
+			b = ImageIO.read(new File(imagePath + "continue2.png"));
+			c = ImageIO.read(new File(imagePath + "exitgame1.png"));
+			d = ImageIO.read(new File(imagePath + "exitgame2.png"));
+			e = ImageIO.read(new File(imagePath + "restart1.png"));
+			f = ImageIO.read(new File(imagePath + "restart2.png"));
 		}
 		catch(IOException e){
 			System.out.println("no image");
@@ -279,14 +281,15 @@ public class GScreen implements Runnable,GameEventListener{
 		return (new Double(value)).intValue();
 	}
 
-	public void trigger(String event){
-		if(event.equals("pause")){
+	public void trigger(GameEvent event){
+		String signal = event.getSignal();
+		if(signal.equals("pause")){
 			state = PAUSE;
 		}
-		if(event.equals("end")){
+		if(signal.equals("end")){
 			state = END;
 		}
-		if(event.equals("crash")){
+		if(signal.equals("crash")){
 			life = player.getLife();
 		}
 	}

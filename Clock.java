@@ -3,7 +3,7 @@ import java.util.*;
 class DelayException  extends Exception{}
 class ExceedException extends Exception{}
 
-class Clock implements GameEventListener{
+class Clock{
 	public final static int START = 1;
 	public final static int STOP  = 0;
 	public final static int PAUSE = 2;
@@ -61,17 +61,6 @@ class Clock implements GameEventListener{
 		if(status != STOP){
 			status = STOP;
 			timer.cancel();
-		}
-	}
-	public void trigger(String event){
-		if(event.equals("pause")){
-			pause();
-		}
-		if(event.equals("end")){
-			stop();
-		}
-		if(event.equals("continue")){
-			start();
 		}
 	}
 }

@@ -7,52 +7,29 @@ import java.io.*;
 
 public class GMenu implements KeyListener{
 	
-	private GWindow game;
+	//private GWindow window;
 	private Stage stage;
-	private Panel canvas;
-	private Graphics g;
 	private Image bg,play1,play2,exit1,exit2,sword;
-	private BufferedImage img;
+	
+	private BufferedImage buffer;
+	private Graphics graphics;
 	private int keyFlag;
 	
+	private String imagePath = "image/";
 	
-	public GMenu(){		
-		
-		game = new GWindow();
+	private Container menu = new Container();
+	
+	public GMenu(){
 		
 		//Choose map
 		String mapName = "";
 		this.stage = new Stage("default");
 
 		keyFlag = 1;
-	
-		canvas = new Panel(){
-			public void paint(Graphics g){
-				g.drawImage(img, 0, 0, null);
-			}
-		};
-		
-		img = new BufferedImage(game.getWidth(),game.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		
-		canvas.setBounds(0, 0, 800, 600);
-		game.cp.add(canvas);
-		g = canvas.getGraphics();
-		canvas.setFocusable(false);
-		
-		drawMenu();
-		/*
-		FocusListener listener = new FocusListener(){
-			public void focusGained(FocusEvent event){
-				System.out.println("GAIN");
-			}
-			public void focusLost(FocusEvent event){
-				System.out.println("LOSE");
-				Component com = event.getOppositeComponent();
-				System.out.println(com == game.cp);
-			}
-		};
-		canvas.addFocusListener(listener);
-		*/
+				
+		menu.setBounds(0, 0, 800, 600);
+		menu.setVisible(true);
+		menu.addKeyListener(this);
 	}
 
 	public void keyPressed(KeyEvent e){
@@ -63,8 +40,8 @@ public class GMenu implements KeyListener{
 				if(keyFlag < 1)
 					keyFlag = 1;
 				else{
-					g.drawImage(play2, 400, 200, null);
-					g.drawImage(exit1, 400, 250, null);
+					graphics.drawImage(play2, 400, 200, null);
+					graphics.drawImage(exit1, 400, 250, null);
 				}
 				break;
 			case KeyEvent.VK_DOWN:
@@ -73,30 +50,30 @@ public class GMenu implements KeyListener{
 				if(keyFlag > 2)
 					keyFlag = 2;
 				else{
-					g.drawImage(play1, 400, 200, null);
-					g.drawImage(exit2, 400, 250, null);
+					graphics.drawImage(play1, 400, 200, null);
+					graphics.drawImage(exit2, 400, 250, null);
 				}
 				break;
 			case KeyEvent.VK_ENTER://Enter RoleMenu
 				switch(keyFlag){
 					case 1:
-						game.removeKeyListener(this);
+						menu.removeKeyListener(this);
 						drawRoleMenu();
 						
-						game.addKeyListener(new KeyAdapter(){
+						menu.addKeyListener(new KeyAdapter(){
 							public void keyPressed(KeyEvent e){
 								switch(e.getKeyCode()){
 									case KeyEvent.VK_UP:
 										break;
 									case KeyEvent.VK_DOWN:
 										break;
-									case KeyEvent.VK_ENTER://Enter game
-										game.removeKeyListener(this);
-										game.cp.remove(canvas);//delete canvas;
-										Nightmare.newGame(game,stage,"Rio");
+									case KeyEvent.VK_ENTER://Enter menu
+										menu.removeKeyListener(this);
+										menu.remove(menu);//delete menu;
+										EventConnect.dispatch(new GameEvent("start",new Object[]{stage,"Rio"}));
 										break;
 									case KeyEvent.VK_ESCAPE://Back to Menu
-										game.removeKeyListener(this);
+										menu.removeKeyListener(this);
 										drawMenu();
 										break;
 								}
@@ -116,54 +93,43 @@ public class GMenu implements KeyListener{
 		}
 		
 	}
+	
+	public Container getContent(){
+		return menu;
+	}
+	public void display(){
+		graphics = menu.getGraphics();
+		drawMenu();
+		menu.requestFocus();
+	}
 
 	public void keyReleased(KeyEvent e){}
 	public void keyTyped(KeyEvent e){}
 	
 	public void drawMenu(){
-		game.addKeyListener(this);
-		
-		Graphics g = canvas.getGraphics();
-		Graphics gg = img.getGraphics();
-		
 		try{
-			play1 = ImageIO.read(new File("map/default/image/play1.png"));
-			play2 = ImageIO.read(new File("map/default/image/play2.png"));
-			exit1 = ImageIO.read(new File("map/default/image/exit1.png"));
-			exit2 = ImageIO.read(new File("map/default/image/exit2.png"));
-			bg = ImageIO.read(new File("map/default/image/menubg.png"));
+			play1 = ImageIO.read(new File(imagePath + "play1.png"));
+			play2 = ImageIO.read(new File(imagePath + "play2.png"));
+			exit1 = ImageIO.read(new File(imagePath + "exit1.png"));
+			exit2 = ImageIO.read(new File(imagePath + "exit2.png"));
+			bg = ImageIO.read(new File(imagePath + "menubg.png"));
 		}
 		catch(IOException e){}
 		
-		g.drawImage(bg, 0, 0, null);
-		g.drawImage(play2, 400, 200, null);
-		g.drawImage(exit1, 400, 250, null);
-		gg.drawImage(bg, 0, 0, null);
-		gg.drawImage(play2, 400, 200, null);
-		gg.drawImage(exit1, 400, 250, null);
-		
-		g.dispose();
-		gg.dispose();
+		graphics.drawImage(bg, 0, 0, null);
+		graphics.drawImage(play2, 400, 200, null);
+		graphics.drawImage(exit1, 400, 250, null);
 	}
 	
 	public void drawRoleMenu(){
-		
-		Graphics g = canvas.getGraphics();
-		Graphics gg = img.getGraphics();
-		
 		try{
-			sword = ImageIO.read(new File("map/default/image/sword2.png"));
-			bg = ImageIO.read(new File("map/default/image/rolebg.png"));
+			sword = ImageIO.read(new File(imagePath + "sword2.png"));
+			bg = ImageIO.read(new File(imagePath + "rolebg.png"));
 		}
 		catch(IOException e){}
 		
-		g.drawImage(bg, 0, 0, null);
-		g.drawImage(sword, 400, 300, null);
-		gg.drawImage(bg, 0, 0, null);
-		gg.drawImage(sword, 400, 300, null);
-		
-		g.dispose();
-		gg.dispose();
+		graphics.drawImage(bg, 0, 0, null);
+		graphics.drawImage(sword, 400, 300, null);
 	}
 	
 }

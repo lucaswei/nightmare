@@ -117,7 +117,7 @@ public class Processor implements Runnable{
 				continue;
 			if(bullet.collision(player)){
 				int life = player.crash();
-				eventConnect.dispatch("crash");
+				EventConnect.dispatch("crash");
 				if(life < 0){
 					//eventConnect.dispatch("end");
 				}
@@ -210,7 +210,7 @@ public class Processor implements Runnable{
 	
 	public void stateCheck(){
 		if(player.isPause()){
-			eventConnect.dispatch("pause");
+			EventConnect.dispatch("pause");
 			clock.pause();
 		}
 	}
@@ -234,8 +234,8 @@ public class Processor implements Runnable{
 	public Processor(Stage stage,
 					Clock clock,
 					Hero player,
-					BlockingQueue<Printable[]> queue,
-					EventConnect eventConnect){
+					BlockingQueue<Printable[]> queue
+					){
 		enemyList  = new ArrayList<Enemy>();
 		bulletList = new ArrayList<Bullet>();
 		playerBulletList = new ArrayList<Bullet>();
@@ -243,7 +243,6 @@ public class Processor implements Runnable{
 		this.player= player; 
 		this.stage = stage;
 		this.clock = clock;
-		this.eventConnect = eventConnect;
 		this.time = 0;
 		this.HEIGHT = 600;
 		this.WIDTH  = 450;
