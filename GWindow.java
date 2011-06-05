@@ -64,7 +64,6 @@ public class GWindow implements GameEventListener{
 		GMenu menu = new GMenu();
 		add(menu.getContent());
 		menu.display();
-		menu.drawMenu();
 	}
 	
 	private void gameStart(Stage stage,String hero){
@@ -73,9 +72,6 @@ public class GWindow implements GameEventListener{
 		game.display();
 	}
 	
-	private void gameEnd(){
-		menu();
-	}
 	
 	private void close(){
 	}
@@ -97,9 +93,6 @@ public class GWindow implements GameEventListener{
 			stage.restart();
 			String hero = (String)data[1];
 			gameStart(stage,hero);
-		}
-		else if(signal.equals("end")){
-			gameEnd();
 		}
 		else if(signal.equals("close")){
 			close();

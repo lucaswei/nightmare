@@ -40,9 +40,12 @@ public class GScreen implements Runnable,GameEventListener{
 	private Image    pauseBuffer;
 	private Graphics pauseBufferGraphics;
 	
-	private PauseMenu pauseMenu;
+	private Container pauseMenu;
 	
-	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key, Stage stage,Hero player){
+	private ItemList list;
+	private ListMenu menu;
+	
+	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key,final Stage stage,Hero player){
 		
 		this.key   = key;
 		this.stage = stage;
@@ -51,9 +54,8 @@ public class GScreen implements Runnable,GameEventListener{
 		
 		game = new Container();
 		game.setBounds(0,0,800,600);
-		game.setVisible(true);
 				
-		play = new Canvas();
+		play = new Component(){};
 		play.setBounds(0,0,450,600);
 		playBuffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
 		playBufferGraphics = playBuffer.getGraphics();
@@ -61,14 +63,14 @@ public class GScreen implements Runnable,GameEventListener{
 		pauseBuffer = new BufferedImage(450,600,BufferedImage.TYPE_4BYTE_ABGR );
 		pauseBufferGraphics = pauseBuffer.getGraphics();
 		
-		scoreBar = new Canvas();
+		scoreBar = new Component(){};
 		scoreBar.setBounds(450,0,800,600);
 		scoreBar.setFocusable(false);
 		scoreBuffer = new BufferedImage(350,600,BufferedImage.TYPE_4BYTE_ABGR);
 		scoreBufferGraphics = scoreBuffer.getGraphics();
 		
-		pauseMenu = new PauseMenu();
-		//pauseMenu.setVisible(false);
+		pauseMenu = new Container();
+		pauseMenu.setBounds(0,0,450,600);
 		
 		try{
 			playBg = ImageIO.read(new File(imagePath + "testbg.gif"));
@@ -85,10 +87,14 @@ public class GScreen implements Runnable,GameEventListener{
 		catch(IOException e){
 			System.err.println("Background can't load");
 		}
-		/*
+		
+		list = new ItemList();
+		list.add(a,b,new Runnable(){public void run(){gameContinue();}});
+		list.add(c,d,new Runnable(){public void run(){EventConnect.dispatch("menu");}});
+		list.add(e,f,new Runnable(){public void run(){restart();}});
+													
 		OverlayLayout layout = new OverlayLayout(game);
 		game.setLayout(layout);
-		*/
 		
 		game.add(pauseMenu);
 		game.add(play);
@@ -97,10 +103,6 @@ public class GScreen implements Runnable,GameEventListener{
 		game.addKeyListener(key);
 		
 		life = player.getLife();
-	}
-	
-	public Container getContent(){
-		return game;
 	}
 
 	public void run(){
@@ -150,6 +152,10 @@ public class GScreen implements Runnable,GameEventListener{
 			playGraphics.drawImage(playBuffer,0,0,null);
 			
 		}
+		
+	}
+	public Container getContent(){
+		return game;
 	}
 	
 	public void drawScore(){
@@ -170,7 +176,10 @@ public class GScreen implements Runnable,GameEventListener{
 		if(signal.equals("pause")){
 			state = PAUSE;
 		}
-		if(signal.equals("end")){
+		if(signal.equals("gameover")){
+			state = END;
+		}
+		if(signal.equals("gameclear")){
 			state = END;
 		}
 		if(signal.equals("crash")){
@@ -179,92 +188,22 @@ public class GScreen implements Runnable,GameEventListener{
 	}
 
 	private void paused(){
-		pauseMenu.display();
+		pauseMenu.getGraphics().drawImage(pauseBg,0,0,null);
+		menu = new ListMenu(list,80,300,370,40,new Runnable(){public void run(){gameContinue();}});
+		pauseMenu.add(menu);
+		menu.display();
 	}
+	
 	private void gameContinue(){
+		EventConnect.dispatch("continue");
 		state = PLAY;
-		pauseMenu.setVisible(false);
+		pauseMenu.remove(menu);
 		game.requestFocus();
 	}
 	
-	private class PauseMenu extends JPanel{
-		private PauseMenu menu;
-		private Graphics graphics;
-		public PauseMenu(){
-			setBounds(0,0,450,600);
-			setOpaque(true);
-			addKeyListener(new PauseKeyListener());
-		}
-		public void display(){
-			setVisible(true);
-			graphics = this.getGraphics();
-			drawPauseMenu(1);
-			requestFocus();
-		}
-		class PauseKeyListener implements KeyListener{
-			private int keyFlag = 1;
-			public void keyPressed(KeyEvent e){
-			switch(e.getKeyCode()){
-				case KeyEvent.VK_UP:
-					keyFlag--;
-					if(keyFlag < 1)	keyFlag += 3;
-					drawPauseMenu(keyFlag);		
-					break;
-				case KeyEvent.VK_DOWN:
-					keyFlag++;
-					if(keyFlag > 3)	keyFlag -= 3;
-					drawPauseMenu(keyFlag);
-					break;
-				case KeyEvent.VK_ENTER:
-					switch(keyFlag){
-						case 1:
-							EventConnect.dispatch("continue");
-							gameContinue();
-							break;
-						case 2:
-							EventConnect.dispatch("menu");
-							break;
-						case 3:
-							stage.restart();
-							EventConnect.dispatch(new GameEvent("restart",new Object[]{stage,"Rio"}));
-							break;
-						default:break;
-					}
-					break;
-				case KeyEvent.VK_ESCAPE:
-					EventConnect.dispatch("continue");
-					gameContinue();
-					break;
-				default:
-					break;
-				}
-			}
-			public void keyReleased(KeyEvent e){}
-			public void keyTyped(KeyEvent e){}
-		}
-		public void drawPauseMenu(int keyFlag){
-			pauseBufferGraphics.drawImage(playBuffer,0,0,null);
-			pauseBufferGraphics.drawImage(pauseBg,0,0,null);
-			switch(keyFlag){
-				case 1:
-					pauseBufferGraphics.drawImage(b, 80, 300, null);
-					pauseBufferGraphics.drawImage(c, 80, 350, null);
-					pauseBufferGraphics.drawImage(e, 80, 400, null);
-					break;
-				case 2:
-					pauseBufferGraphics.drawImage(a, 80, 300, null);
-					pauseBufferGraphics.drawImage(d, 80, 350, null);
-					pauseBufferGraphics.drawImage(e, 80, 400, null);
-					break;
-				case 3:
-					pauseBufferGraphics.drawImage(a, 80, 300, null);
-					pauseBufferGraphics.drawImage(c, 80, 350, null);
-					pauseBufferGraphics.drawImage(f, 80, 400, null);
-					break;
-				default:break;
-			}
-			playGraphics.drawImage(pauseBuffer,0,0,null);
-		}
+	private void restart(){
+		stage.restart();
+		EventConnect.dispatch(new GameEvent("restart",new Object[]{stage,"Rio"}));
 	}
 	
 }

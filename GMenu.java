@@ -7,8 +7,8 @@ import java.io.*;
 
 public class GMenu{
 	
-	//private GWindow window;
 	private Stage stage;
+	
 	private Image mainMenuBg;
 	private Image roleMenuBg;
 	private Image playItem,playItemActive;
@@ -21,11 +21,13 @@ public class GMenu{
 	
 	private String imagePath = "image/";
 	
-	private Container menu = new Container();
+	private Container container = new Container();
 	
-	private KeyListener mainMenuKeyListener = new MainMenuKeyListener();
-	private KeyListener roleMenuKeyListener = new RoleMenuKeyListener();
+	private ListMenu mainMenu;
+	private ListMenu roleMenu;
 	
+	private ItemList mainList;
+	private ItemList roleList;
 	
 	public GMenu(){
 		
@@ -47,99 +49,49 @@ public class GMenu{
 		catch(IOException e){
 			System.out.println("Can't load menu images");
 		}
-		menu.setBounds(0, 0, 800, 600);
-		menu.setVisible(true);
-		menu.addKeyListener(mainMenuKeyListener);
-	}
-
-	private class MainMenuKeyListener implements KeyListener{
-		public void keyPressed(KeyEvent e){
-			switch(e.getKeyCode()){
-				case KeyEvent.VK_UP:
-					keyFlag--;
-				
-					if(keyFlag < 1)
-						keyFlag = 1;
-					else{
-						graphics.drawImage(playItemActive, 400, 200, null);
-						graphics.drawImage(exitItem, 400, 250, null);
-					}
-					break;
-				case KeyEvent.VK_DOWN:
-					keyFlag++;
-				
-					if(keyFlag > 2)
-						keyFlag = 2;
-					else{
-						graphics.drawImage(playItem, 400, 200, null);
-						graphics.drawImage(exitItemActive, 400, 250, null);
-					}
-					break;
-				case KeyEvent.VK_ENTER://Enter RoleMenu
-					switch(keyFlag){
-						case 1:
-							drawRoleMenu();
-							menu.removeKeyListener(mainMenuKeyListener);
-							menu.addKeyListener(roleMenuKeyListener);
-							break;
-						case 2:
-							System.exit(0);
-							break;
-						default:break;
-					}
-					break;
-				default:break;
-			}
+		container.setBounds(0, 0, 800, 600);
+		container.setVisible(true);
 		
-		}
-		public void keyReleased(KeyEvent e){}
-		public void keyTyped(KeyEvent e){}
+		mainList = new ItemList();
+		mainList.add(playItem,playItemActive,new Runnable(){public void run(){displayRoleMenu();}});
+		mainList.add(exitItem,exitItemActive,new Runnable(){public void run(){System.exit(0);}});
+	
+		roleList = new ItemList();
+		roleList.add(sword,sword,new Runnable(){public void run(){startGame();}});
 	}
-
-	private class RoleMenuKeyListener implements KeyListener{
-		public void keyPressed(KeyEvent e){
-			switch(e.getKeyCode()){
-				case KeyEvent.VK_UP:
-					break;
-				case KeyEvent.VK_DOWN:
-					break;
-				case KeyEvent.VK_ENTER://Enter menu
-					EventConnect.dispatch(new GameEvent("start",new Object[]{stage,"Rio"}));
-					break;
-				case KeyEvent.VK_ESCAPE://Back to Menu
-					menu.removeKeyListener(roleMenuKeyListener);
-					menu.addKeyListener(mainMenuKeyListener);
-					drawMenu();
-					break;
-			}
+	private void startGame(){
+		EventConnect.dispatch(new GameEvent("start",new Object[]{stage,"Rio"}));
+	}
+	
+	private void displayMainMenu(){
+		if(roleMenu != null){
+			container.remove(roleMenu);
+			roleMenu = null;
 		}
-
-		public void keyReleased(KeyEvent e){}
-		public void keyTyped(KeyEvent e){}
+		graphics = container.getGraphics();
+		graphics.drawImage(mainMenuBg,0,0,null);
+		mainMenu = new ListMenu(mainList,400,200,200,50);
+		container.add(mainMenu);
+		mainMenu.display();
+	}
+	private void displayRoleMenu(){
+		if(mainMenu != null){
+			container.remove(mainMenu);
+			roleMenu = null;
+		}
+		graphics = container.getGraphics();
+		graphics.drawImage(roleMenuBg,0,0,null);
+		roleMenu = new ListMenu(roleList,400,200,200,50,new Runnable(){public void run(){displayMainMenu();}});
+		container.add(roleMenu);
+		roleMenu.display();
 	}
 	
 	public Container getContent(){
-		return menu;
+		return container;
 	}
 	public synchronized void display(){
-		graphics = menu.getGraphics();
-		menu.requestFocus();
-		drawMenu();
-	}
 
-	public void keyReleased(KeyEvent e){}
-	public void keyTyped(KeyEvent e){}
-	
-	public void drawMenu(){
-		graphics.drawImage(mainMenuBg, 0, 0, null);
-		graphics.drawImage(playItemActive, 400, 200, null);
-		graphics.drawImage(exitItem, 400, 250, null);
+		displayMainMenu();
 	}
-	
-	public void drawRoleMenu(){
-		graphics.drawImage(roleMenuBg, 0, 0, null);
-		graphics.drawImage(sword, 400, 300, null);
-	}
-	
 }
 

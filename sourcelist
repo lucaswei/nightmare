@@ -8,6 +8,7 @@ GMenu.java
 GScreen.java
 GWindow.java
 Instruction.java
+ListMenu.java
 Nightmare.java
 Printable.java
 Processor.java
