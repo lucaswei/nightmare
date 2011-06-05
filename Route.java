@@ -100,6 +100,7 @@ class StraightRoute extends Route{
 		double x = vector.getX();
 		double y = vector.getY();
 		angle = (new Double(atan2(y,x) / PI * 180)).intValue();
+		
 	}
 	public Point move(){
 		double x = position.getX() + vector.getX();

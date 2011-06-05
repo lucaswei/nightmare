@@ -105,16 +105,16 @@ class InstructionCompiler{
 		
 		
 		/* Dump */
-		/*
-		for(int i=0;i<length;i++){
-			Instruction[] arr = out[i];
-			if(arr != null){
-				for(Instruction inst:arr){
-					System.out.println(i+"\t:\t"+inst.toString());
+		if(Nightmare.debug){
+			for(int i=0;i<length;i++){
+				Instruction[] arr = out[i];
+				if(arr != null){
+					for(Instruction inst:arr){
+						System.out.println(i+"\t:\t"+inst.toString());
+					}
 				}
 			}
 		}
-		*/
 		
 		
 		return out;
@@ -719,7 +719,11 @@ class InstructionCompiler{
 				}
 				else{
 					int angle = parseInt(attr(attribute,7));
-					float theta = angle / (amount-1);
+					float theta;
+					if(angle == 360)
+						theta = angle / (amount);
+					else
+						theta = angle / (amount - 1);
 					float startAngle = offsetAngle - theta * (amount - 1) / 2;
 					for(int i=0;i<amount;i++){
 						/* target_ID */
@@ -728,6 +732,46 @@ class InstructionCompiler{
 						arguments[7] = Integer.toString((int)(startAngle + i * theta));
 						Instruction instruction = new Instruction(arguments);
 						addInstruction(time,instruction);
+					}
+				}
+			}
+			else if(shapeType.equals("spin")){
+				/* route_type */
+				arguments[3] = "linear";
+				/* speed */
+				arguments[4] = attr(attribute,3);
+				/* point_refer */
+				arguments[5] = attr(attribute,4);
+				/* point_offset */
+				arguments[6] = attr(attribute,5);
+				/* target_ID */
+				int targetID = parseInt(variables.get("target_ID"));
+				
+				int offsetAngle = parseInt(attr(attribute,6));
+				int amount   = parseInt(variables.get("amount"));
+				if(amount == 1){
+					/* target_ID */
+					arguments[2] = Integer.toString(targetID);
+					/* point_angle */
+					arguments[7] = Integer.toString(offsetAngle);
+					Instruction instruction = new Instruction(arguments);
+					addInstruction(time,instruction);
+				}
+				else{
+					int angle = parseInt(attr(attribute,7));
+					float theta;
+					if(angle == 360)
+						theta = angle / (amount);
+					else
+						theta = angle / (amount - 1);
+					int interval = parseInt(attr(attribute,8));
+					for(int i=0;i<amount;i++){
+						/* target_ID */
+						arguments[2] = Integer.toString(targetID + i);
+						/* point_angle */
+						arguments[7] = Integer.toString((int)(offsetAngle + i * theta));
+						Instruction instruction = new Instruction(arguments);
+						addInstruction(time + i * interval,instruction);
 					}
 				}
 			}

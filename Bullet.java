@@ -56,6 +56,9 @@ abstract class Bullet extends Printable{
 		catch(Exception e){
 		}
 	}
+	public int getId(){
+		return bulletId;
+	}
 }
 class CircleBullet extends Bullet{
 	private int radius;

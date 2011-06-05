@@ -1,2 +1,3 @@
 #!/bin/bash
-cd build && java Nightmare
+echo $1
+cd build && java Nightmare $1

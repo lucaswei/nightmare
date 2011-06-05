@@ -47,6 +47,9 @@ abstract class Enemy extends Plane{
 	public int crash(){
 		return -2;
 	}
+	public int getId(){
+		return enemyId;
+	}
 }
 /*TODO*/
 class Boss extends Enemy{

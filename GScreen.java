@@ -72,7 +72,7 @@ public class GScreen implements Runnable,GameEventListener{
 		
 		try{
 			playBg = ImageIO.read(new File(imagePath + "testbg.gif"));
-			pauseBg = ImageIO.read(new File(imagePath + "pauseBg.png"));
+			pauseBg = ImageIO.read(new File(imagePath + "pause_menu_bg.png"));
 			scoreBg = ImageIO.read(new File(imagePath + "scroeBg.png"));
 			lifeImg = ImageIO.read(new File(imagePath + "life.png"));
 			a = ImageIO.read(new File(imagePath + "continue1.png"));
@@ -244,6 +244,7 @@ public class GScreen implements Runnable,GameEventListener{
 		}
 		public void drawPauseMenu(int keyFlag){
 			pauseBufferGraphics.drawImage(playBuffer,0,0,null);
+			pauseBufferGraphics.drawImage(pauseBg,0,0,null);
 			switch(keyFlag){
 				case 1:
 					pauseBufferGraphics.drawImage(b, 80, 300, null);

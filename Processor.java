@@ -140,7 +140,7 @@ public class Processor implements Runnable,GameEventListener{
 				if(bullet.collision(enemy)){
 					if(enemy.attacted( player.getPower())){
 						enemy.crash();
-						enemyList.remove(enemy);
+						enemyList.set(enemy.getId(),null);
 					}
 				}				
 			}
@@ -177,7 +177,7 @@ public class Processor implements Runnable,GameEventListener{
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
-				bulletList.remove(bullet);
+				bulletList.set(bullet.getId(),null);
 		}
 		
 		Object[] playerBullets = playerBulletList.toArray();
@@ -188,7 +188,7 @@ public class Processor implements Runnable,GameEventListener{
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
-				playerBulletList.remove(bullet);
+				playerBulletList.set(bullet.getId(),null);
 		}
 		
 		Object[] enemies = enemyList.toArray();
@@ -199,7 +199,7 @@ public class Processor implements Runnable,GameEventListener{
 			x = (int)enemy.getPosition().getX();
 			y = (int)enemy.getPosition().getY();
 			if( calcRecycle(x, y) )
-				enemyList.remove(enemy);
+				enemyList.set(enemy.getId(),null);
 		}
 	}
 	private boolean calcRecycle(int x, int y){

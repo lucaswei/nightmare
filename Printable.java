@@ -40,6 +40,8 @@ class Hero extends Plane{
 	private int BULLETRADIUS;
 	private int BULLETIMAGEID;
 	private int BULLETSPEED;
+	
+	private int shooting = 0;
 
 
 	public Hero(ActionSource source, Point position, int radius, int life){
@@ -53,7 +55,7 @@ class Hero extends Plane{
 		this.imageId = 11;
 		/*set bullet information*/
 		this.BULLETRADIUS  = 8;
-		this.BULLETIMAGEID = 17;
+		this.BULLETIMAGEID = 23;
 		this.BULLETSPEED   = 25;
 		/*                      */
 	}
@@ -94,7 +96,7 @@ class Hero extends Plane{
 	public Bullet shoot(){
 		if(source.check("SHOOT")){
 			Point bulletPoint = new Point( position);
-			CircleBullet bullet = new CircleBullet(bulletPoint, BULLETRADIUS, BULLETIMAGEID, 0,0);
+			CircleBullet bullet = new CircleBullet(bulletPoint,0, BULLETRADIUS, BULLETIMAGEID, shooting++);
 			int x = (int)position.getX();
 			int y = (int)position.getY()-10;
 			Point destination = new Point(x, y);
