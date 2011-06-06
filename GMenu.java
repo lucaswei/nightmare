@@ -64,23 +64,23 @@ public class GMenu{
 	}
 	
 	private void displayMainMenu(){
+		graphics = container.getGraphics();
+		graphics.drawImage(mainMenuBg,0,0,null);
 		if(roleMenu != null){
 			container.remove(roleMenu);
 			roleMenu = null;
 		}
-		graphics = container.getGraphics();
-		graphics.drawImage(mainMenuBg,0,0,null);
 		mainMenu = new ListMenu(mainList,400,200,200,50);
 		container.add(mainMenu);
 		mainMenu.display();
 	}
 	private void displayRoleMenu(){
+		graphics = container.getGraphics();
+		graphics.drawImage(roleMenuBg,0,0,null);
 		if(mainMenu != null){
 			container.remove(mainMenu);
 			roleMenu = null;
 		}
-		graphics = container.getGraphics();
-		graphics.drawImage(roleMenuBg,0,0,null);
 		roleMenu = new ListMenu(roleList,400,200,200,50,new Runnable(){public void run(){displayMainMenu();}});
 		container.add(roleMenu);
 		roleMenu.display();
