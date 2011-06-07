@@ -33,7 +33,6 @@ public class GMenu{
 		
 		//Choose map
 		String mapName = "";
-		this.stage = new Stage("default");
 
 		keyFlag = 1;
 		
@@ -75,6 +74,13 @@ public class GMenu{
 		mainMenu.display();
 	}
 	private void displayRoleMenu(){
+		try{
+			this.stage = new Stage("default");
+		}
+		catch(Stage.StageLoadException e){
+			System.out.println("Can't load Stage");
+			return;
+		}
 		if(mainMenu != null){
 			container.remove(mainMenu);
 			roleMenu = null;

@@ -1,17 +1,17 @@
 PATH 0
-	ENEMY 0
-		TYPE normal
-		POSITION 225,0
+	ENEMY 0 normal 225,0
 		MOVE
 			ROUTE 0 line 10 self 0,1 0
 			ROUTE 20 stop
+			ROUTE 60 line 10 self 0,-1 0 
 		END
 		SHOOT
-			CLIP 20 3 20
-				BULLET 0 10
-					TYPE normal
+			LOOP X 0 50 1
+				BULLET 20 normal
 					MOVE
-						SHAPE 0 spin  20 self 0,1 0 360 2
+						ROUTE 0  line 20 self 0,1 7.2*X
+						ROUTE 10 stop
+						ROUTE 15 line 5  player 0,0 0
 					END
 				END
 			END
