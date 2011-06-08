@@ -42,7 +42,8 @@ public class GScreen implements Runnable,GameEventListener{
 	
 	private Container pauseMenu;
 	
-	private ItemList list;
+	private ItemList pauseList;
+	private ItemList deadList;
 	private ListMenu menu;
 	
 	public GScreen(BlockingQueue<Printable[]> queue, KeyListener key,final Stage stage,Hero player){
@@ -88,10 +89,14 @@ public class GScreen implements Runnable,GameEventListener{
 			System.err.println("Background can't load");
 		}
 		
-		list = new ItemList();
-		list.add(a,b,new Runnable(){public void run(){gameContinue();}});
-		list.add(c,d,new Runnable(){public void run(){EventConnect.dispatch("menu");}});
-		list.add(e,f,new Runnable(){public void run(){restart();}});
+		pauseList = new ItemList();
+		pauseList.add(a,b,new Runnable(){public void run(){gameContinue();}});
+		pauseList.add(c,d,new Runnable(){public void run(){EventConnect.dispatch("menu");}});
+		pauseList.add(e,f,new Runnable(){public void run(){restart();}});
+		
+		deadList = new ItemList();
+		deadList.add(c,d,new Runnable(){public void run(){EventConnect.dispatch("menu");}});
+		//deadList.add(e,f,new Runnable(){public void run(){restart();}});
 													
 		OverlayLayout layout = new OverlayLayout(game);
 		game.setLayout(layout);
@@ -110,11 +115,17 @@ public class GScreen implements Runnable,GameEventListener{
 		scoreGraphics = scoreBar.getGraphics();
 		game.requestFocus();
 		
-		while(state != END){
+		while(true){
+		
+			if(state == END){
+				gameOver();
+				break;
+			}
 			
 			if(state == PAUSE){
 				paused();
 			}
+			
 			drawScore();
 			
 			Printable[] list = null;
@@ -176,10 +187,10 @@ public class GScreen implements Runnable,GameEventListener{
 		if(signal.equals("pause")){
 			state = PAUSE;
 		}
-		if(signal.equals("gameover")){
+		if(signal.equals("game_dead")){
 			state = END;
 		}
-		if(signal.equals("gameclear")){
+		if(signal.equals("game_clear")){
 			state = END;
 		}
 		if(signal.equals("crash")){
@@ -189,7 +200,15 @@ public class GScreen implements Runnable,GameEventListener{
 
 	private void paused(){
 		pauseMenu.getGraphics().drawImage(pauseBg,0,0,null);
-		menu = new ListMenu(list,80,300,370,40,new Runnable(){public void run(){gameContinue();}});
+		menu = new ListMenu(pauseList,80,300,370,40,new Runnable(){public void run(){gameContinue();}});
+		pauseMenu.add(menu);
+		menu.display();
+	}
+	
+	
+	private void gameOver(){
+		pauseMenu.getGraphics().drawImage(pauseBg,0,0,null);
+		menu = new ListMenu(deadList,80,300,370,40);
 		pauseMenu.add(menu);
 		menu.display();
 	}

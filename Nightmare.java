@@ -58,7 +58,7 @@ class Game implements GameEventListener{
 		else if(signal.equals("restart")){
 			gameEnd();
 		}
-		else if(signal.equals("gameover") || signal.equals("gameclear")){
+		else if(signal.equals("game_dead") || signal.equals("game_clear")){
 			gameEnd();
 		}
 	}

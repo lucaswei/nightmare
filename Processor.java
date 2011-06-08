@@ -124,7 +124,7 @@ public class Processor implements Runnable,GameEventListener{
 				int life = player.crash();
 				EventConnect.dispatch("crash");
 				if(life < 0 && Nightmare.debug == false){
-					EventConnect.dispatch("end");
+					EventConnect.dispatch("game_dead");
 				}
 			}
 		}
