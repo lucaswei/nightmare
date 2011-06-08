@@ -1,17 +1,46 @@
 PATH 0
 	ENEMY 0
-		TYPE normal
-		POSITION 225,0
+		TYPE small
+		POSITION 0,50
+		MOVE
+			ROUTE 0 line 10 self 1,1 0
+			ROUTE 20 stop
+			ROUTE 60 line 10 self -1,-1 0
+		END
+		SHOOT
+			CLIP 0 3 10
+				BULLET 20 10
+					TYPE small
+					MOVE
+						SHAPE 0 fan  10 self -1,-1 0  60
+						ROUTE 10 stop
+						ROUTE 15 line 5 player 0,0 0
+					END
+				END
+				BULLET 20 10
+					TYPE small
+					MOVE
+						SHAPE 0 fan  10 self 1,-1 0  60
+						ROUTE 10 stop
+						ROUTE 15 line 5 player 0,0 0
+					END
+				END
+			END
+		END
+	END
+	ENEMY 0
+		TYPE large
+		POSITION 350,0
 		MOVE
 			ROUTE 0 line 10 self 0,1 0
 			ROUTE 20 stop
-			ROUTE 60 line 10 self 0,-1 0 
+			ROUTE 60 line 10 self 0,-1 0
 		END
 		SHOOT
 			BULLET 20 10
 				TYPE normal
 				MOVE
-					SHAPE 0 fan  20 self -1,-1 0  60
+					SHAPE 0 fan  10 self -1,-1 0  60
 					ROUTE 10 stop
 					ROUTE 15 line 5 player 0,0 0
 				END
@@ -19,7 +48,7 @@ PATH 0
 			BULLET 20 10
 				TYPE normal
 				MOVE
-					SHAPE 0 fan  20 self 1,-1 0  60
+					SHAPE 0 fan  10 self 1,-1 0  60
 					ROUTE 10 stop
 					ROUTE 15 line 5 player 0,0 0
 				END

@@ -228,8 +228,8 @@ public class Processor implements Runnable,GameEventListener{
 	private boolean calcRecycle(int x, int y){
 		boolean xOver;
 		boolean yOver;
-		xOver = ( (x<0 || x>WIDTH) );
-		yOver = ( (y<0 || y>HEIGHT) );
+		xOver = ( (x<0-WIDTH || x>WIDTH*2) );
+		yOver = ( (y<0-HEIGHT || y>HEIGHT*2) );
 		if( xOver || yOver)
 			return true;
 		else
