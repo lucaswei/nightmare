@@ -692,7 +692,6 @@ class InstructionCompiler{
 			/* inst_type */
 			arguments[0] = "route";
 			
-			
 			/* shape_type */
 			String shapeType = attr(attribute,2);
 			if(shapeType.equals("fan")){
@@ -785,7 +784,7 @@ class InstructionCompiler{
 	
 	private int parseInt(String i){return Integer.valueOf(i);}
 	private String attr(String s,int i){
-		return s.split(" +")[i];
+		return s.trim().split("\\s+")[i];
 	}
 }
 

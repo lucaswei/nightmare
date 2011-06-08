@@ -16,12 +16,12 @@ public class GWindow implements GameEventListener{
 	private static int width = 800;
 	private static int height = 600; 
 	
-	private Frame window;
+	private JFrame window;
 	public Container content;
 	
 	public GWindow(){
 		
-		window = new Frame();
+		window = new JFrame();
 		window.setTitle("Nightmare");
 		window.setLayout(null);
 		window.setSize(width, height);
