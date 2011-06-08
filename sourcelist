@@ -1,6 +1,7 @@
 ActionSource.java
 Bullet.java
 Clock.java
+Effect.java
 Enemy.java
 EventConnect.java
 ExtensibleArray.java

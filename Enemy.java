@@ -25,7 +25,7 @@ abstract class Enemy extends Plane{
 	protected Route route;
 	protected int enemyId;
 
-	public boolean attacted(int harm){
+	public boolean hurt(int harm){
 		hp = hp - harm;
 		if(hp < 0)
 			return true;
@@ -44,21 +44,23 @@ abstract class Enemy extends Plane{
 		catch(Exception e){
 		}
 	}
-	public int crash(){
-		return -2;
+	public Effect crash(){
+		return new EnemyExplodEffect(position);
 	}
 	public int getId(){
 		return enemyId;
 	}
 }
-/*TODO*/
+
+/*
+//TODO
 class Boss extends Enemy{
 	public Boss(int id,Point point){
 		position = point;
 		enemyId = id;
 	}
 }
-
+*/
 
 class SmallEnemy extends Enemy{
 	public SmallEnemy(int id, Point point){

@@ -22,6 +22,7 @@ public class Processor implements Runnable,GameEventListener{
 	private ArrayList<Enemy> enemyList;
 	private ArrayList<Bullet> bulletList;
 	private ArrayList<Bullet> playerBulletList;
+	private ArrayList<Effect> effectList;
 
 	private Hero player;
 
@@ -117,18 +118,24 @@ public class Processor implements Runnable,GameEventListener{
 		}
 	}
 	private void collision(){
-		for(Bullet bullet : bulletList){
-			if(bullet == null)
-				continue;
-			if(bullet.collision(player)){
-				int life = player.crash();
-				EventConnect.dispatch("crash");
-				if(life < 0 && Nightmare.debug == false){
-					EventConnect.dispatch("game_dead");
+		if(!(player.isInvincible())){
+			for(Bullet bullet : bulletList){
+				if(bullet == null)
+					continue;
+				if(bullet.collision(player)){
+					player.hurt(1);
+					int life = player.getLife();
+					EventConnect.dispatch("crash");
+					if(life < 0 && Nightmare.debug == false){
+						EventConnect.dispatch("game_dead");
+					}
+					break;
 				}
 			}
 		}
-		for(Bullet bullet : playerBulletList){
+		
+		Bullet[] pBullets  = playerBulletList.toArray(new Bullet[playerBulletList.size()]);
+		for(Bullet bullet : pBullets){
 			if(bullet == null)
 				continue;
 			
@@ -138,19 +145,26 @@ public class Processor implements Runnable,GameEventListener{
 				if(enemy == null)
 					continue;
 				if(bullet.collision(enemy)){
-					if(enemy.attacted( player.getPower())){
-						enemy.crash();
+					Effect hitEffect = bullet.hit();
+					if(hitEffect != null)
+						effectList.add(hitEffect);
+					playerBulletList.remove(bullet);
+					if(enemy.hurt( player.getPower())){
+						Effect explodEffect = enemy.crash();
+						if(explodEffect != null)
+							effectList.add(explodEffect);
 						enemyList.set(enemy.getId(),null);
 					}
-				}				
+				}	
 			}
 		}
 	}
 	private void outputToScreem(){
 		ArrayList<Printable> output = new ArrayList<Printable>();
 		output.addAll(enemyList);
-		output.addAll(bulletList);
 		output.addAll(playerBulletList);
+		output.addAll(bulletList);
+		output.addAll(effectList);
 		output.add(player);
 		ArrayList<Printable> temp = new ArrayList<Printable>();
 		for(Printable toPrint: output){
@@ -188,7 +202,7 @@ public class Processor implements Runnable,GameEventListener{
 			x = (int)bullet.getPosition().getX();
 			y = (int)bullet.getPosition().getY();
 			if( calcRecycle(x, y) )
-				playerBulletList.set(bullet.getId(),null);
+				playerBulletList.remove(bullet);
 		}
 		
 		Object[] enemies = enemyList.toArray();
@@ -200,6 +214,15 @@ public class Processor implements Runnable,GameEventListener{
 			y = (int)enemy.getPosition().getY();
 			if( calcRecycle(x, y) )
 				enemyList.set(enemy.getId(),null);
+		}
+		
+		//Effects
+		Effect[] effects = effectList.toArray(new Effect[effectList.size()]);
+		for(Effect effect : effects){
+			if(effect == null)
+				continue;
+			if( effect.disappear() )
+				effectList.remove(effect);
 		}
 	}
 	private boolean calcRecycle(int x, int y){
@@ -243,6 +266,7 @@ public class Processor implements Runnable,GameEventListener{
 		enemyList  = new ArrayList<Enemy>();
 		bulletList = new ArrayList<Bullet>();
 		playerBulletList = new ArrayList<Bullet>();
+		effectList = new ArrayList<Effect>();
 		this.queue = queue;
 		this.player= player; 
 		this.stage = stage;

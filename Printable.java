@@ -1,28 +1,35 @@
 import java.awt.Point;
 
-public abstract class Printable{
+public interface Printable{
+	int getImageId();
+	Point getPosition();
+	int getAngle();
+}
+
+abstract class Plane implements Printable{
+	//Printable
 	protected int imageId;
-	protected Point position;
-	protected int angle = 90;
 	public int getImageId(){
 		return imageId;
 	}
+	protected Point position;
 	public Point getPosition(){
 		return position;
 	}
+	protected int angle;
 	public int getAngle(){
 		return angle;
 	}
-}
-
-abstract class Plane extends Printable{
+	
+	//Plane
 	protected int radius;
 	public int getRadius(){
 		return radius;
 	}
 	public abstract void move();
-	/* -1:gameover ; -2:nothing	*/
-	public abstract int crash();
+	public abstract boolean hurt(int harm);
+	public abstract Effect crash();
+	
 }
 
 class Hero extends Plane{
@@ -106,16 +113,31 @@ class Hero extends Plane{
 		}
 		return null;
 	}
-
-	public int crash(){
+	public boolean hurt(int harm){
 		life--;
 		position.setLocation(225, 580);
-		return life;
+		invincibleTime = 32;
+		return true;
+	}
+
+	public Effect crash(){
+		return null;
 	}
 	public int getPower(){
 		return power;
 	}
 	public int getLife(){
 		return life;
+	}
+	
+	private int invincibleTime = 0;
+	public boolean isInvincible(){
+		if(invincibleTime > 0){
+			invincibleTime--;
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }

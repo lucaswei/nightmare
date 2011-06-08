@@ -37,8 +37,24 @@ class BulletFactory{
 		return null;
 	}
 }
-abstract class Bullet extends Printable{
-	protected int test;
+abstract class Bullet implements Printable{
+	//Printable
+	protected int imageId;
+	public int getImageId(){
+		return imageId;
+	}
+	
+	protected Point position;
+	public Point getPosition(){
+		return position;
+	}
+	
+	protected int angle;
+	public int getAngle(){
+		return angle;
+	}
+	
+	//Bullet
 	protected int power;
 	protected int bulletId;
 
@@ -58,6 +74,10 @@ abstract class Bullet extends Printable{
 	}
 	public int getId(){
 		return bulletId;
+	}
+	
+	public Effect hit(){
+		return new BulletHitEffect(position);
 	}
 }
 class CircleBullet extends Bullet{
@@ -79,3 +99,27 @@ class CircleBullet extends Bullet{
 			return false;
 	}
 }
+
+
+/*
+class LineBullet extends Bullet{
+	private int radius;
+	public LineBullet(Point position,int angle, int length, int imageId, int bulletId){
+		this.imageId  = imageId;
+		this.position = position;
+		this.angle    = angle;
+		this.radius   = radius;
+		this.bulletId = bulletId;
+	}
+	public boolean collision(Plane plain){
+		int x = (int)plain.getPosition().getX() - (int)position.getX();
+		int y = (int)plain.getPosition().getY() - (int)position.getY();
+		int r = (int)plain.getRadius() + radius;
+		if( x*x+y*y <  r*r )
+			return true;
+		else
+			return false;
+	}
+}
+
+*/
