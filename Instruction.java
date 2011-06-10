@@ -7,7 +7,7 @@
 */
 
 import java.awt.Point;
-import java.lang.Integer;
+import java.lang.Float;
 
 
 interface IInstruction{
@@ -78,17 +78,17 @@ class Instruction implements
 	
 	/* Printable */
 	public  int    getImageId(){
-		return arguments[4]!=null ? Integer.valueOf(arguments[4]) : 0;
+		return arguments[4]!=null ? Float.valueOf(arguments[4]).intValue() : 0;
 	}
 	public  int    getRadius(){
-		return arguments[5]!=null ? Integer.valueOf(arguments[5]) : 0;
+		return arguments[5]!=null ? Float.valueOf(arguments[5]).intValue() : 0;
 	}
 	
 	
 	
 	/* EnemyInstruction */
 	public  int    getEnemyId(){
-		return arguments[1]!=null ? Integer.valueOf(arguments[1]) : 0;
+		return arguments[1]!=null ? Float.valueOf(arguments[1]).intValue() : 0;
 	}
 	public  String getEnemyType(){
 		return arguments[2];
@@ -96,8 +96,8 @@ class Instruction implements
 	public  Point  getPoint(){
 		if(arguments[3] != null){
 			String[] pair = arguments[3].split(",");
-			int x = Integer.valueOf(pair[0]);
-			int y = Integer.valueOf(pair[1]);
+			int x = Float.valueOf(pair[0]).intValue();
+			int y = Float.valueOf(pair[1]).intValue();
 			return new Point(x,y);
 		}
 		else{
@@ -105,27 +105,27 @@ class Instruction implements
 		}
 	}
 	public  int    getHp(){
-		return arguments[6]!=null ? Integer.valueOf(arguments[6]) : 0;
+		return arguments[6]!=null ? Float.valueOf(arguments[6]).intValue() : 0;
 	}
 	
 	
 	
 	/* BulletInstruction */
 	public  int    getBulletId(){
-		return arguments[2]!=null ? Integer.valueOf(arguments[2]) : 0;
+		return arguments[2]!=null ? Float.valueOf(arguments[2]).intValue() : 0;
 	}
 	public  String getBulletType(){
 		return arguments[3];
 	}
 	public  int    getPower(){
-		return arguments[6]!=null ? Integer.valueOf(arguments[6]) : 0;
+		return arguments[6]!=null ? Float.valueOf(arguments[6]).intValue() : 0;
 	}
 	
 	
 	
 	/* RouteInstruction */
 	public  int    getTargetId(){
-		return arguments[2]!=null ? Integer.valueOf(arguments[2]) : 0;
+		return arguments[2]!=null ? Float.valueOf(arguments[2]).intValue() : 0;
 	}
 	public  String getTargetType(){
 		return arguments[1];
@@ -134,7 +134,7 @@ class Instruction implements
 		return arguments[3];
 	}
 	public  int    getSpeed(){
-		return arguments[4]!=null ? Integer.valueOf(arguments[4]) : 0;
+		return arguments[4]!=null ? Float.valueOf(arguments[4]).intValue() : 0;
 	}
 	public  String getPointRefer(){
 		return arguments[5];
@@ -142,8 +142,8 @@ class Instruction implements
 	public  Point  getPointOffset(){
 		if(arguments[6] != null){
 			String[] pair = arguments[6].split(",");
-			int x = Integer.valueOf(pair[0]);
-			int y = Integer.valueOf(pair[1]);
+			int x = Float.valueOf(pair[0]).intValue();
+			int y = Float.valueOf(pair[1]).intValue();
 			return new Point(x,y);
 		}
 		else{
@@ -151,12 +151,12 @@ class Instruction implements
 		}
 	}
 	public  int    getPointAngle(){
-		return arguments[7]!=null ? Integer.valueOf(arguments[7]) : 0;
+		return arguments[7]!=null ? Float.valueOf(arguments[7]).intValue() : 0;
 	}
 	public  float  getCurveRadius(){
 		return arguments[8]!=null ? Float.valueOf(arguments[8]) : 0;
 	}
 	public  int    getCurveAngle(){
-		return arguments[9]!=null ? Integer.valueOf(arguments[9]) : 0;
+		return arguments[9]!=null ? Float.valueOf(arguments[9]).intValue() : 0;
 	}
 }

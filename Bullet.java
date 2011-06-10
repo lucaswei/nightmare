@@ -92,7 +92,7 @@ class CircleBullet extends Bullet{
 	public boolean collision(Plane plain){
 		int x = (int)plain.getPosition().getX() - (int)position.getX();
 		int y = (int)plain.getPosition().getY() - (int)position.getY();
-		int r = (int)plain.getRadius() + radius;
+		int r =      plain.getRadius() + radius;
 		if( x*x+y*y <  r*r )
 			return true;
 		else
