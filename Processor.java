@@ -61,7 +61,7 @@ public class Processor implements Runnable,GameEventListener{
 				RouteInstruction inst = insts[i];
 				String targetType = inst.getTargetType();
 				int    targetId   = inst.getTargetId();
-				if(targetType.equals("enemy")){
+				if(targetType.equals("enemy")){//System.out.println(inst);
 					if(targetId < enemyList.size() && enemyList.get(targetId) != null){
 						Enemy target = enemyList.get(targetId);
 						Route route = RouteFactory.getRoute(inst,target,player.getPosition());
