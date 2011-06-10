@@ -4,6 +4,8 @@ import java.awt.*;
 import javax.imageio.ImageIO;
 import java.lang.Math.*;
 import java.lang.reflect.Constructor;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class Stage{
 	private String stageName;
@@ -258,14 +260,15 @@ class InstructionCompiler{
 		public void calc(){
 			String var  = attributes[1].value();
 			float start = attributes[2].floatValue();
-			float end   = attributes[3].floatValue();System.out.println(end);
+			float end   = attributes[3].floatValue();
 			float inter = attributes[4].floatValue();
 			variables.push();
-			for(float val=start;val<=end;val+=inter)
+			for(float val=start;val<=end;val+=inter){
 				variables.set(var,parseString(val));
 				for(Element e:elements){
 					e.calc();
 				}
+			}
 			variables.pop();
 		}
 	}
@@ -379,8 +382,8 @@ class InstructionCompiler{
 			elements = parse(allowed);
 		}	
 		
-		
 		public void calc(){
+		
 			String[] arguments = new String[7];
 			//inst_type
 			arguments[0] = "bullet";
@@ -405,6 +408,7 @@ class InstructionCompiler{
 			int plusTime = attributes[1].intValue();
 			int time = baseTime + plusTime;
 			
+					//System.out.println(bulletID);
 			Instruction instruction = new Instruction(arguments);
 			addInstruction(time,instruction);
 			
@@ -564,84 +568,57 @@ class InstructionCompiler{
 	}
 	
 	private class Value{
-		private String value;
-		private boolean isCalculated = false;
-		public Value(String value){this.value = value;}
+		private String _value;
+		public Value(String _value){this._value = _value;}
 		
 		public int    intValue()  {return Float.valueOf(calcValue()).intValue();}
 		public float  floatValue(){return Float.valueOf(calcValue());}
 		public String value()     {return calcValue();}
 		
 		private String calcValue(){
+			String value = _value;
 			try{
-			if(isCalculated)
-				return value;
-			if(value.matches(".*\\d.*")){
-				//Number or Point
-				if(value.matches("\\w+,\\w")){
-					//Point
-					String[] pair = value.split(",");
-					pair[0] = Calculator.calculate(replaceVariable(pair[0]));
-					pair[1] = Calculator.calculate(replaceVariable(pair[1]));
-					value = pair[0] + ',' + pair[1];
+				if(value.matches(".*\\d.*")){
+					//Number or Point
+					if(value.matches(".+,.+")){
+						//Point
+						String[] pair = value.split(",");
+						pair[0] = Calculator.calculate(replaceVariable(pair[0]));
+						pair[1] = Calculator.calculate(replaceVariable(pair[1]));
+						value = pair[0] + ',' + pair[1];
+					}
+					else{
+						//Number
+						value = Calculator.calculate(replaceVariable(value));
+					}
 				}
 				else{
-					//Number
-					value = Calculator.calculate(replaceVariable(value));
+					//Pure string
 				}
-			}
-			else{
-				//Pure string
-			}
 			}
 			catch(NoSuchVariableException e){
 			}
-			isCalculated = true;
 			return value;
 		}
 		
 		private class NoSuchVariableException extends Exception{};
 		private String replaceVariable(String s) throws NoSuchVariableException{
-			String result = "";
+			String result = s;
 			String var    = "";
-			char[] str = s.toCharArray();
-			for(int i=0;i<str.length;i++){
-				char c = str[i];
-				if(Character.isDigit(c)){
-					result += c;
-				}
-				else if(c=='(' || c==')' || c=='+' || c=='-' || c=='*' || c=='/'){
-					if(!(var.equals(""))){
-						String value = variables.get(var);
-						if(value == null){
-							System.out.println("Can't find variable:"+var);
-							throw new NoSuchVariableException();
-						}
-						else{
-							result += value;
-						}
-						var = "";
-					}
-					result += c;
-				}
-				else if(Character.isUpperCase(c)){
-					var += c;
+			String value  = "";
+			Pattern pattern = Pattern.compile("[_A-Z]+");
+			Matcher matcher = pattern.matcher(s);
+			while(matcher.find()){
+				var = matcher.group();
+				value = variables.get(var);
+				if(value != null){
+					result = result.replace(var,value);
 				}
 				else{
-					System.out.println("Syntax error: '"+s+"' unexcepted charactor '"+c+"'");
-				}
-			}
-			if(!(var.equals(""))){
-				String value = variables.get(var);
-				if(value == null){
-					System.out.println("Can't find variable:"+var);
+					System.err.println("No such variable : "+var);
 					throw new NoSuchVariableException();
 				}
-				else{
-					result += value;
-				}
 			}
-			
 			return result;
 		}
 	}

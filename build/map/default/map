@@ -2,16 +2,14 @@ PATH 0
 	ENEMY 0 normal 225,0
 		MOVE
 			ROUTE 0 line 10 self 0,1 0
-			ROUTE 20 stop
-			ROUTE 60 line 10 self 0,-1 0 
+			ROUTE 30 stop
+			ROUTE 10000 line 10 self 0,-1 0 
 		END
 		SHOOT
-			LOOP X 0 50 1
-				BULLET 20 normal
+			LOOP X 0 250 1
+				BULLET 20+X normal
 					MOVE
-						ROUTE 0  line 20 self 0,1 7.2*X
-						ROUTE 10 stop
-						ROUTE 15 line 5  player 0,0 0
+						ROUTE 0  line 20 self 0,1 3.6*X
 					END
 				END
 			END
