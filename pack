@@ -1,0 +1,3 @@
+#!/bin/bash
+jar cfm Nightmare.jar MANIFEST.MF bin/*.class src/*.java
+exit $?
